@@ -4,11 +4,29 @@
 
 Boost is a DeFi application that democratizes yield generation through a dual-mode approach: safe stablecoin vaults (Inflation Shield) for unbanked/high-inflation users, and high-risk leveraged strategies (Max Yield) for experienced traders. Built with a revolutionary narrative of "From Survival to Thriving," the platform enables users to earn yields and optionally donate portions to vetted causes, creating an "impact flywheel" that connects personal gains with collective good.
 
-The application targets emerging markets (Argentina, Nigeria, Venezuela, Brazil) with mobile-first design, Celo blockchain integration for gasless transactions, and local currency context. It combines Uniswap V4 liquidity pools with Aave lending protocols to deliver 8-18% APY for safe vaults and 30-300%+ APY for leveraged strategies.
+The application targets emerging markets (Argentina, Nigeria, Venezuela, Brazil) with mobile-first design, Celo blockchain integration for gasless transactions, and local currency context. It combines Uniswap V4 liquidity pools with Aave lending protocols, with historical yields in the 8-18% range for safe vaults and 30-300%+ range for leveraged strategies.
+
+## Recent Changes (November 2025)
+
+**Narrative Refinement & Legal/Compliance Calibration:**
+- Softened APY claims from guaranteed numbers to "historically X-Y%" language throughout
+- Removed competitor comparisons (e.g., "outperforms Summer.fi")
+- Changed "fortress" and "near-zero" language to "designed to reduce" and "aims to minimize"
+- Strengthened risk disclosures in modals with 6-7 specific warnings per mode
+- Updated all copy to avoid overpromising while maintaining emotional narrative strength
+- Added regulatory disclaimers: "not FDIC insured," "past performance doesn't predict future returns"
+- Maintained dual persona storytelling (Maria/Ahmed) but with tempered yield expectations
+
+**Landing Page Structure:**
+- Simplified HeroSection to quick decision point with concise risk labels
+- Expanded SafeShowcaseSection with complete Maria persona story and detailed benefits
+- Expanded DegenShowcaseSection with complete Ahmed persona story and comprehensive warnings
+- All CTAs consistently trigger risk disclosure modals before vault access
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Risk messaging: Calibrated for investor/regulator friendliness while maintaining accessibility.
 
 ## System Architecture
 
