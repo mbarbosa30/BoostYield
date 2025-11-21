@@ -8,6 +8,20 @@ The application targets emerging markets (Argentina, Nigeria, Venezuela, Brazil)
 
 ## Recent Changes (November 2025)
 
+**Blockchain Integration - Phase 1 & 2 Complete (Nov 21):**
+- Installed and configured wagmi v2, viem v2, RainbowKit v2 for Web3 wallet connection
+- Set up Celo mainnet configuration with public Forno RPC endpoint
+- Integrated RainbowKit ConnectButton in Navigation with MetaMask, WalletConnect, Valora support
+- Added BoostAaveVault contract ABI with full ERC4626 interface for Aave V3 wrapper
+- Built VaultDashboard page with read-only contract integration:
+  - Displays user's cUSD balance, vault shares, principal deposited
+  - Shows total vault assets and current APY (static 8-12%)
+  - Implements proper `enabled` guards on all wagmi hooks to prevent crashes
+  - Loading states with "..." placeholders during RPC queries
+- Navigation flow: Landing → Risk Modal → Vault Dashboard
+- Required WalletConnect project ID (throws error if missing) - configured with placeholder "demo"
+- Degen Mode CTAs disabled with "Coming Q1 2026" messaging
+
 **Narrative Refinement & Legal/Compliance Calibration:**
 - Softened APY claims from guaranteed numbers to "historically X-Y%" language throughout
 - Removed competitor comparisons (e.g., "outperforms Summer.fi")
