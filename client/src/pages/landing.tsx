@@ -40,8 +40,8 @@ export default function LandingPage() {
           onDegenClick={handleDegenClick}
         />
         <HowItWorksSection />
-        <SafeShowcaseSection />
-        <DegenShowcaseSection />
+        <SafeShowcaseSection onOpenVault={handleSafeClick} />
+        <DegenShowcaseSection onExploreStrategy={handleDegenClick} />
         <CauseBrowseSection />
         <FinalCTASection />
       </main>
