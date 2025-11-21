@@ -1,8 +1,8 @@
 import { Link } from "wouter";
 import { ThemeToggle } from "./ThemeToggle";
 import { CurrencyToggle } from "./CurrencyToggle";
-import { Button } from "@/components/ui/button";
 import { TrendingUp } from "lucide-react";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { Currency } from "./CurrencyToggle";
 
 interface NavigationProps {
@@ -24,12 +24,7 @@ export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
         <div className="flex items-center gap-4">
           <CurrencyToggle value={currency} onValueChange={onCurrencyChange} />
           <ThemeToggle />
-          <Button 
-            variant="default" 
-            data-testid="button-connect-wallet"
-          >
-            Connect Wallet
-          </Button>
+          <ConnectButton />
         </div>
       </div>
     </nav>

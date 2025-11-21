@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
@@ -10,6 +11,7 @@ import { RiskDisclosureModal } from "@/components/RiskDisclosureModal";
 import type { Currency } from "@/components/CurrencyToggle";
 
 export default function LandingPage() {
+  const [, setLocation] = useLocation();
   const [currency, setCurrency] = useState<Currency>("USD");
   const [showSafeModal, setShowSafeModal] = useState(false);
   const [showDegenModal, setShowDegenModal] = useState(false);
@@ -23,11 +25,12 @@ export default function LandingPage() {
   };
 
   const handleSafeAccept = () => {
-    console.log("Safe vault access granted");
+    setShowSafeModal(false);
+    setLocation("/vault");
   };
 
   const handleDegenAccept = () => {
-    console.log("Degen strategy access granted");
+    console.log("Degen strategy access granted - Coming Q1 2026");
   };
 
   return (
