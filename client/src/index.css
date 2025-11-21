@@ -43,7 +43,8 @@
   --chart-3: 150 65% 35%;
   --chart-4: 280 70% 40%;
   --chart-5: 340 75% 38%;
-  --font-sans: Open Sans, sans-serif;
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-accent: Space Grotesk, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --radius: .5rem;
@@ -57,6 +58,16 @@
   --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.00);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+
+  /* FlowShelter Custom Colors */
+  --safe-primary: 190 75% 50%;
+  --safe-secondary: 200 60% 85%;
+  --degen-primary: 270 70% 55%;
+  --degen-secondary: 30 85% 60%;
+  --impact-primary: 350 70% 60%;
+  --impact-secondary: 20 75% 70%;
+  --warning: 35 95% 55%;
+  --success: 150 65% 45%;
 
 /* Fallback for older browsers */
   --sidebar-primary-border: hsl(var(--sidebar-primary));

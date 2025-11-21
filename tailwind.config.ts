@@ -81,9 +81,24 @@ export default {
           busy: "rgb(239 68 68)",
           offline: "rgb(156 163 175)",
         },
+        safe: {
+          primary: "hsl(var(--safe-primary) / <alpha-value>)",
+          secondary: "hsl(var(--safe-secondary) / <alpha-value>)",
+        },
+        degen: {
+          primary: "hsl(var(--degen-primary) / <alpha-value>)",
+          secondary: "hsl(var(--degen-secondary) / <alpha-value>)",
+        },
+        impact: {
+          primary: "hsl(var(--impact-primary) / <alpha-value>)",
+          secondary: "hsl(var(--impact-secondary) / <alpha-value>)",
+        },
+        warning: "hsl(var(--warning) / <alpha-value>)",
+        success: "hsl(var(--success) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
+        accent: ["var(--font-accent)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
       },
