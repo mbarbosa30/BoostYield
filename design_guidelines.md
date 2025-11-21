@@ -1,198 +1,243 @@
-# FlowShelter Design Guidelines
+# Boost Design Guidelines
+
+## Brand Narrative
+**"From Survival to Thriving – The People's Yield Revolution"**
+
+Boost is a movement, not just an app. In 2025, billions remain unbanked or battle hyperinflation in Argentina, Nigeria, Venezuela. Traditional finance has failed the masses. Crypto promised freedom, but DeFi became a playground for the tech-savvy elite with complicated interfaces and hidden risks.
+
+Boost democratizes DeFi's best-kept secrets through radical simplicity and superior yields. It's a shield against economic chaos for everyday survivors, rocket fuel for bold risk-takers, and a bridge to impact for everyone.
+
+### Core Personas
+- **Maria in Buenos Aires**: Deposits $500 USDC, beats 100% inflation with 12% APY, sends 25% of yield to local school fund
+- **Ahmed in Lagos**: Leverages ETH for 150% returns while funding clean water projects
+
+### Brand Voice
+- **Revolutionary, not corporate**: "Join the movement" not "use our product"
+- **Empowering, not condescending**: Speak to resilience and ambition
+- **Transparent, not jargony**: Zero crypto maze, banking-app simplicity
+- **Impact-driven**: Personal gains → collective good
+
+---
 
 ## Design Approach
-**Hybrid Reference-Based**: Drawing from Coinbase (trust/accessibility), Robinhood (dual-mode risk clarity), and Revolut (currency flexibility) for financial product patterns, combined with clean component architecture for the impact/donation layer.
+**Emerging Market First**: Mobile-optimized, Celo-powered (gasless, sub-cent fees), built for $50 deposits and hyperinflation scenarios. Reference points: Venmo simplicity + Wall Street power.
 
 ## Core Design Principles
-1. **Dual-Personality Interface**: Calm reassurance for Safe mode, controlled energy for Degen mode
-2. **Risk Transparency**: Visual hierarchy makes risk impossible to miss
-3. **Impact Visibility**: Yield donations are celebrated, not hidden
-4. **Currency Flexibility**: USD primary with seamless local currency context
+1. **Radical Simplicity**: 3 screens max, one wallet connect, zero jargon
+2. **Dual-Mode Philosophy**: Inflation Shield (survival) vs Max Yield (thriving)
+3. **Risk Transparency**: Visual hierarchy makes risk impossible to miss
+4. **Impact Flywheel**: Global leaderboard, transparent tracking, community building
+5. **Currency Flexibility**: USD primary with seamless local currency context
 
 ---
 
 ## Typography
 - **Primary Font**: Inter (via Google Fonts)
-- **Accent Font**: Space Grotesk (for Safe vault headers and impact metrics)
+- **Accent Font**: Space Grotesk (for vault headers, impact metrics, revolutionary messaging)
 - **Hierarchy**:
-  - Hero headlines: text-5xl/text-6xl, font-bold
+  - Hero headlines: text-5xl/text-7xl, font-bold
+  - Revolutionary taglines: text-2xl/text-3xl, font-semibold
   - Section headers: text-3xl/text-4xl, font-semibold
   - Card titles: text-xl, font-semibold
   - Body: text-base, font-normal
   - Micro-copy/disclaimers: text-sm, font-medium
-  - APY displays: text-2xl, font-bold with tabular-nums
+  - APY displays: text-2xl/text-3xl, font-bold with tabular-nums
 
 ---
 
-## Layout System
-**Spacing Primitives**: Tailwind units of 3, 4, 6, 8, 12, 16, 24
-- Component padding: p-6 to p-8
-- Section spacing: py-16 to py-24 (desktop), py-12 (mobile)
-- Card gaps: gap-6 to gap-8
-- Max container width: max-w-7xl with px-6
+## Color System
+
+### Inflation Shield (Safe Mode)
+- Calm, trustworthy, protection-focused
+- Blue-gray to soft teal gradients
+- Icons: Shield, Lock, Heart
+
+### Max Yield (Degen Mode)
+- Energetic, ambitious, high-performance
+- Vibrant purple to orange gradients
+- Icons: Lightning, Fire, TrendingUp
+
+### Impact Layer
+- Warm coral/pink accent gradient
+- Icons: Heart, Users, Globe
+- Celebration animations for donations
 
 ---
 
 ## Component Library
 
 ### Navigation
-- Fixed top navbar with glass morphism effect (backdrop-blur-lg, bg-opacity-90)
-- Logo left, currency toggle and connect wallet right
-- Mobile: hamburger menu with slide-out drawer
+- Logo: "Boost" (bold, accent font)
+- Tagline option: "The People's Yield Revolution"
+- Fixed top navbar with glass morphism
+- Currency toggle and connect wallet right
+- Mobile: hamburger menu
 
 ### Hero Section (Landing)
-**Full-width, 85vh section** with dramatic split-screen treatment:
-- Left half: "Protect my savings" with calm gradient overlay
-- Right half: "Explore high-risk strategies" with energetic gradient
-- Center divider with subtle glow effect
-- Both sides have CTA buttons with blurred backgrounds (backdrop-blur-md bg-white/20)
-- Tagline above: "Save in dollars. Choose safety or risk. Let your yield fund your community." (centered, text-4xl)
+**Asymmetric Tiered Layout**:
+- Primary column (70%): Inflation Shield narrative
+  - Revolutionary headline: "Save in dollars. Protect your wealth."
+  - Maria persona story integration
+  - 8-18% APY prominently displayed
+  - Risk level 3/10 visual indicator
+  - Impact hook: "Optional: Donate yield to community causes"
+  - Primary CTA: "Start Saving Safely"
+  
+- Secondary column (30%): Max Yield alternative
+  - Badge: "For experienced DeFi users only"
+  - 30-300%+ APY range
+  - Risk level 8/10 visual warning
+  - High risk disclosure
+  - Secondary CTA: "Explore Strategies"
+  
+- Mobile: Inflation Shield first, Max Yield collapsible
 
 ### Vault/Strategy Cards
-**Safe Mode Cards**:
-- Rounded-2xl with subtle border
-- Shield icon (from Heroicons) in corner
-- APY range displayed prominently with "Est." prefix
-- Risk badge: "Low Risk" with dot indicator
-- "Conservative yield" tagline
-- Hover: subtle lift (translate-y-1) and shadow increase
 
-**Degen Mode Cards**:
-- Same structure but with warning accent border
-- Fire/lightning icon from Heroicons
-- Risk meter: horizontal bar with 1-10 scale, filled portions in warning gradient
-- Large ⚠️ emoji + "High Risk" badge
-- APY shown with "Variable, not guaranteed" subtext
-- Pulse animation on risk meter
+**Inflation Shield Cards**:
+- Title: "Inflation Shield"
+- APY: 8-18% (vs old 4-6%)
+- Tagline: "Beat inflation by 10x what banks offer"
+- Risk: 3/10 with visual dots
+- Features: "Auto-optimized Uniswap V4 + Aave lending"
+- Celo optimization badge
+- Near-zero impermanent loss callout
+
+**Max Yield Cards**:
+- Title: "Max Yield"
+- APY: 30-300%+ (vs old 20-50%)
+- Tagline: "Auto-looped leverage, one-click entry"
+- Risk: 8/10 with warning dots
+- Features: "Outperforms Summer.fi manual strategies"
+- Liquidation buffer mention
+- ⚠️ "Can lose everything" warning
 
 ### Impact Layer Components
+
 **Yield Donation Slider**:
-- Horizontal slider with percentage markers (0%, 25%, 50%, 75%, 100%)
-- Warm accent gradient fill as slider moves right
-- Live preview text: "You keep X%, [Cause] receives Y%"
-- Heart icon (Heroicons) animates when donation percentage increases
+- 0-100% donation percentage
+- Global leaderboard integration
+- "Turn earning into a force for good"
+- Tax receipt mention
+- Community building emphasis
 
-**Cause Selection Cards** (3-column grid on desktop, 1-column mobile):
-- Photo/logo of cause at top (rounded-lg)
-- Cause name and category tag
-- Short description (2 lines, truncated)
-- "Total yield received" metric with number
-- "Support this cause" secondary button
+**Cause Selection Cards**:
+- Education in Africa, rainforest protection, clean water
+- Total yield donated metric
+- Transparent on-chain tracking
+- Impact stories integration
 
-### Dashboard Components
-**Balance Display**:
-- Large card with gradient background (calm for Safe, energetic for Degen)
-- Primary balance: huge text (text-5xl) with USD
-- Local currency equivalent below in text-xl
-- Tabular numbers for easy scanning
+---
 
-**Performance Chart**:
-- Simple line chart showing vault value over time
-- Dual-axis: left shows USD value, right shows local currency
-- Donated yield shown as shaded area below main line
-- 7D/30D/90D/ALL toggle buttons
+## APY & Risk Messaging
 
-**Yield Breakdown**:
-- Horizontal stacked bar showing earned vs donated yield
-- Numbers on hover/tap
-- Color-coded: user yield in primary, donated in warm accent
+### Inflation Shield
+- **APY Range**: 8-18%
+- **Messaging**: "Beat 100% inflation", "10x what banks offer", "Shield against economic chaos"
+- **Risk Level**: 3/10 (Low)
+- **Target**: Unbanked, hyperinflation survivors, $50+ deposits
 
-### Risk Disclosure Modal
-- Centered modal with dark overlay (bg-black/50)
-- Large warning icon at top
-- Bullet points of key risks in clear language
-- For Degen: 2-3 question quiz with radio buttons
-- "I understand" checkbox must be checked to proceed
-- Emphasized CTA button
-
-### Withdrawal Flow
-- Multi-step card with progress indicator at top
-- Summary section showing:
-  - Deposited amount
-  - Current value (with P&L badge: green for profit, red for loss)
-  - Total donated to date with cause name
-- Amount input with "Max" button
-- Preview of post-withdrawal state
+### Max Yield
+- **APY Range**: 30-300%+
+- **Messaging**: "Rocket fuel for returns", "Auto-looped leverage", "Buffered against liquidation"
+- **Risk Level**: 8/10 (High)
+- **Target**: Yield-hungry degens, experienced DeFi users
 
 ---
 
 ## Visual Design Patterns
 
-### Safe Mode Aesthetic
-- Calm blue-gray to soft teal gradient backgrounds
-- Rounded-xl corners throughout
+### Inflation Shield Aesthetic
+- Calm blue-gray to soft teal gradients
+- Rounded-xl corners
 - Subtle shadows (shadow-md)
-- Shield, lock, savings icons throughout
-- Soft, reassuring micro-copy
+- Shield, lock, heart icons
+- Reassuring, empowering copy
+- Maria persona integration
 
-### Degen Mode Aesthetic
+### Max Yield Aesthetic
 - Vibrant purple to orange gradients
-- Slightly sharper corners (rounded-lg)
+- Sharper corners (rounded-lg)
 - Heavier shadows (shadow-lg)
-- Lightning, fire, graph-up icons
-- Bold warning badges with emoji
-- Persistent risk meter in header when in Degen section
+- Lightning, fire, trending-up icons
+- Bold warning badges
+- Ahmed persona integration
+- Persistent risk meter
 
 ### Impact Layer Aesthetic
-- Warm coral/pink accent gradient
-- Heart, users, hand-holding icons (Heroicons)
-- Cause cards feature actual photos
-- Celebration micro-animations when yield is donated (confetti particle effect, very brief)
+- Warm coral/pink accents
+- Heart, globe, users icons
+- Cause photos (authentic, human-centered)
+- Celebration micro-animations
+- Global leaderboard visualization
 
 ---
 
-## Images
+## Key Value Props
 
-### Hero Section
-**Large hero image**: Split-screen treatment with abstract financial imagery
-- Left side: Soft, secure imagery (piggy bank, shield, safe deposit metaphor) with calm blue overlay
-- Right side: Dynamic, energetic imagery (charts, fast movement, risk metaphor) with vibrant gradient overlay
-- Both sides 50% width on desktop, stacked on mobile
+### vs Traditional Banks/CeFi
+- 10-20x higher yields
+- No KYC barriers
+- Full self-custody
+- Optional philanthropy
 
-### Cause Cards
-**Photo requirements**: 
-- Each cause card needs a 16:9 hero image
-- Authentic photos of communities/beneficiaries
-- Warm, human-centered imagery
-- Examples: women's cooperative meeting, community gathering, local business
+### vs Other DeFi Apps
+- Simpler UI (3 screens max)
+- Auto-routes to best chains/pools
+- Celo for low fees
+- Combined UniV4 + Aave magic
+- Unique donation flywheel
 
-### About/How It Works Section
-**Diagram images**:
-- Visual flow showing: Deposit → Yield Generation → Split → Impact
-- Illustrated icons for each step
-- Clean, modern illustration style
+### Emerging Market Optimization
+- Gasless entry via Celo
+- Sub-cent transaction fees
+- $50 minimum deposits
+- Native stables (cUSD)
+- Local cause resonance
 
 ---
 
 ## Page-Specific Layouts
 
 ### Landing Page (7 sections)
-1. **Hero**: Split-screen dual CTA (85vh)
-2. **How It Works**: 3-step visual explainer with icons and short copy (py-24)
-3. **Safe Mode Showcase**: 2-column (description + vault card preview) (py-20)
-4. **Degen Mode Showcase**: 2-column (vault card preview + description with warnings) (py-20)
-5. **Impact Stories**: 3-column cause cards grid with "Browse all causes" CTA (py-24)
-6. **Trust Indicators**: Partner logos, security badges, protocol integrations (py-16)
-7. **Final CTA**: Centered with both mode options + "Start saving today" headline (py-24)
+1. **Hero**: Asymmetric tiered layout (Inflation Shield primary, Max Yield secondary)
+2. **How It Works**: Radical simplicity messaging, 3-screen max, Celo optimization
+3. **Inflation Shield Showcase**: Maria story, 8-18% APY, emerging market focus
+4. **Max Yield Showcase**: Ahmed story, 30-300%+ APY, auto-looping emphasis
+5. **Impact Stories**: Global leaderboard, community building, force for good
+6. **Trust Indicators**: Uniswap V4, Aave, Celo badges
+7. **Final CTA**: "Join the revolution – protect, optimize, and give today"
 
-### Vault Dashboard
-- Top stats row: 3-4 metric cards (balance, earned, donated, APY)
-- Main chart section: performance over time
-- Positions table: list of all active vaults/strategies
-- Quick actions sidebar: deposit more, withdraw, change donation settings
+---
 
-### Cause Browse Page
-- Filter bar at top: category tags (Women Empowerment, UBI, Public Goods, etc.)
-- 3-column grid of cause cards
-- Each card expandable to full details modal
-- Aggregate impact metrics at top: "Total yield donated across all causes: $XXX"
+## Messaging Framework
+
+### Headlines
+- "From Survival to Thriving"
+- "The People's Yield Revolution"
+- "Your money fights back, grows, and gives back"
+- "Save in dollars. Choose safety or risk."
+- "Join the revolution"
+
+### Taglines
+- "Earn More, Risk Smart, Give Effortlessly"
+- "As easy as Venmo, as powerful as Wall Street"
+- "Beat inflation. Build resilience. Create shared prosperity."
+- "One wallet connect. One deposit. Zero jargon."
+
+### Call-to-Actions
+- Primary: "Start Saving Safely" (Inflation Shield)
+- Secondary: "Explore Strategies" (Max Yield)
+- Impact: "Support a Cause"
+- Final: "Join the Revolution"
 
 ---
 
 ## Accessibility & Micro-interactions
-- All interactive elements have 44px minimum touch targets
-- Focus states: visible ring-2 with appropriate accent
-- Loading states: skeleton screens matching component shape
-- Success states: brief green checkmark animation
-- Error states: shake animation with red accent and clear error message
-- Tooltips on hover for all APY estimates and risk meters
+- 44px minimum touch targets
+- Focus states: visible ring-2
+- Loading: skeleton screens
+- Success: brief checkmark animation
+- Error: shake animation with clear message
+- Tooltips on APY estimates and risk meters
+- Celebration animations for yield donations (confetti, brief)
