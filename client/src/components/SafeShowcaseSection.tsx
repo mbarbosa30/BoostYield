@@ -20,7 +20,7 @@ export function SafeShowcaseSection({ onOpenVault }: SafeShowcaseSectionProps) {
             Inflation Shield
           </h2>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Beat inflation by 10x what banks offer. Your money fights back while your yield builds communities.
+            Designed to earn meaningfully higher returns than traditional banks. Your savings grow while your yield builds communities.
           </p>
         </div>
 
@@ -29,13 +29,13 @@ export function SafeShowcaseSection({ onOpenVault }: SafeShowcaseSectionProps) {
             <div>
               <h3 className="text-2xl font-bold mb-4 font-accent">How It Works</h3>
               <p className="text-muted-foreground mb-6">
-                Auto-optimized Uniswap V4 stablecoin pools combined with Aave lending hooks. Near-zero impermanent loss. Set it and forget it.
+                Auto-optimized stablecoin strategies combining liquidity pools and lending protocols. Designed to minimize impermanent loss. Set it and forget it.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Expected APY</p>
+                <p className="text-sm text-muted-foreground">Historical APY Range</p>
                 <p className="text-4xl font-bold tabular-nums text-safe-primary">8-18%</p>
               </div>
               <div className="space-y-2">
@@ -104,7 +104,7 @@ export function SafeShowcaseSection({ onOpenVault }: SafeShowcaseSectionProps) {
                     <p className="font-semibold">The Maria Story</p>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Maria in Buenos Aires watches the peso collapse (100% annual inflation). She deposits $500 USDC into Inflation Shield, earns 12% APY in stable dollars. That's 112% ahead of inflation eating her neighbors' savings.
+                    Maria in Buenos Aires faces peso collapse (100% annual inflation). She deposits $500 USDC into Inflation Shield and earns yield in stable dollars that historically has been around 12% APY—helping her savings keep pace with inflation.
                   </p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     She donates 25% of her yield to a local school fund. One tap. Transparent on-chain tracking. Tax receipts included.
@@ -133,7 +133,7 @@ export function SafeShowcaseSection({ onOpenVault }: SafeShowcaseSectionProps) {
             <SafeVaultCard
               name="Inflation Shield"
               apyRange="8-18%"
-              description="Beat 100% inflation with auto-optimized yield. USDC, cUSD, and stablecoin LP positions."
+              description="Aims to outpace inflation with auto-optimized yield strategies. USDC, cUSD, and stablecoin LP positions."
               onOpenVault={onOpenVault}
             />
 

@@ -36,10 +36,10 @@ export function DegenShowcaseSection({ onExploreStrategy }: DegenShowcaseSection
                     <p className="font-semibold">The Ahmed Story</p>
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    Ahmed in Lagos wants to multiply his ETH returns. He deposits $1,000 ETH into Max Yield. The strategy auto-loops 3x leverage on Aave, earning 150% APY on his amplified position.
+                    Ahmed in Lagos wants to multiply his ETH returns. He deposits $1,000 ETH into Max Yield. The strategy auto-loops 3x leverage, with potential for significantly amplified returns—but also amplified risk.
                   </p>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    He donates 10% of his yield to clean water projects. Risk is real—if ETH drops 25%, liquidation triggers. But buffered positions give him breathing room traditional leverage doesn't.
+                    He donates 10% of his yield to clean water projects. Risk is real—if ETH drops 25%, liquidation can trigger. Positions are designed to provide breathing room, but nothing is guaranteed.
                   </p>
                   <div className="pt-2 flex items-center gap-2 text-xs text-degen-primary font-semibold">
                     <span>$1,500/year potential</span>
@@ -56,7 +56,7 @@ export function DegenShowcaseSection({ onExploreStrategy }: DegenShowcaseSection
                     <div>
                       <p className="text-sm font-semibold text-warning mb-1">High Risk Warning</p>
                       <p className="text-xs text-muted-foreground">
-                        Can lose everything. Buffered against liquidation but not guaranteed. Only use funds you can afford to lose.
+                        You can lose your entire deposit. Designed to reduce liquidation risk but offers no guarantees. Only use funds you can afford to lose completely.
                       </p>
                     </div>
                   </div>
@@ -83,7 +83,7 @@ export function DegenShowcaseSection({ onExploreStrategy }: DegenShowcaseSection
             />
 
             <p className="text-xs text-muted-foreground text-center">
-              Outperforms Summer.fi manual strategies • Requires DeFi experience • Not for beginners
+              Requires DeFi experience • High risk of loss • Not suitable for beginners
             </p>
           </div>
 
@@ -91,13 +91,13 @@ export function DegenShowcaseSection({ onExploreStrategy }: DegenShowcaseSection
             <div>
               <h3 className="text-2xl font-bold mb-4 font-accent">How Leverage Works</h3>
               <p className="text-muted-foreground mb-6">
-                Auto-looped leverage combines Uniswap V4 liquidity positions with Aave borrowing. Strategy automatically multiplies your exposure without manual management.
+                Auto-looped leverage combines liquidity positions with lending protocols. Automatically multiplies your exposure without manual management—but also multiplies risk.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Potential APY</p>
+                <p className="text-sm text-muted-foreground">Historical APY Range</p>
                 <p className="text-4xl font-bold tabular-nums text-degen-primary">30-300%+</p>
               </div>
               <div className="space-y-2">
@@ -134,9 +134,9 @@ export function DegenShowcaseSection({ onExploreStrategy }: DegenShowcaseSection
                   <TrendingUp className="h-5 w-5 text-degen-primary" />
                 </div>
                 <div>
-                  <h4 className="font-semibold mb-1">Buffered Liquidation Protection</h4>
+                  <h4 className="font-semibold mb-1">Designed to Reduce Liquidation Risk</h4>
                   <p className="text-sm text-muted-foreground">
-                    Smart health factor monitoring. Auto-deleverage before liquidation hits. Not guaranteed but gives breathing room.
+                    Smart health factor monitoring aims to auto-deleverage before liquidation hits. Designed for resilience but offers no guarantees.
                   </p>
                 </div>
               </div>

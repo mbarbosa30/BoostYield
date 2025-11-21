@@ -27,8 +27,8 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Your money can fight back, grow, and give back.<br />
-            Choose your path: safe protection or maximum returns.
+            Your money doesn't just sit idle—it can grow and give back.<br />
+            Choose your path: designed for resilience or maximum potential.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
               Protect My Savings
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <p className="text-xs text-muted-foreground mt-2">8-18% APY • Risk 3/10 • Recommended</p>
+            <p className="text-xs text-muted-foreground mt-2">Historically 8-18% APY • Risk 3/10 • Recommended</p>
           </div>
 
           <div className="w-full sm:w-auto">
@@ -59,7 +59,7 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
               Maximize Returns
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <p className="text-xs text-warning mt-2">30-300%+ APY • Risk 8/10 • High Risk</p>
+            <p className="text-xs text-warning mt-2">Historically 30-300%+ APY • Risk 8/10 • High Risk</p>
           </div>
         </div>
 
