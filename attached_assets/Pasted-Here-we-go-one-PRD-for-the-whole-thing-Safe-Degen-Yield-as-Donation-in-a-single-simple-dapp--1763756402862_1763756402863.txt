@@ -1,0 +1,458 @@
+Here we go — one PRD for the whole thing: Safe + Degen + Yield-as-Donation in a single simple dapp.
+
+⸻
+
+PRD – “FlowShelter” (Working Name)
+
+Save in dollars. Choose safety or risk. Let your yield quietly fund your community.
+
+⸻
+
+1. Product Overview
+
+Problem(s)
+	•	People in high-inflation / unbanked contexts need:
+	•	A simple way to store value in stablecoins and earn modest yield.
+	•	A UI that doesn’t look like a DeFi war machine.
+	•	More advanced users / degens want:
+	•	Strategy access & yield optimization using Uniswap v4 + Aave.
+	•	A clear way to take on ridiculous risk with eyes wide open.
+	•	Many would like part of the upside to support causes or communities they care about, without giving up their whole principal.
+
+Solution in one line
+A simple dapp where any user can deposit stablecoins, choose between Safe Yield Vaults or Degen Strategies, and optionally donate some or all of their yield to vetted causes or community vaults.
+
+⸻
+
+2. Goals & Non-Goals
+
+2.1 Goals
+	1.	Accessible Savings for Unbanked / High-Inflation Users
+	•	Easy, low-friction onboarding.
+	•	“Safe” stablecoin strategies with conservative risk and clear language.
+	•	Local currency display and inflation context.
+	2.	High-Risk Yield for Advanced Users
+	•	Expose higher-risk strategies (e.g., leveraged LP using Aave + Uni v4) behind an explicit “degen” door.
+	•	Make risk visually obvious and repeatedly acknowledged.
+	3.	Impact Layer: Yield-as-Donation
+	•	Let users direct a configurable % of their yield (not principal) to:
+	•	Specific communities (e.g., women co-ops, UBI collectives).
+	•	Public goods / impact funds.
+	•	Support sponsor vaults (0% yield to depositor, 100% to cause).
+	4.	Simple UX First, On-Chain Smartness Later
+	•	MVP: one chain (e.g. Base / Celo / mainnet) and a small set of strategies.
+	•	Hide protocol complexity: “we use lending + trading fees behind the scenes”.
+
+2.2 Non-Goals (MVP)
+	•	No on-chain governance / DAO in v1.
+	•	No user-created custom strategies in v1.
+	•	No fiat on/off-ramp in v1 (can be linked later).
+	•	No complex tax reporting, just basic export.
+
+⸻
+
+3. Target Users & Personas
+
+3.1 Persona A – “Inflation Refugee”
+	•	Role: Worker / small entrepreneur in high-inflation country (e.g., Argentina, Nigeria, etc.).
+	•	Needs:
+	•	Simple way to hold stablecoins and earn modest yield.
+	•	See value in local currency terms.
+	•	Understand risk at a glance.
+	•	Optionally support their local community with some upside.
+	•	Risk appetite: low to medium.
+
+3.2 Persona B – “Crypto Degen / Yield Farmer”
+	•	Role: Experienced DeFi user.
+	•	Needs:
+	•	Access to more aggressive, structured strategies.
+	•	Clear risk / reward metrics.
+	•	Fun, “arcade” feel for high-risk strategies.
+	•	Ability to earmark some yield for meaningful causes.
+	•	Risk appetite: very high; understands liquidation/IL & protocol risk.
+
+3.3 Persona C – “Community Steward / NGO Partner”
+	•	Role: Local NGO, community org, or steward of a vulnerable group.
+	•	Needs:
+	•	A way to receive yield streams from sponsors.
+	•	Simple dashboard of incoming donations.
+	•	Ability to withdraw or distribute funds.
+	•	Option to expose only Safe Mode to their participants (no Degen).
+
+⸻
+
+4. Core Concepts & Product Structure
+
+4.1 Two Doors: Safe vs Degen
+	1.	Door A – Safe Yield (“Inflation Shield Vaults”)
+	•	Conservative stablecoin strategies:
+	•	Aave lending.
+	•	Potentially stable-stable Uniswap v4 pools with idle funds rehypothecated into Aave.
+	•	No leverage.
+	•	Clear copy: “Low risk, not zero. Earn small yield while protecting from inflation.”
+	2.	Door B – Degen Arcade (“Storm Strategies”)
+	•	Higher-risk strategies:
+	•	Leveraged LP (deposit stable → borrow volatile asset on Aave → LP on Uni v4).
+	•	Volatile pairs.
+	•	Explicit warnings:
+	•	“You can lose all your money.”
+	•	Risk meter 1–10.
+	•	Optional short unlock quiz / checkbox.
+
+UX rule: On home screen, Safe is visually primary. Degen is secondary.
+
+⸻
+
+4.2 Impact Layer: Yield-as-Donation
+
+On top of any strategy (Safe or Degen):
+	•	Users choose who benefits from their yield:
+	•	Me only (0% donation).
+	•	Split (e.g., 25/50/75% of yield to a cause).
+	•	All yield donated (0% to self).
+	•	Principal stays owned by the depositor (unless they choose a pure sponsor vault structure; even there, it’s still technically redeemable unless we define otherwise).
+
+Key principle:
+
+Default mental model: “Your deposit is yours. We route a share of the yield to your chosen cause.”
+
+⸻
+
+4.3 Vault & Strategy Types
+
+1. User Savings Vault
+	•	Backed by a Safe strategy.
+	•	Yield split: user (X%), cause (Y%).
+	•	Good for unbanked / savings users.
+
+2. Degen Strategy Position
+	•	Backed by a Degen strategy.
+	•	Yield / P&L split: user vs cause as chosen.
+	•	Clarify that if strategy loses money → there may be zero yield.
+
+3. Sponsor Vault (Impact Endowment)
+	•	Deposit with yield split: 0% user / 100% cause.
+	•	Principal can be withdrawn by sponsor but default messaging is long-term.
+
+4. Community Vault
+	•	Wallet (or contract) designated for a cause / community.
+	•	Aggregates donated yield from many users.
+	•	Community can withdraw and distribute.
+
+⸻
+
+5. User Flows
+
+5.1 Onboarding
+
+Flow
+	1.	Landing:
+	•	Hero text:
+	•	“Save in dollars. Choose safety or risk. Let your yield fund your community.”
+	•	Two main buttons:
+	•	“Protect my savings”
+	•	“Explore high-risk strategies”
+	2.	Connect / Create Account:
+	•	Option A: Connect wallet.
+	•	Option B: Email / phone social login → behind the scenes creates a smart account.
+	3.	Choose Display Currency:
+	•	Default: USD.
+	•	Optional: Local currency (ARS, NGN, BRL etc.).
+	•	Show both within app.
+	4.	Short risk disclosure:
+	•	“This is not a bank. Funds can be lost. Only use what you can afford to lose.”
+	•	Checkbox: “I understand.”
+
+⸻
+
+5.2 Safe Vault Deposit Flow (“Inflation Shield”)
+	1.	User chooses: Protect my savings.
+	2.	Sees Safe Vault Card:
+	•	“Inflation Shield Vault”
+	•	Est. APY: “4–6% (variable)”
+	•	Tagline: “Conservative yield using lending + trading fees on stablecoins.”
+	•	Risk: “Low, not zero.”
+	3.	Tap “Open Vault”:
+	•	Choose amount: e.g., 50 USDC.
+	•	Optional explanation: “We’ll convert or use your USDC in a yield strategy.”
+	4.	Impact Layer Step:
+	•	Toggle: “Support a cause with my yield?”
+	•	If off → 100% yield to user.
+	•	If on:
+	•	Choose cause from dropdown:
+	•	“Mujeres2000 (women microcredit)”
+	•	“Local UBI community”
+	•	“Public goods fund”
+	•	Choose split:
+	•	Buttons: 25% / 50% / 75% / 100%.
+	•	Summary text:
+	•	“Your 50 USDC stays yours. If there is yield, 50% goes to Mujeres2000, 50% to you.”
+	5.	Confirmation screen:
+	•	Deposit amount (USDC + local currency).
+	•	Est. APY.
+	•	Yield split.
+	•	Explicit risk note.
+	6.	Sign transaction:
+	•	On-chain deposit to appropriate strategy contract.
+	7.	Post-deposit dashboard:
+	•	“My Vault Balance: X USDC (≈ Y ARS)”
+	•	“My earned yield: A USDC”
+	•	“Donated yield: B USDC to [Cause]”
+	•	Simple line chart for vault value over time.
+
+⸻
+
+5.3 Degen Strategy Deposit Flow
+	1.	User chooses: Explore high-risk strategies.
+	2.	Degen screen shows cards:
+Card example:
+	•	Title: “Leveraged ETH/USDC LP x2”
+	•	Est. APY: “20–50% (variable, not guaranteed)”
+	•	Risk: 8/10, tag “⚠️ You can lose everything”
+	•	Short explainer: “Deposits USDC, borrows ETH on Aave, provides LP on Uniswap v4.”
+	3.	User taps a card → Strategy Details page:
+	•	Overview explanation in plain language.
+	•	Risk section:
+	•	“You can lose your principal due to liquidation or price volatility.”
+	•	Chart:
+	•	Past simulated performance (optional, with heavy disclaimers).
+	•	FAQ snippet:
+	•	“What can go wrong?”
+	•	“How do I exit?”
+	4.	Unlock gating:
+	•	Checkbox: “I understand I can lose my entire deposit.”
+	•	Optional 2–3 question micro-quiz before first Degen use.
+	5.	Deposit amount selection.
+	6.	Impact Layer:
+	•	Same as in Safe:
+	•	“Support a cause with my yield?”
+	•	Choose cause & % of yield donated.
+	7.	Confirmation screen:
+	•	Shows:
+	•	Strategy name.
+	•	Deposit amount.
+	•	Risk: 8/10, big warning.
+	•	Yield split.
+	•	Copy:
+	•	“This is experimental, high-risk. Don’t use rent money.”
+	8.	Sign transaction → strategy contract.
+	9.	Degen dashboard:
+	•	Shows:
+	•	“Current value: X USDC (can be < deposit).”
+	•	“PnL: +/– USDC.”
+	•	“Donated yield so far: B USDC.”
+	•	Health indicator (if there’s a liquidation threshold).
+	•	Big “Close Position” button.
+
+⸻
+
+5.4 Withdrawal / Closing Position
+
+For any vault or strategy:
+	1.	User taps “Withdraw” or “Close Position”.
+	2.	App shows:
+	•	“You deposited: 50 USDC”
+	•	“Current value: 54.2 USDC”
+	•	“Profit/Loss: +4.2 USDC”
+	•	“Donated to date: 1.5 USDC → [Cause]”
+	3.	Options:
+	•	Withdraw full.
+	•	Withdraw partial.
+	4.	On full exit:
+	•	All pending yield split is applied according to the configured percentages.
+	•	User receives their share.
+
+⸻
+
+5.5 Cause / Community Onboarding & Dashboard
+
+Onboarding a Cause:
+	•	Simplified off-chain flow (for MVP):
+	•	Manual registration by the team, or
+	•	Admin panel to add:
+	•	Cause name.
+	•	Description.
+	•	Logo/image.
+	•	Receiving wallet.
+	•	Category (e.g., “Women empowerment”, “Refugee aid”).
+	•	Later: crowd-sourced or DAO-curated listing.
+
+Cause Dashboard:
+	1.	For stewards:
+	•	“Total sponsors: N”
+	•	“Active sponsor capital: X USDC”
+	•	“Yield received this month: Y USDC”
+	•	History of inflows.
+	2.	Actions:
+	•	“Withdraw yield” to their wallet.
+	•	(Future) “Distribute to beneficiaries” (manual or via sub-accounts).
+	3.	Public cause profile (for donors):
+	•	Cause story.
+	•	Aggregate donated yield so far.
+	•	Basic transparency: “Funds used for…”
+
+⸻
+
+6. UX & IA (Information Architecture)
+
+6.1 Main Navigation
+	•	Home
+	•	Two main CTA:
+	•	“Protect my savings”
+	•	“Explore high-risk strategies”
+	•	Short explanation video / graphic.
+	•	Vaults
+	•	List of user’s Safe vaults.
+	•	Detail screens.
+	•	Strategies
+	•	List of Degen strategies user has joined.
+	•	Detail screens, health status.
+	•	Impact
+	•	List of causes user supports.
+	•	Donated yield summary.
+	•	Browse & choose new causes.
+	•	Profile
+	•	Settings.
+	•	Currency preference.
+	•	Risk mode options (hide Degen, Safe-only mode).
+
+6.2 Visual Language
+	•	Safe Mode:
+	•	Calm / neutral palette.
+	•	Language: “Shield”, “Savings”, “Vault”.
+	•	Degen Mode:
+	•	More energetic design.
+	•	Lots of warnings, use icons (⚠️, 🔥).
+	•	Impact Layer:
+	•	Warm accents (heart, people icons).
+	•	Photos / icons for causes.
+
+⸻
+
+7. Technical Architecture (High-Level, Non-Deep)
+
+Note: no deep Solidity spec here, just what the system conceptually needs.
+
+7.1 Smart Contracts (Conceptual Modules)
+	1.	Strategy Contracts
+	•	Safe strategies:
+	•	Deposit stablecoins → route to Aave and/or stable LPs on Uni v4.
+	•	Degen strategies:
+	•	Manage borrowing on Aave.
+	•	Manage LP positions on Uni v4.
+	•	Each strategy contract exposes:
+	•	deposit(amount, user, yieldSplitConfig)
+	•	withdraw(user)
+	•	getPosition(user) → {principal, accruedYield, currentValue}
+	2.	Yield Split / Impact Module
+	•	Takes strategy-reported yield.
+	•	Applies user-configured split:
+	•	userYield = totalYield * (1 - donationRate)
+	•	donationYield = totalYield * donationRate
+	•	Sends donation yield to cause wallet.
+	3.	Cause Registry
+	•	Keeps list of registered causes and their receiving addresses.
+	•	Stores basic metadata.
+	4.	Account / Vault Registry
+	•	Maps user addresses / smart accounts to their strategy positions.
+	•	Used by frontend for discovery.
+
+7.2 Backend / API
+	•	Off-chain indexer / backend to:
+	•	Read events from strategies and yield splits.
+	•	Aggregate balances, yield, donation amounts.
+	•	Provide REST/GraphQL API for frontend.
+	•	Store off-chain metadata (cause stories, images, local-currency FX rates).
+
+7.3 Integrations (MVP)
+	•	Blockchain: choose one EVM chain (e.g., Base or Celo) for MVP.
+	•	Protocols:
+	•	Aave (or equivalent lending).
+	•	Uniswap v4 (or v3 initially if v4 infra not yet stable).
+	•	FX Rates:
+	•	Use external API off-chain to convert USDC value → local fiat for display only.
+
+⸻
+
+8. Risk, Safeguards & Compliance
+
+8.1 Key Risks
+	•	Protocol risk: Aave / Uniswap / chain-level problems.
+	•	Smart contract bugs in strategies / hooks / yield-split.
+	•	Liquidation risk (Degen strategies).
+	•	Regulatory risk (interpretation as investment product / yield product).
+	•	UX risk: people misunderstanding “safe” as “guaranteed”.
+
+8.2 Safeguards in UX
+	•	Language:
+	•	No “guaranteed”.
+	•	Use “estimated”, “might”, and “can lose money”.
+	•	Safe vs Degen Separation:
+	•	Safe mode accessible by default.
+	•	Degen behind explicit opt-in, warnings, and maybe quiz.
+	•	Per-user Caps (Optional):
+	•	Default cap on Degen exposure as % of total app balance (can be configured).
+	•	Emergency Exit:
+	•	Clear “Close position and move to Safe vault” flow where technically feasible.
+
+8.3 For Vulnerable Communities
+	•	NGOs can request:
+	•	Safe-only white-label mode:
+	•	Hide Degen tab entirely for their participants.
+	•	Default donation split that can be edited by the user (or not, depending on partnership).
+
+⸻
+
+9. Metrics & KPIs
+
+Adoption & Usage
+	•	of unique depositors.
+	•	Total value locked (TVL).
+	•	% users choosing Safe vs Degen.
+	•	Average deposit size — Safe vs Degen.
+
+Impact
+	•	Total donated yield (USDC).
+	•	Number of causes onboarded.
+	•	Average donation rate (share of yield donated).
+	•	of active sponsor vaults.
+
+Risk & Health
+	•	of liquidations in Degen strategies.
+	•	% of users in Safe-only mode.
+	•	Time to first deposit after onboarding.
+
+Engagement
+	•	Retention (weekly/monthly active depositors).
+	•	Average time funds stay deposited.
+
+⸻
+
+10. Roadmap (High-Level)
+
+Phase 1 – MVP (3–4 core features)
+	•	One chain.
+	•	1–2 Safe strategies (Aave + maybe a simple stable pool).
+	•	1–2 Degen strategies (even one is enough for MVP).
+	•	Yield-as-donation split (simple %).
+	•	Basic cause registry (curated list).
+	•	Simple dashboards for:
+	•	User balances.
+	•	Donations.
+
+Phase 2 – Community & Strategy Expansion
+	•	More strategies (risk spectrum).
+	•	Community-vault specific UI.
+	•	NGO / partner dashboard.
+	•	Light social features (referral links, impact badges).
+
+Phase 3 – Governance & Customization
+	•	Community / DAO-curated cause list.
+	•	User-submitted strategies (with whitelisting).
+	•	More advanced risk controls & analytics.
+
+⸻
+
+If you want, next step I can:
+	•	Compress this into a 1-page founder brief for investors/partners, or
+	•	Turn it into flow diagrams or wireframe outlines for the Replit devs / designer (screen-by-screen list with minimal copy).
