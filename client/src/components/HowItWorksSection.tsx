@@ -11,7 +11,7 @@ export function HowItWorksSection() {
     {
       icon: Shield,
       title: "2. Choose Your Path",
-      description: "Inflation Shield (8-18% APY, safe) or Max Yield (30-300%+ APY, high risk). Switch anytime, no lockups.",
+      description: "Inflation Shield (historically 8-18% APY, lower risk) or Max Yield (historically 30-300%+ APY, high risk). Switch anytime, no lockups.",
     },
     {
       icon: Heart,

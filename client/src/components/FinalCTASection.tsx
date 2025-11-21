@@ -10,12 +10,12 @@ export function FinalCTASection() {
         </h2>
         
         <p className="text-xl text-muted-foreground mb-4 max-w-2xl mx-auto">
-          Your money can fight back, grow, and give back. Choose your path.
+          Your money doesn't just sit idle—it can grow and give back. Choose your path.
         </p>
         
         <p className="text-lg text-muted-foreground mb-12 max-w-2xl mx-auto">
-          <span className="font-semibold">Protect.</span> Beat inflation with 8-18% APY.{" "}
-          <span className="font-semibold">Optimize.</span> Amplify returns with 30-300%+ leverage.{" "}
+          <span className="font-semibold">Protect.</span> Aim to outpace inflation with stable yields.{" "}
+          <span className="font-semibold">Optimize.</span> Amplify potential returns with leverage.{" "}
           <span className="font-semibold">Give.</span> Build communities with your yield.
         </p>
 
