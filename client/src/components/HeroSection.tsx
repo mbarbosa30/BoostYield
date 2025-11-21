@@ -1,4 +1,4 @@
-import { ArrowRight, Shield, Zap, Lock, Heart, AlertTriangle, TrendingUp, ChevronDown } from "lucide-react";
+import { ArrowRight, Shield, Zap, Lock, Heart, AlertTriangle, TrendingUp, ChevronDown, Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +12,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
-  const [showDegen, setShowDegen] = useState(true);
+  const [showMaxYield, setShowMaxYield] = useState(true);
 
   return (
     <div className="relative min-h-[85vh] py-12 px-6">
@@ -26,12 +26,12 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
               </Badge>
               
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-accent leading-tight">
-                Save in dollars.<br />
-                <span className="text-safe-primary">Protect</span> your wealth.
+                Your money fights back.<br />
+                <span className="text-safe-primary">Beat</span> inflation.
               </h1>
               
               <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl">
-                Earn steady 4-6% yield on stablecoins while your earnings support communities in need.
+                Join the revolution. Earn 8-18% APY on stablecoins while your yield builds communities.
               </p>
             </div>
 
@@ -47,18 +47,18 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
               <CardContent className="relative p-8 space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="h-12 w-12 rounded-lg bg-safe-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Lock className="h-6 w-6 text-safe-primary" />
+                    <Shield className="h-6 w-6 text-safe-primary" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold mb-2 font-accent">Inflation Shield Vault</h3>
-                    <p className="text-muted-foreground">Conservative lending + stable LP. No leverage, minimal volatility.</p>
+                    <h3 className="text-2xl font-bold mb-2 font-accent">Inflation Shield</h3>
+                    <p className="text-muted-foreground">Beat inflation by 10x what banks offer. Auto-optimized Uniswap V4 + Aave lending.</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">Expected APY</p>
-                    <p className="text-3xl font-bold tabular-nums">4-6%</p>
+                    <p className="text-3xl font-bold tabular-nums">8-18%</p>
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm text-muted-foreground">Risk Level</p>
@@ -76,10 +76,17 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
                   </div>
                 </div>
 
+                <div className="p-4 bg-muted/50 rounded-lg space-y-2">
+                  <p className="text-sm font-semibold">The Maria Story</p>
+                  <p className="text-xs text-muted-foreground">
+                    $500 USDC in Buenos Aires → 12% APY beats 100% inflation → 25% of yield to local school fund. One tap.
+                  </p>
+                </div>
+
                 <div className="flex items-center gap-3 p-4 bg-impact-primary/10 rounded-lg">
                   <Heart className="h-5 w-5 text-impact-primary flex-shrink-0" />
                   <p className="text-sm">
-                    <span className="font-semibold">Optional:</span> Donate part of your yield to community causes
+                    <span className="font-semibold">Optional:</span> Donate 0-100% of yield to vetted causes with global leaderboard
                   </p>
                 </div>
 
@@ -95,7 +102,7 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center">
-                  Uses Aave lending protocol. Not a bank. Funds can be lost.
+                  Celo-optimized • Gasless entry • Sub-cent fees • Not a bank
                 </p>
               </CardContent>
             </Card>
@@ -103,17 +110,17 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
 
           <div className="lg:col-span-5 space-y-6" data-testid="hero-degen-section">
             <button
-              onClick={() => setShowDegen(!showDegen)}
+              onClick={() => setShowMaxYield(!showMaxYield)}
               className="lg:hidden w-full flex items-center justify-between p-4 bg-muted/50 rounded-lg hover-elevate"
             >
               <div className="flex items-center gap-2">
                 <Zap className="h-5 w-5 text-degen-primary" />
-                <span className="font-semibold">Advanced High-Risk Option</span>
+                <span className="font-semibold">Max Yield: Advanced Users</span>
               </div>
-              <ChevronDown className={`h-5 w-5 transition-transform ${showDegen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-5 w-5 transition-transform ${showMaxYield ? 'rotate-180' : ''}`} />
             </button>
 
-            <div className={`space-y-4 ${!showDegen ? 'hidden lg:block' : ''}`}>
+            <div className={`space-y-4 ${!showMaxYield ? 'hidden lg:block' : ''}`}>
               <Badge className="w-fit bg-warning/10 text-warning border-warning/20">
                 <AlertTriangle className="h-3 w-3 mr-1" />
                 For experienced DeFi users only
@@ -132,18 +139,18 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
                 <CardContent className="relative p-6 space-y-4">
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 rounded-lg bg-degen-primary/20 flex items-center justify-center flex-shrink-0">
-                      <Zap className="h-5 w-5 text-degen-primary" />
+                      <Flame className="h-5 w-5 text-degen-primary" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold mb-1 font-accent">High-Risk Strategies</h3>
-                      <p className="text-sm text-muted-foreground">Leveraged positions for maximum yield</p>
+                      <h3 className="text-xl font-bold mb-1 font-accent">Max Yield</h3>
+                      <p className="text-sm text-muted-foreground">Auto-looped leverage, one-click entry</p>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Potential APY</span>
-                      <span className="text-2xl font-bold tabular-nums">20-50%+</span>
+                      <span className="text-2xl font-bold tabular-nums">30-300%+</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Risk Level</span>
@@ -161,10 +168,17 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
                     </div>
                   </div>
 
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-xs font-semibold mb-1">The Ahmed Story</p>
+                    <p className="text-xs text-muted-foreground">
+                      ETH leverage in Lagos → 150% APY while funding clean water. Rocket fuel for returns.
+                    </p>
+                  </div>
+
                   <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg">
                     <p className="text-xs text-warning font-semibold mb-1">⚠️ High Risk Warning</p>
                     <p className="text-xs text-muted-foreground">
-                      Leveraged positions can lose everything. Only use funds you can afford to lose.
+                      Can lose everything. Buffered against liquidation but not guaranteed.
                     </p>
                   </div>
 
@@ -176,13 +190,13 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
                     data-testid="button-hero-degen"
                   >
                     <TrendingUp className="h-4 w-4" />
-                    Explore Strategies
+                    Explore Max Yield
                   </Button>
                 </CardContent>
               </Card>
 
               <p className="text-xs text-muted-foreground text-center">
-                Not recommended for beginners. Requires DeFi experience.
+                Outperforms Summer.fi manual strategies
               </p>
             </div>
           </div>

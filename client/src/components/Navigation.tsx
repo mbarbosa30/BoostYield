@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { ThemeToggle } from "./ThemeToggle";
 import { CurrencyToggle } from "./CurrencyToggle";
 import { Button } from "@/components/ui/button";
-import { Shield } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import type { Currency } from "./CurrencyToggle";
 
 interface NavigationProps {
@@ -16,8 +16,8 @@ export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" data-testid="link-home">
           <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-            <Shield className="h-6 w-6 text-safe-primary" />
-            <span className="text-xl font-accent font-semibold">FlowShelter</span>
+            <TrendingUp className="h-6 w-6 text-primary" />
+            <span className="text-xl font-accent font-semibold">Boost</span>
           </div>
         </Link>
 
@@ -27,7 +27,6 @@ export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
           <Button 
             variant="default" 
             data-testid="button-connect-wallet"
-            className="hover-elevate active-elevate-2"
           >
             Connect Wallet
           </Button>

@@ -48,7 +48,7 @@ export default function LandingPage() {
 
       <footer className="border-t py-12 px-6">
         <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2025 FlowShelter. Not a bank. DeFi carries risks. Use responsibly.</p>
+          <p>© 2025 Boost. Not a bank. DeFi carries risks. Built on Celo with Uniswap V4 + Aave.</p>
         </div>
       </footer>
 
