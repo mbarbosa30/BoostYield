@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useAccount, useReadContract, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Shield, DollarSign, Heart, TrendingUp, CheckCircle } from "lucide-react";
+import { Shield, DollarSign, Heart, TrendingUp, CheckCircle, RefreshCw } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
@@ -17,6 +17,7 @@ export default function SimplePage() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   // Read user's vault balance
   const { data: userShares, isLoading: isLoadingShares } = useReadContract({
@@ -30,7 +31,7 @@ export default function SimplePage() {
     }
   });
 
-  const { data: assetsForShares } = useReadContract({
+  const { data: assetsForShares, dataUpdatedAt } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
@@ -40,6 +41,13 @@ export default function SimplePage() {
       refetchInterval: 5000 // Refetch every 5 seconds to show yield accrual
     }
   });
+
+  // Update timestamp when data changes
+  useEffect(() => {
+    if (dataUpdatedAt) {
+      setLastUpdate(dataUpdatedAt);
+    }
+  }, [dataUpdatedAt]);
 
   const { data: userPrincipal } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
@@ -181,11 +189,17 @@ export default function SimplePage() {
                         <p className="text-sm text-muted-foreground mb-1">You Saved</p>
                         <p className="text-2xl font-bold">${Number(formatUnits(savedAmount, 18)).toFixed(2)}</p>
                       </div>
-                      <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
+                      <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 relative">
                         <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
-                        <p className="text-sm text-muted-foreground mb-1">You Earned</p>
+                        <p className="text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                          You Earned
+                          <RefreshCw className="w-3 h-3 animate-spin text-emerald-600" data-testid="icon-refreshing" />
+                        </p>
                         <p className="text-2xl font-bold text-emerald-600">
                           +${Number(formatUnits(earned, 18)).toFixed(8)}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Updates every 5s
                         </p>
                       </div>
                       <div className="text-center p-4 rounded-lg bg-muted/50">

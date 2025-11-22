@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { useAccount, useReadContract, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Wallet, Zap, Heart, BarChart3 } from "lucide-react";
+import { TrendingUp, Wallet, Zap, Heart, BarChart3, RefreshCw } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
@@ -17,6 +17,7 @@ export default function DegenPage() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   // Read user's vault balance
   const { data: userShares, isLoading: isLoadingShares } = useReadContract({
@@ -30,7 +31,7 @@ export default function DegenPage() {
     }
   });
 
-  const { data: assetsForShares } = useReadContract({
+  const { data: assetsForShares, dataUpdatedAt } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
@@ -40,6 +41,13 @@ export default function DegenPage() {
       refetchInterval: 5000 // Refetch every 5 seconds to show yield accrual
     }
   });
+
+  // Update timestamp when data changes
+  useEffect(() => {
+    if (dataUpdatedAt) {
+      setLastUpdate(dataUpdatedAt);
+    }
+  }, [dataUpdatedAt]);
 
   const { data: userPrincipal } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
@@ -193,11 +201,14 @@ export default function DegenPage() {
                       <p className="text-xs text-muted-foreground mt-1">Principal + accrued yield</p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1">Profit Realized</p>
+                      <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1">
+                        Profit Realized
+                        <RefreshCw className="w-3 h-3 animate-spin text-emerald-600" data-testid="icon-refreshing" />
+                      </p>
                       <p className="text-2xl font-bold text-emerald-600">
                         +${Number(formatUnits(profit, 18)).toFixed(8)}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">Gross yield earned</p>
+                      <p className="text-xs text-muted-foreground mt-1">Updates every 5s</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Zero-Fee Giving</p>
