@@ -105,9 +105,22 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
   };
 
   const handleDeposit = async () => {
-    if (!address || !BOOST_VAULT_ADDRESS || !amountBigInt) return;
+    console.log('handleDeposit called', {
+      address,
+      BOOST_VAULT_ADDRESS,
+      amountBigInt: amountBigInt.toString(),
+      hasBalance,
+      needsApproval,
+      isApproveSuccess
+    });
+
+    if (!address || !BOOST_VAULT_ADDRESS || !amountBigInt) {
+      console.log('handleDeposit: missing required params');
+      return;
+    }
 
     try {
+      console.log('Calling deposit with args:', [amountBigInt.toString(), address]);
       deposit({
         address: BOOST_VAULT_ADDRESS,
         abi: BoostVaultABI,
@@ -115,6 +128,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
         args: [amountBigInt, address],
       });
     } catch (error: any) {
+      console.error('Deposit error:', error);
       toast({
         variant: "destructive",
         title: "Deposit Failed",
