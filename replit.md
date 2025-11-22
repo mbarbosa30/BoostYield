@@ -29,14 +29,23 @@ While authentication is not fully implemented, the system is designed for cookie
 
 ### Dual-UI Implementation
 
-The platform features two distinct user interfaces:
-- **`/degen`**: A crypto-native interface with sophisticated terminology, data-dense dashboards, a dark theme, and professional impact metrics for donations ("Zero-Fee Philanthropy").
-- **`/simple`**: An emerging markets interface with plain language, a bright design, progress visualizations, and community-focused messaging for donations ("Share Your Growth").
-Both UIs share core transaction dialogs (Deposit, Withdraw, Donation Settings) for consistent functionality.
+The platform features three distinct user interfaces:
+- **`/degen`**: A crypto-native interface with sophisticated Wall Street terminology, data-dense dashboards, a dark theme, and professional impact metrics for donations ("Zero-Fee Philanthropy")
+- **`/simple`**: An emerging markets interface with plain language, bright design, progress visualizations, and community-focused messaging for donations ("Share Your Growth")
+- **`/mini`**: A mobile-optimized Farcaster miniapp with streamlined UX for in-app DeFi transactions and viral sharing
+All three UIs share core transaction dialogs (Deposit, Withdraw, Donation Settings) for consistent functionality and display real-time APY from Aave V3 with smooth 60 FPS earnings animations using `requestAnimationFrame`.
 
 ### Farcaster Miniapp Integration
 
-A mobile-first `/mini` route is integrated as a Farcaster miniapp, utilizing RainbowKit and the Farcaster SDK. This allows full deposit, withdraw, and donation flows within the Farcaster feed, along with a `ShareCastButton` for viral sharing of yield stats. The integration includes manifest configuration (`.well-known/farcaster.json`) and OpenGraph tags for rich embeds, aiming to significantly boost user discovery.
+A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with complete DeFi functionality:
+- **SDK Integration:** Uses `@farcaster/miniapp-sdk` with proper `sdk.actions.ready()` lifecycle management
+- **Manifest:** Published at `/.well-known/farcaster.json` with app metadata, splash screen configuration, and Celo chain requirements (eip155:42220)
+- **Rich Embeds:** OpenGraph meta tags (`fc:miniapp`, `fc:frame`) enable rich social sharing in Farcaster feeds with 3:2 aspect ratio images
+- **Full DeFi Flows:** Complete deposit, withdraw, and donation functionality within the Farcaster client
+- **Viral Sharing:** `ShareCastButton` composes pre-filled casts with yield stats and donation impact
+- **Real-time APY:** Fetches live APY from Aave V3's `currentLiquidityRate` (Ray format, 1e27) displayed across all pages
+- **Smooth Animations:** 60 FPS earnings display using `requestAnimationFrame` with interpolated values between blockchain polls
+- **Note:** Account association signature requires setup via Farcaster Developer Tools (see `FARCASTER_SETUP.md`)
 
 ## External Dependencies
 
