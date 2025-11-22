@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useAccount, useReadContract, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +19,7 @@ export default function SimplePage() {
   const [donationOpen, setDonationOpen] = useState(false);
 
   // Read user's vault balance
-  const { data: userShares } = useReadContract({
+  const { data: userShares, isLoading: isLoadingShares } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
     abi: BoostVaultABI,
     functionName: 'balanceOf',
@@ -68,9 +69,22 @@ export default function SimplePage() {
   const earningRate = "11% per year";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-background dark:from-background dark:to-background pt-24 pb-12">
-      <div className="max-w-4xl mx-auto px-6 space-y-6">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-background dark:from-background dark:to-background">
+      {/* Compact Header */}
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b">
+        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" data-testid="link-home">
+            <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <span className="text-lg font-accent font-semibold">Boost</span>
+            </div>
+          </Link>
+          <ConnectButton />
+        </div>
+      </header>
+
+      <div className="max-w-4xl mx-auto px-6 pt-8 pb-12 space-y-6">
+        {/* Page Title */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-accent font-bold mb-3">Grow Your Money</h1>
           <p className="text-lg text-muted-foreground">
@@ -146,34 +160,42 @@ export default function SimplePage() {
                 <CardDescription className="text-base">See how much you have and how much you earned</CardDescription>
               </CardHeader>
               <CardContent className="pt-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-4 rounded-lg bg-muted/50">
-                    <DollarSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-1">You Saved</p>
-                    <p className="text-2xl font-bold">${Number(formatUnits(savedAmount, 18)).toFixed(2)}</p>
+                {isLoadingShares ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-muted-foreground">Loading your money...</div>
                   </div>
-                  <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
-                    <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
-                    <p className="text-sm text-muted-foreground mb-1">You Earned</p>
-                    <p className="text-2xl font-bold text-emerald-600">
-                      +${Number(formatUnits(earned, 18)).toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="text-center p-4 rounded-lg bg-muted/50">
-                    <CheckCircle className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                    <p className="text-sm text-muted-foreground mb-1">Total Now</p>
-                    <p className="text-2xl font-bold">${Number(formatUnits(yourMoney, 18)).toFixed(2)}</p>
-                  </div>
-                </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center p-4 rounded-lg bg-muted/50">
+                        <DollarSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mb-1">You Saved</p>
+                        <p className="text-2xl font-bold">${Number(formatUnits(savedAmount, 18)).toFixed(2)}</p>
+                      </div>
+                      <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
+                        <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
+                        <p className="text-sm text-muted-foreground mb-1">You Earned</p>
+                        <p className="text-2xl font-bold text-emerald-600">
+                          +${Number(formatUnits(earned, 18)).toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="text-center p-4 rounded-lg bg-muted/50">
+                        <CheckCircle className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-muted-foreground mb-1">Total Now</p>
+                        <p className="text-2xl font-bold">${Number(formatUnits(yourMoney, 18)).toFixed(2)}</p>
+                      </div>
+                    </div>
 
-                {Number(formatUnits(savedAmount, 18)) > 0 && (
-                  <div className="pt-4 border-t">
-                    <p className="text-sm text-muted-foreground mb-2">Your money is growing</p>
-                    <Progress value={Math.min((Number(formatUnits(earned, 18)) / Number(formatUnits(savedAmount, 18))) * 100, 100)} className="h-3" />
-                    <p className="text-xs text-muted-foreground mt-2">
-                      Earning {earningRate} - much better than banks
-                    </p>
-                  </div>
+                    {Number(formatUnits(savedAmount, 18)) > 0 && (
+                      <div className="pt-4 border-t">
+                        <p className="text-sm text-muted-foreground mb-2">Your money is growing</p>
+                        <Progress value={Math.min((Number(formatUnits(earned, 18)) / Number(formatUnits(savedAmount, 18))) * 100, 100)} className="h-3" />
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Earning {earningRate} - much better than banks
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -292,8 +314,17 @@ export default function SimplePage() {
         onOpenChange={setDepositOpen}
         cusdBalance={cusdBalance?.value}
       />
-      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} />
-      <DonationSettingsDialog open={donationOpen} onOpenChange={setDonationOpen} />
+      <WithdrawDialog
+        open={withdrawOpen}
+        onOpenChange={setWithdrawOpen}
+        vaultShares={userShares}
+        userPrincipal={userPrincipal}
+        donationPct={donationPct}
+      />
+      <DonationSettingsDialog
+        open={donationOpen}
+        onOpenChange={setDonationOpen}
+      />
     </div>
   );
 }

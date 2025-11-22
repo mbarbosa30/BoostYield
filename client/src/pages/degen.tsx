@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useAccount, useReadContract, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,7 +19,7 @@ export default function DegenPage() {
   const [donationOpen, setDonationOpen] = useState(false);
 
   // Read user's vault balance
-  const { data: userShares } = useReadContract({
+  const { data: userShares, isLoading: isLoadingShares } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
     abi: BoostVaultABI,
     functionName: 'balanceOf',
@@ -76,17 +77,27 @@ export default function DegenPage() {
   const tvl = totalAssets ? Number(formatUnits(BigInt(totalAssets.toString()), 18)) : 0;
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-12">
-      <div className="max-w-6xl mx-auto px-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-4xl font-accent font-bold mb-2">Yield Protocol</h1>
-            <p className="text-muted-foreground">
-              Aave V3 optimized vault · Celo mainnet · ERC4626 compliant
-            </p>
-          </div>
-          {!isConnected && <ConnectButton />}
+    <div className="min-h-screen bg-background">
+      {/* Compact Header */}
+      <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" data-testid="link-home">
+            <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              <span className="text-lg font-accent font-semibold">Boost</span>
+            </div>
+          </Link>
+          <ConnectButton />
+        </div>
+      </header>
+
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-12 space-y-6">
+        {/* Page Title */}
+        <div>
+          <h1 className="text-4xl font-accent font-bold mb-2">Yield Protocol</h1>
+          <p className="text-muted-foreground">
+            Aave V3 optimized vault · Celo mainnet · ERC4626 compliant
+          </p>
         </div>
 
         {/* Protocol Stats */}
@@ -161,34 +172,40 @@ export default function DegenPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Total Deposited</p>
-                    <p className="text-2xl font-bold">${Number(formatUnits(deposited, 18)).toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">Principal + accrued yield</p>
+                {isLoadingShares ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-muted-foreground">Loading position...</div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Profit Realized</p>
-                    <p className="text-2xl font-bold text-emerald-600">
-                      +${Number(formatUnits(profit, 18)).toFixed(2)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">Gross yield earned</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Total Deposited</p>
+                      <p className="text-2xl font-bold">${Number(formatUnits(deposited, 18)).toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Principal + accrued yield</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Profit Realized</p>
+                      <p className="text-2xl font-bold text-emerald-600">
+                        +${Number(formatUnits(profit, 18)).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">Gross yield earned</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Zero-Fee Giving</p>
+                      <p className="text-2xl font-bold text-pink-600">
+                        ${Number(formatUnits(totalDonated, 18)).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">{donationPct}% of yield donated</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground mb-1">Net Profit</p>
+                      <p className="text-2xl font-bold">
+                        ${Number(formatUnits(netProfit, 18)).toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">After donations</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Zero-Fee Giving</p>
-                    <p className="text-2xl font-bold text-pink-600">
-                      ${Number(formatUnits(totalDonated, 18)).toFixed(2)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">{donationPct}% of yield donated</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Net Profit</p>
-                    <p className="text-2xl font-bold">
-                      ${Number(formatUnits(netProfit, 18)).toFixed(2)}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">After donations</p>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -285,8 +302,17 @@ export default function DegenPage() {
         onOpenChange={setDepositOpen}
         cusdBalance={cusdBalance?.value}
       />
-      <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} />
-      <DonationSettingsDialog open={donationOpen} onOpenChange={setDonationOpen} />
+      <WithdrawDialog
+        open={withdrawOpen}
+        onOpenChange={setWithdrawOpen}
+        vaultShares={userShares}
+        userPrincipal={userPrincipal}
+        donationPct={donationPct}
+      />
+      <DonationSettingsDialog
+        open={donationOpen}
+        onOpenChange={setDonationOpen}
+      />
     </div>
   );
 }
