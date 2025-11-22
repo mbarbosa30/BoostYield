@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import LandingPage from "@/pages/landing";
 import VaultPage from "@/pages/vault";
+import MiniPage from "@/pages/mini";
 import NotFound from "@/pages/not-found";
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -16,6 +17,7 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <Route path="/vault" component={VaultPage} />
+      <Route path="/mini" component={MiniPage} />
       <Route component={NotFound} />
     </Switch>
   );
