@@ -58,17 +58,28 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
     error: depositError,
   } = useWriteContract();
 
-  // Log deposit errors
+  // Log deposit errors and state
   useEffect(() => {
+    console.log('Deposit hook state:', {
+      depositError: depositError ? {
+        message: depositError.message,
+        cause: depositError.cause,
+        name: depositError.name,
+      } : null,
+      depositHash,
+      isDepositPending,
+    });
+    
     if (depositError) {
       console.error('Deposit transaction error:', depositError);
+      console.error('Full error object:', JSON.stringify(depositError, null, 2));
       toast({
         variant: "destructive",
         title: "Deposit Failed",
         description: depositError.message || "Failed to initiate deposit transaction",
       });
     }
-  }, [depositError, toast]);
+  }, [depositError, depositHash, isDepositPending, toast]);
 
   const { isLoading: isDepositConfirming, isSuccess: isDepositSuccess } =
     useWaitForTransactionReceipt({
