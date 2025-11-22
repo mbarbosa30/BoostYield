@@ -69,6 +69,13 @@ export default function MiniPage() {
     query: { enabled: !!BOOST_VAULT_ADDRESS }
   });
 
+  // Read user's cUSD balance
+  const { data: cusdBalance } = useBalance({
+    address: address,
+    token: CUSD_ADDRESS,
+    query: { enabled: !!address }
+  });
+
   // Calculate stats
   const deposited = assetsForShares || BigInt(0);
   const principal = userPrincipal || BigInt(0);
@@ -240,7 +247,11 @@ export default function MiniPage() {
       </div>
 
       {/* Dialogs */}
-      <DepositDialog open={depositOpen} onOpenChange={setDepositOpen} />
+      <DepositDialog
+        open={depositOpen}
+        onOpenChange={setDepositOpen}
+        cusdBalance={cusdBalance?.value}
+      />
       <WithdrawDialog open={withdrawOpen} onOpenChange={setWithdrawOpen} />
       <DonationSettingsDialog open={donationOpen} onOpenChange={setDonationOpen} />
     </div>
