@@ -74,6 +74,25 @@ The application targets emerging markets (Argentina, Nigeria, Venezuela, Brazil)
 - Added regulatory disclaimers: "not FDIC insured," "past performance doesn't predict future returns"
 - Maintained dual persona storytelling (Maria/Ahmed) but with tempered yield expectations
 
+**Farcaster Miniapp Integration - Distribution Strategy (Nov 22):**
+- **Architecture Decision:** Using RainbowKit + Farcaster SDK hybrid (not Base native) to preserve existing Celo deployment at 0xb47973F205121AD784d9414bbfeCa86c8E270844
+- **SDK Integration:** Installed @farcaster/miniapp-sdk with legacy-peer-deps workaround (.npmrc) for hardhat compatibility
+- **Miniapp Route:** Created mobile-first /mini route with simplified UX optimized for in-feed Farcaster usage
+  - Full deposit/withdraw/donation flows accessible within Farcaster context
+  - ShareCastButton for viral cast composition with yield stats (emoji-free per design policy)
+  - Navigation auto-hides on /mini route and Farcaster context detection to prevent UI flash
+- **Manifest Configuration:** .well-known/farcaster.json with Celo chain requirements (eip155:42220)
+  - Required capabilities: actions.signIn, wallet.getEthereumProvider, actions.composeCast
+  - Icon/preview assets: /icon.png, /og-image.png for social sharing
+- **Meta Tags:** OpenGraph tags for rich embeds (og:image, og:title, og:description)
+- **Key Files:**
+  - client/src/lib/farcasterClient.ts: SDK initialization and helper functions
+  - client/src/pages/mini.tsx: Mobile-optimized miniapp entry point
+  - client/src/components/ShareCastButton.tsx: Viral cast composition
+  - client/public/.well-known/farcaster.json: Miniapp manifest
+- **Testing Strategy:** Requires development tunnel (cloudflared/ngrok) for Warpcast testing before production deployment
+- **Distribution Goal:** 10-100x user discovery boost via Farcaster feed integration vs traditional landing page
+
 **Landing Page Structure:**
 - Simplified HeroSection to quick decision point with concise risk labels
 - Expanded SafeShowcaseSection with complete Maria persona story and detailed benefits

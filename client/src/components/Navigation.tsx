@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link } from "wouter";
+import { Link, useRoute } from "wouter";
 import { ThemeToggle } from "./ThemeToggle";
 import { CurrencyToggle } from "./CurrencyToggle";
 import { TrendingUp } from "lucide-react";
@@ -13,14 +12,11 @@ interface NavigationProps {
 }
 
 export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
-  const [isMiniapp, setIsMiniapp] = useState(false);
-
-  useEffect(() => {
-    setIsMiniapp(isFarcasterMiniapp());
-  }, []);
-
-  // Hide navigation in Farcaster miniapp (mobile-optimized UI)
-  if (isMiniapp) {
+  // Check route on initial render to avoid navbar flash in miniapp
+  const [isMiniRoute] = useRoute("/mini");
+  
+  // Hide navigation in Farcaster miniapp or on /mini route
+  if (isMiniRoute || isFarcasterMiniapp()) {
     return null;
   }
 
