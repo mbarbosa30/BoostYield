@@ -47,7 +47,7 @@ const POOL_ABI = [
   }
 ] as const;
 
-function useEarningsPrecision(balance: bigint, decimals = 18) {
+function useEarningsPrecision(earnedAmount: bigint, principalAmount: bigint, decimals = 18) {
   const precisionRef = useRef<number>(2);
   
   const { data: reserveData } = useReadContract({
@@ -58,12 +58,12 @@ function useEarningsPrecision(balance: bigint, decimals = 18) {
     query: { refetchInterval: 60000 }
   });
   
-  const balanceNumber = parseFloat(formatUnits(balance, decimals));
+  const principalNumber = parseFloat(formatUnits(principalAmount, decimals));
   
-  if (reserveData && balanceNumber > 0) {
-    const liquidityRateRay = reserveData[2];
+  if (reserveData && principalNumber > 0) {
+    const liquidityRateRay = reserveData.currentLiquidityRate;
     const apyDecimal = Number(liquidityRateRay) / 1e27;
-    const velocityPerSecond = balanceNumber * apyDecimal / SECONDS_PER_YEAR;
+    const velocityPerSecond = principalNumber * apyDecimal / SECONDS_PER_YEAR;
     const deltaPerPoll = velocityPerSecond * POLL_INTERVAL_SECONDS;
     
     if (deltaPerPoll > 0) {
@@ -72,7 +72,7 @@ function useEarningsPrecision(balance: bigint, decimals = 18) {
     }
   }
   
-  const fullString = formatUnits(balance, decimals);
+  const fullString = formatUnits(earnedAmount, decimals);
   const parts = fullString.split('.');
   if (!parts[1]) return fullString;
   
@@ -156,7 +156,7 @@ export default function DegenPage() {
   const totalDonated = (profit * BigInt(donationPct)) / BigInt(100);
   const netProfit = profit - totalDonated;
   
-  const formattedProfit = useEarningsPrecision(profit, 18);
+  const formattedProfit = useEarningsPrecision(profit, principal, 18);
 
 
   // APY calculation (simplified)
