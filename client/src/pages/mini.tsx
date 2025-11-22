@@ -12,6 +12,54 @@ import { ShareCastButton } from "@/components/ShareCastButton";
 import { BOOST_VAULT_ADDRESS, CUSD_ADDRESS, BoostVaultABI } from "@/lib/BoostVaultABI";
 import { initializeFarcaster, getFarcasterContext, type FarcasterContext } from "@/lib/farcasterClient";
 
+const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
+
+const POOL_ABI = [
+  {
+    inputs: [{ name: 'asset', type: 'address' }],
+    name: 'getReserveData',
+    outputs: [{
+      components: [
+        { name: 'configuration', type: 'uint256' },
+        { name: 'liquidityIndex', type: 'uint128' },
+        { name: 'currentLiquidityRate', type: 'uint128' },
+        { name: 'variableBorrowIndex', type: 'uint128' },
+        { name: 'currentVariableBorrowRate', type: 'uint128' },
+        { name: 'currentStableBorrowRate', type: 'uint128' },
+        { name: 'lastUpdateTimestamp', type: 'uint40' },
+        { name: 'id', type: 'uint16' },
+        { name: 'aTokenAddress', type: 'address' },
+        { name: 'stableDebtTokenAddress', type: 'address' },
+        { name: 'variableDebtTokenAddress', type: 'address' },
+        { name: 'interestRateStrategyAddress', type: 'address' },
+        { name: 'accruedToTreasury', type: 'uint128' },
+        { name: 'unbacked', type: 'uint128' },
+        { name: 'isolationModeTotalDebt', type: 'uint128' }
+      ],
+      name: 'ReserveData',
+      type: 'tuple'
+    }],
+    stateMutability: 'view',
+    type: 'function'
+  }
+] as const;
+
+function useAaveAPY() {
+  const { data: reserveData } = useReadContract({
+    address: AAVE_POOL_ADDRESS,
+    abi: POOL_ABI,
+    functionName: 'getReserveData',
+    args: [CUSD_ADDRESS],
+    query: { refetchInterval: 60000 }
+  });
+  
+  if (!reserveData) return 0;
+  
+  const liquidityRateRay = reserveData.currentLiquidityRate;
+  const apyDecimal = parseFloat(formatUnits(liquidityRateRay, 27));
+  return apyDecimal * 100;
+}
+
 export default function MiniPage() {
   const { address, isConnected } = useAccount();
   const [farcasterContext, setFarcasterContext] = useState<FarcasterContext>(null);
@@ -83,8 +131,7 @@ export default function MiniPage() {
   const donationPct = Number(userDonationPct || BigInt(0));
   const totalDonated = (profit * BigInt(donationPct)) / BigInt(100);
 
-  // Estimate APY (simplified - in production, fetch from backend)
-  const estimatedAPY = 11.2;
+  const currentAPY = useAaveAPY();
 
   return (
     <div className="min-h-screen bg-background">
@@ -118,9 +165,9 @@ export default function MiniPage() {
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between items-baseline">
-                <span className="text-sm text-muted-foreground">Est. APY</span>
+                <span className="text-sm text-muted-foreground">Current APY</span>
                 <span className="text-3xl font-bold text-emerald-600">
-                  {estimatedAPY.toFixed(1)}%
+                  {currentAPY > 0 ? `${currentAPY.toFixed(2)}%` : 'Loading...'}
                 </span>
               </div>
               <div className="flex justify-between items-baseline">
