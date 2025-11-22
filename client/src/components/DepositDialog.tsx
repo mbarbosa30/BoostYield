@@ -79,6 +79,20 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
   const needsApproval = allowance !== undefined && amountBigInt > allowance;
   const hasBalance = cusdBalance !== undefined && amountBigInt > BigInt(0) && amountBigInt <= cusdBalance;
 
+  // Debug logging
+  useEffect(() => {
+    if (amount) {
+      console.log('Deposit state:', {
+        amount,
+        amountBigInt: amountBigInt.toString(),
+        allowance: allowance?.toString(),
+        cusdBalance: cusdBalance?.toString(),
+        needsApproval,
+        hasBalance,
+      });
+    }
+  }, [amount, amountBigInt, allowance, cusdBalance, needsApproval, hasBalance]);
+
   // Auto-refetch allowance after approval succeeds
   useEffect(() => {
     if (isApproveSuccess) {
@@ -142,15 +156,20 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
 
     try {
       console.log('Calling deposit with args:', [amountBigInt.toString(), address]);
-      const result = deposit({
+      console.log('Current allowance:', allowance?.toString());
+      console.log('DepositPending before call:', isDepositPending);
+      
+      deposit({
         address: BOOST_VAULT_ADDRESS,
         abi: BoostVaultABI,
         functionName: 'deposit',
         args: [amountBigInt, address],
       });
-      console.log('deposit() returned:', result);
+      
+      console.log('deposit() called successfully');
+      console.log('DepositPending after call:', isDepositPending);
     } catch (error: any) {
-      console.error('Deposit error:', error);
+      console.error('Deposit error caught:', error);
       toast({
         variant: "destructive",
         title: "Deposit Failed",
