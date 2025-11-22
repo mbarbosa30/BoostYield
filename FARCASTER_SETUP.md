@@ -55,10 +55,16 @@ The manifest at `client/public/.well-known/farcaster.json` contains placeholder 
 3. The SDK will initialize automatically
 
 ### In Farcaster Client:
-1. Deploy your app to Replit
-2. Share a URL to your app in a cast
-3. The `fc:miniapp` meta tags will create a rich embed
-4. Users can click "Earn Yield" to launch the mini app
+1. Deploy your app to Replit (the meta tags use `https://boost.replit.app`)
+2. Update the URLs in `client/index.html` if your domain is different
+3. Share a URL to your app in a cast
+4. The `fc:miniapp` meta tags will create a rich embed
+5. Users can click "Earn Yield" to launch the mini app
+
+### Important Notes:
+- The `fc:miniapp` meta tags require **absolute HTTPS URLs** (not relative paths)
+- The action type must be `launch_miniapp` (not `launch_frame`)
+- If you change your domain, update all URLs in both `client/index.html` and `client/public/.well-known/farcaster.json`
 
 ## Manifest Configuration
 
