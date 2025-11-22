@@ -49,6 +49,15 @@ export default function SimplePage() {
     }
   }, [dataUpdatedAt]);
 
+  // Debug: Log values when they change
+  useEffect(() => {
+    if (assetsForShares) {
+      console.log('📊 Assets for shares:', assetsForShares.toString());
+      console.log('📊 Formatted:', formatUnits(assetsForShares, 18));
+      console.log('📊 Updated at:', new Date(dataUpdatedAt).toISOString());
+    }
+  }, [assetsForShares, dataUpdatedAt]);
+
   const { data: userPrincipal } = useReadContract({
     address: BOOST_VAULT_ADDRESS,
     abi: BoostVaultABI,
@@ -199,7 +208,7 @@ export default function SimplePage() {
                           +${Number(formatUnits(earned, 18)).toFixed(15)}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Updates every 5s
+                          Updates every 5s • Raw: {earned.toString()}
                         </p>
                       </div>
                       <div className="text-center p-4 rounded-lg bg-muted/50">
