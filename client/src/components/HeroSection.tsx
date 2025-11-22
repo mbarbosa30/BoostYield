@@ -22,13 +22,13 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
       <div className="relative max-w-5xl mx-auto text-center space-y-8">
         <div className="space-y-6">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-accent leading-tight">
-            The People's<br />
-            <span className="text-primary">Yield Revolution</span>
+            Save Money.<br />
+            <span className="text-primary">Earn While Giving Back.</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Your money doesn't just sit idle—it can grow and give back.<br />
-            Choose your path: designed for resilience or maximum potential.
+            Earn up to 11% yearly on your savings while helping others.<br />
+            Choose the experience that fits you best.
           </p>
         </div>
 
@@ -38,13 +38,13 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
               size="lg"
               onClick={onSafeClick}
               className="w-full gap-2 min-w-[240px]"
-              data-testid="button-hero-safe"
+              data-testid="button-hero-simple"
             >
               <Shield className="h-5 w-5" />
-              Protect My Savings
+              Simple & Clear
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <p className="text-xs text-muted-foreground mt-2">Historically 8-18% APY • Risk 3/10 • Recommended</p>
+            <p className="text-xs text-muted-foreground mt-2">Easy to understand • Perfect for beginners • Plain language</p>
           </div>
 
           <div className="w-full sm:w-auto">
@@ -53,13 +53,13 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
               variant="outline"
               onClick={onDegenClick}
               className="w-full gap-2 min-w-[240px]"
-              data-testid="button-hero-degen"
+              data-testid="button-hero-advanced"
             >
               <Flame className="h-5 w-5" />
-              Maximize Returns
+              Advanced View
               <ArrowRight className="h-5 w-5" />
             </Button>
-            <p className="text-xs text-warning mt-2">Historically 30-300%+ APY • Risk 8/10 • High Risk</p>
+            <p className="text-xs text-muted-foreground mt-2">For crypto natives • Detailed metrics • Full transparency</p>
           </div>
         </div>
 

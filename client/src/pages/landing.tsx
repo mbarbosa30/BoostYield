@@ -16,7 +16,7 @@ export default function LandingPage() {
   const [showSafeModal, setShowSafeModal] = useState(false);
   const [showDegenModal, setShowDegenModal] = useState(false);
 
-  const handleSafeClick = () => {
+  const handleSimpleClick = () => {
     setShowSafeModal(true);
   };
 
@@ -24,13 +24,14 @@ export default function LandingPage() {
     setShowDegenModal(true);
   };
 
-  const handleSafeAccept = () => {
+  const handleSimpleAccept = () => {
     setShowSafeModal(false);
-    setLocation("/vault");
+    setLocation("/simple");
   };
 
   const handleDegenAccept = () => {
-    console.log("Degen strategy access granted - Coming Q1 2026");
+    setShowDegenModal(false);
+    setLocation("/degen");
   };
 
   return (
@@ -39,11 +40,11 @@ export default function LandingPage() {
       
       <main className="pt-16">
         <HeroSection 
-          onSafeClick={handleSafeClick}
+          onSafeClick={handleSimpleClick}
           onDegenClick={handleDegenClick}
         />
         <HowItWorksSection />
-        <SafeShowcaseSection onOpenVault={handleSafeClick} />
+        <SafeShowcaseSection onOpenVault={handleSimpleClick} />
         <DegenShowcaseSection onExploreStrategy={handleDegenClick} />
         <CauseBrowseSection />
         <FinalCTASection />
@@ -59,13 +60,13 @@ export default function LandingPage() {
         open={showSafeModal}
         onOpenChange={setShowSafeModal}
         type="safe"
-        onAccept={handleSafeAccept}
+        onAccept={handleSimpleAccept}
       />
 
       <RiskDisclosureModal
         open={showDegenModal}
         onOpenChange={setShowDegenModal}
-        type="degen"
+        type="safe"
         onAccept={handleDegenAccept}
       />
     </div>

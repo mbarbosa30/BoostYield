@@ -12,11 +12,13 @@ interface NavigationProps {
 }
 
 export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
-  // Check route on initial render to avoid navbar flash in miniapp
+  // Check routes on initial render to avoid navbar flash
   const [isMiniRoute] = useRoute("/mini");
+  const [isDegenRoute] = useRoute("/degen");
+  const [isSimpleRoute] = useRoute("/simple");
   
-  // Hide navigation in Farcaster miniapp or on /mini route
-  if (isMiniRoute || isFarcasterMiniapp()) {
+  // Hide navigation in Farcaster miniapp or on focused routes
+  if (isMiniRoute || isDegenRoute || isSimpleRoute || isFarcasterMiniapp()) {
     return null;
   }
 
