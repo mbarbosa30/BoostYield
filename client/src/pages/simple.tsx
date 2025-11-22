@@ -14,7 +14,7 @@ import { BOOST_VAULT_ADDRESS, CUSD_ADDRESS, BoostVaultABI } from "@/lib/BoostVau
 
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
 const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
-const POLL_INTERVAL_SECONDS = 5;
+const POLL_INTERVAL_MS = 5000;
 
 const POOL_ABI = [
   {
@@ -47,8 +47,26 @@ const POOL_ABI = [
   }
 ] as const;
 
-function useEarningsPrecision(earnedAmount: bigint, principalAmount: bigint, decimals = 18) {
+function useAaveAPY() {
+  const { data: reserveData } = useReadContract({
+    address: AAVE_POOL_ADDRESS,
+    abi: POOL_ABI,
+    functionName: 'getReserveData',
+    args: [CUSD_ADDRESS],
+    query: { refetchInterval: 60000 }
+  });
+  
+  if (!reserveData) return 0;
+  
+  const liquidityRateRay = reserveData.currentLiquidityRate;
+  const apyDecimal = parseFloat(formatUnits(liquidityRateRay, 27));
+  return apyDecimal * 100; // Convert to percentage
+}
+
+function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigint, lastUpdateTime: number, decimals = 18) {
+  const [displayValue, setDisplayValue] = useState('0.00');
   const precisionRef = useRef<number>(2);
+  const velocityRef = useRef<number>(0);
   
   const { data: reserveData } = useReadContract({
     address: AAVE_POOL_ADDRESS,
@@ -58,25 +76,48 @@ function useEarningsPrecision(earnedAmount: bigint, principalAmount: bigint, dec
     query: { refetchInterval: 60000 }
   });
   
-  const principalNumber = parseFloat(formatUnits(principalAmount, decimals));
-  
-  if (reserveData && principalNumber > 0) {
-    const liquidityRateRay = reserveData.currentLiquidityRate;
-    const apyDecimal = Number(liquidityRateRay) / 1e27;
-    const velocityPerSecond = principalNumber * apyDecimal / SECONDS_PER_YEAR;
-    const deltaPerPoll = velocityPerSecond * POLL_INTERVAL_SECONDS;
+  useEffect(() => {
+    const principalNumber = parseFloat(formatUnits(principalAmount, decimals));
     
-    if (deltaPerPoll > 0) {
-      const neededPrecision = Math.max(2, Math.min(Math.ceil(-Math.log10(deltaPerPoll)), decimals));
-      precisionRef.current = neededPrecision;
+    if (reserveData && principalNumber > 0) {
+      const liquidityRateRay = reserveData.currentLiquidityRate;
+      const apyDecimal = parseFloat(formatUnits(liquidityRateRay, 27));
+      const velocityPerSecond = principalNumber * apyDecimal / SECONDS_PER_YEAR;
+      velocityRef.current = velocityPerSecond;
+      
+      if (velocityPerSecond > 0) {
+        const neededPrecision = Math.max(2, Math.min(Math.ceil(-Math.log10(velocityPerSecond)), decimals));
+        precisionRef.current = neededPrecision;
+      }
     }
-  }
+  }, [reserveData, principalAmount, decimals]);
   
-  const fullString = formatUnits(earnedAmount, decimals);
-  const parts = fullString.split('.');
-  if (!parts[1]) return fullString;
+  useEffect(() => {
+    let animationFrameId: number;
+    
+    const updateDisplay = () => {
+      const now = Date.now();
+      const secondsElapsed = (now - lastUpdateTime) / 1000;
+      const interpolatedEarnings = velocityRef.current * secondsElapsed;
+      const totalEarned = parseFloat(formatUnits(baseEarnedAmount, decimals)) + interpolatedEarnings;
+      
+      const fullString = totalEarned.toFixed(decimals);
+      const parts = fullString.split('.');
+      if (!parts[1]) {
+        setDisplayValue(fullString);
+      } else {
+        setDisplayValue(`${parts[0]}.${parts[1].slice(0, precisionRef.current)}`);
+      }
+      
+      animationFrameId = requestAnimationFrame(updateDisplay);
+    };
+    
+    animationFrameId = requestAnimationFrame(updateDisplay);
+    
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [baseEarnedAmount, lastUpdateTime, decimals]);
   
-  return `${parts[0]}.${parts[1].slice(0, precisionRef.current)}`;
+  return displayValue;
 }
 
 export default function SimplePage() {
@@ -105,7 +146,7 @@ export default function SimplePage() {
     args: userShares ? [userShares] : undefined,
     query: { 
       enabled: !!userShares && userShares > BigInt(0),
-      refetchInterval: 5000 // Refetch every 5 seconds to show yield accrual
+      refetchInterval: POLL_INTERVAL_MS
     }
   });
 
@@ -132,7 +173,7 @@ export default function SimplePage() {
     args: address ? [address] : undefined,
     query: { 
       enabled: !!address && !!BOOST_VAULT_ADDRESS,
-      refetchInterval: 5000 // Refetch every 5 seconds
+      refetchInterval: POLL_INTERVAL_MS
     }
   });
 
@@ -158,11 +199,11 @@ export default function SimplePage() {
   const donated = (earned * BigInt(donationPct)) / BigInt(100);
   const yourMoney = totalAmount - donated;
   
-  const formattedEarned = useEarningsPrecision(earned, savedAmount, 18);
-
+  const formattedEarned = useInterpolatedEarnings(earned, savedAmount, lastUpdate, 18);
+  const currentAPY = useAaveAPY();
 
   // Convert to local display (simplified - in production would use exchange rates)
-  const earningRate = "11% per year";
+  const earningRate = currentAPY > 0 ? `${currentAPY.toFixed(2)}% per year` : "loading...";
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-background dark:from-background dark:to-background">
