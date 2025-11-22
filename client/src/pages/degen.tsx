@@ -201,14 +201,12 @@ export default function DegenPage() {
                       <p className="text-xs text-muted-foreground mt-1">Principal + accrued yield</p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1">
+                      <p className="text-sm text-muted-foreground mb-1">
                         Profit Realized
-                        <RefreshCw className="w-3 h-3 animate-spin text-emerald-600" data-testid="icon-refreshing" />
                       </p>
                       <p className="text-xl font-bold text-emerald-600 font-mono">
-                        +${Number(formatUnits(profit, 18)).toFixed(15)}
+                        +${Number(formatUnits(profit, 18)).toFixed(8)}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">Updates every 5s</p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Zero-Fee Giving</p>

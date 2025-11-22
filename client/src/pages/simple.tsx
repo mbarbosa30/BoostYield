@@ -198,17 +198,13 @@ export default function SimplePage() {
                         <p className="text-sm text-muted-foreground mb-1">You Saved</p>
                         <p className="text-2xl font-bold">${Number(formatUnits(savedAmount, 18)).toFixed(2)}</p>
                       </div>
-                      <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 relative">
+                      <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
                         <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
-                        <p className="text-sm text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                        <p className="text-sm text-muted-foreground mb-1">
                           You Earned
-                          <RefreshCw className="w-3 h-3 animate-spin text-emerald-600" data-testid="icon-refreshing" />
                         </p>
                         <p className="text-xl font-bold text-emerald-600 font-mono">
-                          +${Number(formatUnits(earned, 18)).toFixed(15)}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Updates every 5s • Raw: {earned.toString()}
+                          +${Number(formatUnits(earned, 18)).toFixed(8)}
                         </p>
                       </div>
                       <div className="text-center p-4 rounded-lg bg-muted/50">
