@@ -1,0 +1,353 @@
+Nice, Symbiote is exactly the kind of thing that shows what’s possible if you go full v4 + Aave + JIT. Let me use it to upgrade the Boost design without lying to ourselves about safety.
+
+I’ll do two things:
+	1.	Pull concrete lessons from SymbioteHook and apply them to Boost’s architecture.
+	2.	Show a cleaner code skeleton: keep the Aave-only “Inflation Shield” vault as the safe core, and add a Degen Symbiote adapter vault that treats Symbiote as a strategy module instead of mixing everything.
+
+⸻
+
+1. What we learn from SymbioteHook and how to apply it
+
+From the README, SymbioteHook is:
+
+“A Uniswap V4 hook that integrates Aave lending protocol for capital-efficient liquidity provision through JIT mechanisms… storing idle liquidity in Aave… providing JIT liquidity during swaps… and allowing users to borrow against their deposited liquidity.”
+
+Key patterns that are actually useful for Boost:
+
+A. Separation of roles
+
+Symbiote clearly separates:
+	•	Hook / strategy logic (SymbioteHook + JITPoolManager)
+	•	The external protocols (Uniswap v4 PoolManager + Aave Pool).
+
+For Boost, that suggests:
+	•	Boost vaults should not try to be the hook.
+	•	Instead: Boost = vault layer + strategy adapters.
+	•	Aave-only strategy for Safe mode.
+	•	Symbiote strategy for one Degen product.
+	•	Later: other strategies (Arrakis, Gamma, etc.).
+
+B. Explicit “metrics” view
+
+Symbiote exposes a getPositionData() / PoolMetrics view for health factor & position stats.
+
+We should mirror that in Boost:
+	•	Every strategy adapter exposes read-only metrics like:
+	•	current TVL,
+	•	estimated APY,
+	•	health factor,
+	•	worst-case slippage bounds.
+	•	Boost vaults can:
+	•	show these in the UI,
+	•	enforce “no deposits if health factor < X”,
+	•	or auto-pause strategy.
+
+C. JIT + slippage constraints are first-class
+
+Symbiote’s hook guards JIT entries with slippage checks based on tick windows and swap direction.
+
+For Boost:
+	•	Any v4-based strategy we use should:
+	•	Implement and expose its own slippage guards (inside the strategy).
+	•	Treat JIT as a tight, controlled operation, not just “addLiquidity always”.
+
+This reinforces the design choice: Boost should treat Symbiote (or similar) as a black-box strategy that has its own safety checks, not reimplement them inside the vault.
+
+D. “Windows” abstraction for CLM
+
+Symbiote uses windows (tick ranges) to structure concentrated liquidity and JIT decisions.
+
+For Boost:
+	•	Good news: Boost itself doesn’t need to know about windows.
+	•	Only the Symbiote strategy cares – Boost just queries “value of my position” and provides the capital.
+
+Conclusion: Don’t push Symbiote’s complexity into Boost vault accounting. Use it behind a clear, minimal interface.
+
+⸻
+
+2. Improved Boost architecture using Symbiote (and keeping the safe core)
+
+Layering
+
+Layer 0 – Protocols
+	•	Aave v3 on Celo (stable lending).  ￼
+	•	Uniswap v4 on Celo (PoolManager, hooks).  ￼
+
+Layer 1 – Strategy modules
+	•	AaveLendingStrategy (simple): lend stable → earn yield.
+	•	SymbioteJITStrategy (complex): JIT CLM with Aave leverage (via SymbioteHook).
+
+Layer 2 – Boost vaults (user-facing)
+	•	BoostInflationShield (Safe):
+	•	Wraps AaveLendingStrategy.
+	•	Tracks per-user principal, calculates profit-only donations.
+	•	BoostSymbioteVault (Degen):
+	•	Holds user funds,
+	•	Uses SymbioteJITStrategy to deploy,
+	•	Exposes the same donation mechanic but clearly labeled high risk.
+
+Layer 3 – Frontend
+	•	Same UX as we already discussed:
+	•	Door A: “Inflation Shield”.
+	•	Door B: “Max Yield (experimental)”.
+	•	Impact slider uses the vault’s donationPct + beneficiary.
+
+⸻
+
+3. Keep the safe Aave-only vault as the core
+
+The Aave-only “Inflation Shield” I gave you earlier is still structurally the right direction (with per-user userPrincipal + profit-only donation on withdraw). I won’t re-dump the whole contract, but the big features:
+	•	asset = stable (cUSD/USDC).
+	•	All capital gets supplied to Aave → aToken.
+	•	Shares = ERC20 representing claim on totalUnderlying().
+	•	Per-user:
+	•	userPrincipal[user] tracks their cost basis.
+	•	On withdraw, we compute:
+	•	assetsOut proportional to their shares.
+	•	withdrawnPrincipal proportional to their share of principal.
+	•	profit = max(0, assetsOut - withdrawnPrincipal).
+	•	Donation = profit * donationPct[user] / 100 → beneficiary[user].
+
+This already gives you:
+
+“Save in stablecoins, earn yield, donate some of your profit”,
+
+with zero Uniswap v4 / Symbiote complexity.
+
+⸻
+
+4. Add a Degen adapter vault that talks to Symbiote
+
+Now, using Symbiote’s architecture as inspiration, we can design a clean adapter vault instead of stuffing JIT/Aave logic into the vault itself.
+
+This is skeleton code (not for mainnet), but it shows the improved separation:
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {ERC20} from "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
+import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "openzeppelin-contracts/contracts/security/ReentrancyGuard.sol";
+import {SafeERC20} from "openzeppelin-contracts/contracts/token/ERC20/utils/SafeERC20.sol";
+
+/// @notice Minimal interface to the Symbiote strategy layer
+interface ISymbiotePool {
+    struct PoolKey {
+        address token0;
+        address token1;
+        uint24 fee;
+        int24 tickSpacing;
+        address hooks; // SymbioteHook
+    }
+
+    struct ModifyLiquidityParams {
+        int24 tickLower;
+        int24 tickUpper;
+        int256 liquidityDelta;
+        bytes32 salt;
+    }
+
+    struct PositionMetrics {
+        uint256 valueInQuote;   // total position value in quote token terms
+        uint256 healthFactor;   // Aave-style HF * 1e18
+    }
+
+    function modifyLiquidity(
+        PoolKey memory key,
+        ModifyLiquidityParams memory params,
+        uint16 multiplier
+    ) external payable;
+
+    function closePosition(address recipient) external;
+
+    function getPositionMetrics(address owner) external view returns (PositionMetrics memory);
+}
+
+contract BoostSymbioteVault is ERC20, Ownable, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
+    IERC20 public immutable quoteToken;        // e.g. cUSD
+    ISymbiotePool public immutable symbiote;
+    ISymbiotePool.PoolKey public poolKey;
+
+    // donation config
+    mapping(address => uint8) public donationPct;
+    mapping(address => address) public beneficiary;
+
+    // principal accounting
+    mapping(address => uint256) public userPrincipal;
+
+    event Deposit(address indexed user, uint256 amount, uint256 shares);
+    event Withdraw(
+        address indexed user,
+        uint256 shares,
+        uint256 valueOut,
+        uint256 principalUsed,
+        uint256 profit,
+        uint256 donated,
+        address indexed beneficiary
+    );
+    event DonationConfigUpdated(address indexed user, uint8 pct, address beneficiary);
+    event StrategyClosed(uint256 totalValue, uint256 timestamp);
+
+    constructor(
+        address _quoteToken,
+        address _symbiote,
+        ISymbiotePool.PoolKey memory _poolKey,
+        address _owner
+    ) ERC20("Boost Symbiote Degen", "bSYMB") Ownable(_owner) {
+        require(_quoteToken != address(0), "token=0");
+        require(_symbiote != address(0), "symbiote=0");
+        quoteToken = IERC20(_quoteToken);
+        symbiote = ISymbiotePool(_symbiote);
+        poolKey = _poolKey;
+    }
+
+    // === Views ===
+
+    function totalValue() public view returns (uint256) {
+        // value in quote token terms, as reported by Symbiote
+        ISymbiotePool.PositionMetrics memory m = symbiote.getPositionMetrics(address(this));
+        return m.valueInQuote;
+    }
+
+    function userValue(address user) public view returns (uint256) {
+        uint256 ts = totalSupply();
+        if (ts == 0) return 0;
+        return (balanceOf(user) * totalValue()) / ts;
+    }
+
+    function userProfit(address user) external view returns (uint256) {
+        uint256 v = userValue(user);
+        uint256 p = userPrincipal[user];
+        return v > p ? v - p : 0;
+    }
+
+    // === Donation config ===
+
+    function setDonationConfig(uint8 pct, address bene) external {
+        require(pct <= 100, "max 100");
+        donationPct[msg.sender] = pct;
+        beneficiary[msg.sender] = bene;
+        emit DonationConfigUpdated(msg.sender, pct, bene);
+    }
+
+    // === Core flow ===
+
+    function deposit(
+        uint256 amount,
+        ISymbiotePool.ModifyLiquidityParams calldata params,
+        uint16 multiplier
+    ) external nonReentrant returns (uint256 shares) {
+        require(amount > 0, "zero amount");
+
+        uint256 totalBefore = totalValue();
+        uint256 ts = totalSupply();
+
+        quoteToken.safeTransferFrom(msg.sender, address(this), amount);
+        quoteToken.safeApprove(address(symbiote), amount);
+
+        // Call Symbiote to increase position
+        // NOTE: This is simplified; the actual Symbiote implementation
+        // may expect msg.value, specific token ordering, etc.
+        symbiote.modifyLiquidity(poolKey, params, multiplier);
+
+        // share issuance based on pre-deposit value
+        if (ts == 0 || totalBefore == 0) {
+            shares = amount; // initial 1:1
+        } else {
+            shares = (amount * ts) / totalBefore;
+        }
+        require(shares > 0, "shares=0");
+        _mint(msg.sender, shares);
+
+        userPrincipal[msg.sender] += amount;
+        emit Deposit(msg.sender, amount, shares);
+    }
+
+    function withdraw(uint256 shares) external nonReentrant returns (uint256 valueOut) {
+        require(shares > 0, "zero shares");
+        uint256 userShares = balanceOf(msg.sender);
+        require(userShares >= shares, "insufficient shares");
+
+        uint256 ts = totalSupply();
+        uint256 totalNow = totalValue();
+        require(ts > 0 && totalNow > 0, "empty vault");
+
+        valueOut = (shares * totalNow) / ts;
+
+        // burn shares first
+        _burn(msg.sender, shares);
+
+        // principal allocation
+        uint256 principalBefore = userPrincipal[msg.sender];
+        uint256 withdrawnPrincipal = (principalBefore * shares) / userShares;
+        if (withdrawnPrincipal > principalBefore) {
+            withdrawnPrincipal = principalBefore;
+        }
+        userPrincipal[msg.sender] = principalBefore - withdrawnPrincipal;
+
+        uint256 profit = 0;
+        if (valueOut > withdrawnPrincipal) {
+            profit = valueOut - withdrawnPrincipal;
+        }
+
+        uint256 donated = 0;
+        address bene = beneficiary[msg.sender];
+        uint8 pct = donationPct[msg.sender];
+        if (profit > 0 && pct > 0 && bene != address(0)) {
+            donated = (profit * pct) / 100;
+        }
+
+        // For simplicity, we trigger a full strategy unwind if this was the last LP
+        // In practice you'd want partial redemptions via Symbiote for larger pools.
+        if (totalSupply() == 0) {
+            symbiote.closePosition(address(this)); // pulls back swap tokens to this vault
+            emit StrategyClosed(totalNow, block.timestamp);
+        }
+
+        // Here you'd need additional logic to:
+        // - swap non-quote tokens back to quoteToken
+        // - handle Symbiote balances properly
+        // For now we assume closePosition delivers quoteToken.
+
+        // transfer donations & user payout
+        if (donated > 0) {
+            quoteToken.safeTransfer(bene, donated);
+        }
+        quoteToken.safeTransfer(msg.sender, valueOut - donated);
+
+        emit Withdraw(
+            msg.sender,
+            shares,
+            valueOut,
+            withdrawnPrincipal,
+            profit,
+            donated,
+            bene
+        );
+    }
+}
+
+How this uses ideas from Symbiote:
+	•	The vault does not try to implement JIT / windows / Aave borrowing itself.
+	•	It talks to Symbiote through a minimal interface:
+	•	modifyLiquidity to open/increase position.
+	•	getPositionMetrics to get valueInQuote + healthFactor.
+	•	closePosition to unwind.
+	•	It keeps Boost’s profit-only donation logic and user principal tracking.
+	•	It keeps Symbiote firmly in the Degen bucket:
+	•	You can enforce caps and warnings in the frontend.
+	•	You can use getPositionMetrics().healthFactor to auto-pause deposits if HF is too low.
+
+This is still not production-grade (missing partial unwinds, swaps back to quoteToken, HF checks, pause, etc.), but it’s:
+	•	cleaner than previous sketches,
+	•	respects the separation Symbiote uses,
+	•	and gives you a path to plug Symbiote in without entangling its complexity with your core Boost accounting.
+
+⸻
+
+If you’d like, I can next draft:
+	•	A tiny “strategy interface spec” (for Aave-only, Symbiote, Arrakis, etc.) so Boost vaults can be strategy-agnostic, or
+	•	A risk checklist you’d enforce before turning on a Symbiote-based vault on testnet (HF thresholds, deposit caps, kill switch, monitoring).
