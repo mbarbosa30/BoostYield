@@ -195,8 +195,8 @@ export default function SimplePage() {
                           You Earned
                           <RefreshCw className="w-3 h-3 animate-spin text-emerald-600" data-testid="icon-refreshing" />
                         </p>
-                        <p className="text-2xl font-bold text-emerald-600">
-                          +${Number(formatUnits(earned, 18)).toFixed(8)}
+                        <p className="text-xl font-bold text-emerald-600 font-mono">
+                          +${Number(formatUnits(earned, 18)).toFixed(15)}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
                           Updates every 5s
