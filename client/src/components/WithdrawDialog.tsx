@@ -36,6 +36,18 @@ export function WithdrawDialog({
   const { address } = useAccount();
   const { toast } = useToast();
 
+  // Debug logging
+  useEffect(() => {
+    if (open) {
+      console.log('📤 WithdrawDialog opened with:', {
+        vaultShares: vaultShares?.toString(),
+        userPrincipal: userPrincipal?.toString(),
+        donationPct,
+        address
+      });
+    }
+  }, [open, vaultShares, userPrincipal, donationPct, address]);
+
   const shareAmountBigInt = shareAmount ? parseUnits(shareAmount, 18) : BigInt(0);
 
   // Preview redemption
@@ -54,6 +66,7 @@ export function WithdrawDialog({
     writeContract: redeem,
     data: redeemHash,
     isPending: isRedeemPending,
+    error: redeemError,
   } = useWriteContract();
 
   const { isLoading: isRedeemConfirming, isSuccess: isRedeemSuccess } =
@@ -78,7 +91,16 @@ export function WithdrawDialog({
   const netReceived = assetsOut - donationAmount;
 
   const handleRedeem = async () => {
-    if (!address || !BOOST_VAULT_ADDRESS || !shareAmountBigInt) return;
+    if (!address || !BOOST_VAULT_ADDRESS || !shareAmountBigInt) {
+      console.error('❌ Missing required data:', { address, BOOST_VAULT_ADDRESS, shareAmountBigInt: shareAmountBigInt.toString() });
+      return;
+    }
+
+    console.log('🔄 Attempting redeem with:', {
+      shares: shareAmountBigInt.toString(),
+      receiver: address,
+      owner: address
+    });
 
     try {
       redeem({
@@ -88,6 +110,7 @@ export function WithdrawDialog({
         args: [shareAmountBigInt, address, address],
       });
     } catch (error: any) {
+      console.error('❌ Redeem error:', error);
       toast({
         variant: "destructive",
         title: "Withdrawal Failed",
@@ -199,6 +222,15 @@ export function WithdrawDialog({
               <Loader2 className="h-4 w-4 animate-spin" />
               Waiting for withdrawal confirmation...
             </div>
+          )}
+
+          {redeemError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {redeemError.message || 'Transaction failed. Please try again.'}
+              </AlertDescription>
+            </Alert>
           )}
         </div>
 
