@@ -1,4 +1,5 @@
-const hre = require("hardhat");
+import hre from "hardhat";
+import "@nomicfoundation/hardhat-ethers";
 
 async function main() {
   console.log("Deploying BoostAaveVault to Celo mainnet...");
@@ -11,7 +12,15 @@ async function main() {
   console.log("- Aave Pool:", AAVE_POOL);
   console.log("- cUSD Asset:", CUSD);
 
-  const BoostAaveVault = await hre.ethers.getContractFactory("BoostAaveVault");
+  console.log("hre.ethers:", hre.ethers);
+  console.log("hre keys:", Object.keys(hre));
+  
+  if (!hre.ethers) {
+    throw new Error("hre.ethers is undefined - hardhat-ethers plugin not loaded");
+  }
+  
+  const ethers = hre.ethers;
+  const BoostAaveVault = await ethers.getContractFactory("BoostAaveVault");
   const vault = await BoostAaveVault.deploy(AAVE_POOL, CUSD);
 
   await vault.waitForDeployment();
