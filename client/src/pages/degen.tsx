@@ -186,7 +186,7 @@ export default function DegenPage() {
                     <div>
                       <p className="text-sm text-muted-foreground mb-1">Profit Realized</p>
                       <p className="text-2xl font-bold text-emerald-600">
-                        +${Number(formatUnits(profit, 18)).toFixed(2)}
+                        +${Number(formatUnits(profit, 18)).toFixed(8)}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">Gross yield earned</p>
                     </div>

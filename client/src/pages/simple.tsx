@@ -176,7 +176,7 @@ export default function SimplePage() {
                         <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
                         <p className="text-sm text-muted-foreground mb-1">You Earned</p>
                         <p className="text-2xl font-bold text-emerald-600">
-                          +${Number(formatUnits(earned, 18)).toFixed(2)}
+                          +${Number(formatUnits(earned, 18)).toFixed(8)}
                         </p>
                       </div>
                       <div className="text-center p-4 rounded-lg bg-muted/50">
