@@ -11,6 +11,25 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 interface IPool {
     function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
     function withdraw(address asset, uint256 amount, address to) external returns (uint256);
+    function getReserveData(address asset) external view returns (ReserveData memory);
+}
+
+struct ReserveData {
+    uint256 configuration;
+    uint128 liquidityIndex;
+    uint128 currentLiquidityRate;
+    uint128 variableBorrowIndex;
+    uint128 currentVariableBorrowRate;
+    uint128 currentStableBorrowRate;
+    uint40 lastUpdateTimestamp;
+    uint16 id;
+    address aTokenAddress;
+    address stableDebtTokenAddress;
+    address variableDebtTokenAddress;
+    address interestRateStrategyAddress;
+    uint128 accruedToTreasury;
+    uint128 unbacked;
+    uint128 isolationModeTotalDebt;
 }
 
 interface IAToken is IERC20 {
@@ -53,9 +72,10 @@ contract BoostAaveVault is ERC20, ReentrancyGuard {
         POOL = IPool(pool_);
         ASSET = IERC20(asset_);
 
-        // Get aToken address from Aave pool
-        // For Celo mainnet cUSD, the aToken is 0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB
-        ATOKEN = 0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB;
+        // Get aToken address dynamically from Aave pool
+        ReserveData memory reserveData = POOL.getReserveData(asset_);
+        require(reserveData.aTokenAddress != address(0), "Asset not listed on Aave");
+        ATOKEN = reserveData.aTokenAddress;
 
         // Approve Aave pool to spend assets
         ASSET.forceApprove(address(POOL), type(uint256).max);
