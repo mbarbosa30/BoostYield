@@ -60,26 +60,26 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
 
   // Log deposit errors and state
   useEffect(() => {
-    console.log('Deposit hook state:', {
-      depositError: depositError ? {
-        message: depositError.message,
-        cause: depositError.cause,
-        name: depositError.name,
-      } : null,
-      depositHash,
-      isDepositPending,
-    });
-    
     if (depositError) {
       console.error('Deposit transaction error:', depositError);
-      console.error('Full error object:', JSON.stringify(depositError, null, 2));
+      console.error('Error message:', depositError.message);
+      console.error('Error cause:', depositError.cause);
+      
+      // Extract meaningful error message
+      let errorMessage = "Transaction failed";
+      if (depositError.message.includes("execution reverted")) {
+        errorMessage = "Contract rejected the deposit. Please ensure you have approved enough cUSD and have sufficient balance.";
+      } else if (depositError.message.includes("user rejected")) {
+        errorMessage = "Transaction was cancelled";
+      }
+      
       toast({
         variant: "destructive",
         title: "Deposit Failed",
-        description: depositError.message || "Failed to initiate deposit transaction",
+        description: errorMessage,
       });
     }
-  }, [depositError, depositHash, isDepositPending, toast]);
+  }, [depositError, toast]);
 
   const { isLoading: isDepositConfirming, isSuccess: isDepositSuccess } =
     useWaitForTransactionReceipt({
