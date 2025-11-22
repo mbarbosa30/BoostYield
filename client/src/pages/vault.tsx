@@ -1,14 +1,21 @@
+import { useState } from 'react';
 import { useAccount, useReadContract, useBalance } from 'wagmi';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, TrendingUp, Wallet, Shield } from "lucide-react";
+import { ArrowLeft, TrendingUp, Wallet, Shield, Heart } from "lucide-react";
 import { Link } from "wouter";
 import { BoostVaultABI, BOOST_VAULT_ADDRESS, CUSD_ADDRESS } from "@/lib/BoostVaultABI";
 import { formatUnits } from 'viem';
+import { DepositDialog } from "@/components/DepositDialog";
+import { WithdrawDialog } from "@/components/WithdrawDialog";
+import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
 
 export default function VaultPage() {
   const { address, isConnected } = useAccount();
+  const [depositOpen, setDepositOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
 
   const vaultEnabled = isConnected && !!address && !!BOOST_VAULT_ADDRESS;
 
@@ -212,14 +219,56 @@ export default function VaultPage() {
           </CardContent>
         </Card>
 
-        <div className="mt-6 flex gap-4">
-          <Button size="lg" className="flex-1" data-testid="button-deposit">
-            Deposit cUSD
-          </Button>
-          <Button size="lg" variant="outline" className="flex-1" data-testid="button-withdraw">
-            Withdraw
+        <div className="mt-6 space-y-4">
+          <div className="flex gap-4">
+            <Button 
+              size="lg" 
+              className="flex-1" 
+              onClick={() => setDepositOpen(true)}
+              data-testid="button-deposit"
+            >
+              Deposit cUSD
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="flex-1"
+              onClick={() => setWithdrawOpen(true)}
+              data-testid="button-withdraw"
+            >
+              Withdraw
+            </Button>
+          </div>
+          <Button
+            size="lg"
+            variant="secondary"
+            className="w-full gap-2"
+            onClick={() => setDonationOpen(true)}
+            data-testid="button-donation-settings"
+          >
+            <Heart className="h-4 w-4" />
+            Configure Donation Settings
           </Button>
         </div>
+
+        <DepositDialog
+          open={depositOpen}
+          onOpenChange={setDepositOpen}
+          cusdBalance={cusdBalance?.value}
+        />
+        
+        <WithdrawDialog
+          open={withdrawOpen}
+          onOpenChange={setWithdrawOpen}
+          vaultShares={vaultShares}
+          userPrincipal={userPrincipal}
+          donationPct={donationPct ? Number(donationPct) : 0}
+        />
+
+        <DonationSettingsDialog
+          open={donationOpen}
+          onOpenChange={setDonationOpen}
+        />
       </div>
     </div>
   );
