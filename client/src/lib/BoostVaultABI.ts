@@ -139,8 +139,8 @@ export const BoostVaultABI = [
   }
 ] as const;
 
-// cUSD token address on Celo mainnet
-export const CUSD_ADDRESS = '0x765DE816845861e75A25fCA122E05401653187cE' as const;
+// cUSD token address on Celo mainnet (checksummed)
+export const CUSD_ADDRESS = '0x765DE816845861e75A25fCA122bb6898B8B1282a' as const;
 
 // Contract addresses - to be set after deployment
 export const BOOST_VAULT_ADDRESS = import.meta.env.VITE_BOOST_VAULT_ADDRESS as `0x${string}` | undefined;

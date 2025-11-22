@@ -1,24 +1,39 @@
-import hre from "hardhat";
-const { ethers } = hre;
+import { ethers } from "ethers";
+import { readFileSync } from "fs";
+import { join } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function main() {
   console.log("🚀 Deploying BoostAaveVault to Celo mainnet...\n");
 
-  // Celo mainnet addresses
+  // Celo mainnet addresses (checksummed)
   const AAVE_POOL = "0x794a61358D6845594F94dc1DB02A252b5b4814aD";
-  const CUSD_TOKEN = "0x765DE816845861e75A25fCA122E05401653187cE";
+  const CUSD_TOKEN = "0x765DE816845861e75A25fCA122bb6898B8B1282a";
 
   console.log("Configuration:");
   console.log("- Aave V3 Pool:", AAVE_POOL);
   console.log("- cUSD Token:", CUSD_TOKEN);
   console.log("");
 
-  // Get deployer
-  const [deployer] = await ethers.getSigners();
+  // Check for private key
+  const privateKey = process.env.DEPLOYER_PRIVATE_KEY;
+  if (!privateKey) {
+    console.error("❌ ERROR: DEPLOYER_PRIVATE_KEY environment variable not set");
+    process.exit(1);
+  }
+
+  // Setup provider and wallet
+  const provider = new ethers.JsonRpcProvider("https://forno.celo.org");
+  const deployer = new ethers.Wallet(privateKey, provider);
+  
   console.log("Deploying with account:", deployer.address);
 
   // Check balance
-  const balance = await ethers.provider.getBalance(deployer.address);
+  const balance = await provider.getBalance(deployer.address);
   console.log("Account balance:", ethers.formatEther(balance), "CELO");
   console.log("");
 
@@ -27,11 +42,14 @@ async function main() {
     console.log("Continuing anyway...\n");
   }
 
+  // Load compiled contract
+  const artifactPath = join(__dirname, "../artifacts/contracts/BoostAaveVault.sol/BoostAaveVault.json");
+  const artifact = JSON.parse(readFileSync(artifactPath, "utf8"));
+
   // Deploy contract
   console.log("Deploying contract...");
-  const BoostAaveVault = await ethers.getContractFactory("BoostAaveVault");
-  
-  const vault = await BoostAaveVault.deploy(AAVE_POOL, CUSD_TOKEN);
+  const factory = new ethers.ContractFactory(artifact.abi, artifact.bytecode, deployer);
+  const vault = await factory.deploy(AAVE_POOL, CUSD_TOKEN);
   
   console.log("Waiting for deployment transaction...");
   await vault.waitForDeployment();

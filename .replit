@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web", "postgresql-16"]
+modules = ["web", "postgresql-16", "nodejs-22"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
@@ -67,3 +67,4 @@ waitForPort = 5000
 [userenv.shared]
 VITE_WALLETCONNECT_PROJECT_ID = "demo"
 VITE_CELO_RPC_URL = "https://forno.celo.org"
+VITE_BOOST_VAULT_ADDRESS = "0xb47973F205121AD784d9414bbfeCa86c8E270844"

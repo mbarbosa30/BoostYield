@@ -6,6 +6,17 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
+// ============ Interfaces ============
+
+interface IPool {
+    function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
+    function withdraw(address asset, uint256 amount, address to) external returns (uint256);
+}
+
+interface IAToken is IERC20 {
+    function UNDERLYING_ASSET_ADDRESS() external view returns (address);
+}
+
 /**
  * @title BoostAaveVault
  * @notice ERC4626-compliant vault that deposits cUSD into Aave V3 on Celo
@@ -13,17 +24,6 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  */
 contract BoostAaveVault is ERC20, ReentrancyGuard {
     using SafeERC20 for IERC20;
-
-    // ============ Interfaces ============
-
-    interface IPool {
-        function supply(address asset, uint256 amount, address onBehalfOf, uint16 referralCode) external;
-        function withdraw(address asset, uint256 amount, address to) external returns (uint256);
-    }
-
-    interface IAToken is IERC20 {
-        function UNDERLYING_ASSET_ADDRESS() external view returns (address);
-    }
 
     // ============ State Variables ============
 
@@ -123,29 +123,29 @@ contract BoostAaveVault is ERC20, ReentrancyGuard {
             ? (userPrincipal * shares) / totalUserShares 
             : 0;
 
-        // Update principal
-        principalOf[owner] = totalUserShares > shares 
+        // Update principal - ALWAYS reduce by pro-rata amount
+        principalOf[owner] = userPrincipal > principalForShares 
             ? userPrincipal - principalForShares 
             : 0;
 
         // Burn shares
         _burn(owner, shares);
 
-        // Withdraw from Aave
+        // Withdraw from Aave (get underlying assets)
         uint256 withdrawn = POOL.withdraw(address(ASSET), assets, address(this));
 
-        // Calculate donation (only on profits)
+        // Calculate donation (only on profits, never principal)
         uint256 profit = withdrawn > principalForShares ? withdrawn - principalForShares : 0;
         uint256 donation = (profit * donationPctOf[owner]) / 100;
         uint256 netAmount = withdrawn - donation;
 
-        // Transfer donation to beneficiary if set
+        // Transfer donation in cUSD to beneficiary if set
         if (donation > 0 && beneficiaryOf[owner] != address(0)) {
             ASSET.safeTransfer(beneficiaryOf[owner], donation);
             emit Donated(owner, donation, beneficiaryOf[owner]);
         }
 
-        // Transfer net amount to receiver
+        // Transfer net amount (or full withdrawal if no donation) to receiver in cUSD
         ASSET.safeTransfer(receiver, donation > 0 ? netAmount : withdrawn);
 
         return withdrawn;

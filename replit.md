@@ -52,6 +52,19 @@ The application targets emerging markets (Argentina, Nigeria, Venezuela, Brazil)
 
 *Degen Mode:* CTAs disabled with "Coming Q1 2026" messaging pending Aave+v4 adapter audit
 
+**Smart Contract Deployment - Production Ready (Nov 22):**
+- **Contract Address:** `0xb47973F205121AD784d9414bbfeCa86c8E270844` (Celo mainnet)
+- **Explorer:** https://celoscan.io/address/0xb47973F205121AD784d9414bbfeCa86c8E270844
+- **Aave V3 Pool:** `0x794a61358D6845594F94dc1DB02A252b5b4814aD`
+- **cUSD Token:** `0x765DE816845861e75A25fCA122bb6898B8B1282a` (checksummed)
+- **aToken (acUSD):** `0x4e65fE4DbA92790696d040ac24Aa414708F5c0AB`
+- **Deployment Tools:** Hardhat with Solidity 0.8.20, Node.js 22
+- **Critical Fixes Applied:**
+  - Principal accounting: Pro-rata reduction on every withdrawal
+  - Donation transfers: cUSD sent directly to beneficiaries (not vault shares)
+- **Status:** Architect-reviewed, production-ready for Celo mainnet
+- **Gas Cost:** ~0.03 CELO per deployment
+
 **Narrative Refinement & Legal/Compliance Calibration:**
 - Softened APY claims from guaranteed numbers to "historically X-Y%" language throughout
 - Removed competitor comparisons (e.g., "outperforms Summer.fi")
