@@ -24,7 +24,10 @@ export default function SimplePage() {
     abi: BoostVaultABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { 
+      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      refetchInterval: 5000 // Refetch every 5 seconds
+    }
   });
 
   const { data: assetsForShares } = useReadContract({
@@ -32,7 +35,10 @@ export default function SimplePage() {
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
     args: userShares ? [userShares] : undefined,
-    query: { enabled: !!userShares && userShares > BigInt(0) }
+    query: { 
+      enabled: !!userShares && userShares > BigInt(0),
+      refetchInterval: 5000 // Refetch every 5 seconds to show yield accrual
+    }
   });
 
   const { data: userPrincipal } = useReadContract({
@@ -40,7 +46,10 @@ export default function SimplePage() {
     abi: BoostVaultABI,
     functionName: 'principalOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { 
+      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      refetchInterval: 5000 // Refetch every 5 seconds
+    }
   });
 
   const { data: userDonationPct } = useReadContract({
