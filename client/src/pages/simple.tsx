@@ -79,16 +79,21 @@ function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigi
   useEffect(() => {
     const principalNumber = parseFloat(formatUnits(principalAmount, decimals));
     
-    if (reserveData && principalNumber > 0) {
-      const liquidityRateRay = reserveData.currentLiquidityRate;
-      const apyDecimal = parseFloat(formatUnits(liquidityRateRay, 27));
-      const velocityPerSecond = principalNumber * apyDecimal / SECONDS_PER_YEAR;
-      velocityRef.current = velocityPerSecond;
-      
-      if (velocityPerSecond > 0) {
-        const neededPrecision = Math.max(2, Math.min(Math.ceil(-Math.log10(velocityPerSecond)), decimals));
-        precisionRef.current = neededPrecision;
-      }
+    if (!reserveData || principalNumber <= 0) {
+      velocityRef.current = 0;
+      precisionRef.current = 2;
+      setDisplayValue('0.00');
+      return;
+    }
+    
+    const liquidityRateRay = reserveData.currentLiquidityRate;
+    const apyDecimal = parseFloat(formatUnits(liquidityRateRay, 27));
+    const velocityPerSecond = principalNumber * apyDecimal / SECONDS_PER_YEAR;
+    velocityRef.current = velocityPerSecond;
+    
+    if (velocityPerSecond > 0) {
+      const neededPrecision = Math.max(2, Math.min(Math.ceil(-Math.log10(velocityPerSecond)), decimals));
+      precisionRef.current = neededPrecision;
     }
   }, [reserveData, principalAmount, decimals]);
   
