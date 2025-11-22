@@ -1,0 +1,23 @@
+{
+  "accountAssociation": {
+    "header": "placeholder",
+    "payload": "placeholder",
+    "signature": "placeholder"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Boost - Yield Revolution",
+    "iconUrl": "https://boost.replit.app/icon.png",
+    "homeUrl": "https://boost.replit.app/mini",
+    "imageUrl": "https://boost.replit.app/preview.png",
+    "buttonTitle": "Earn Yield",
+    "splashImageUrl": "https://boost.replit.app/splash.png",
+    "splashBackgroundColor": "#10b981",
+    "requiredChains": ["eip155:42220"],
+    "requiredCapabilities": [
+      "actions.signIn",
+      "wallet.getEthereumProvider",
+      "actions.composeCast"
+    ]
+  }
+}
