@@ -159,17 +159,22 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       console.log('Current allowance:', allowance?.toString());
       console.log('DepositPending before call:', isDepositPending);
       
-      deposit({
+      const result = deposit({
         address: BOOST_VAULT_ADDRESS,
         abi: BoostVaultABI,
         functionName: 'deposit',
         args: [amountBigInt, address],
       });
       
-      console.log('deposit() called successfully');
+      console.log('deposit() returned:', result);
       console.log('DepositPending after call:', isDepositPending);
     } catch (error: any) {
       console.error('Deposit error caught:', error);
+      console.error('Error details:', {
+        message: error.message,
+        name: error.name,
+        cause: error.cause,
+      });
       toast({
         variant: "destructive",
         title: "Deposit Failed",
