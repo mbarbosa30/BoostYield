@@ -1,17 +1,17 @@
 {
   "accountAssociation": {
-    "header": "PLACEHOLDER_HEADER",
-    "payload": "PLACEHOLDER_PAYLOAD",
-    "signature": "PLACEHOLDER_SIGNATURE"
+    "header": "eyJmaWQiOjMyNTQ0MCwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDc0Mjc5ZDRGNGIzOTRFOWUyZDczODRiMmI3NzM0Y0ZjMENlNDdkQjQifQ",
+    "payload": "eyJkb21haW4iOiJZaWVsZC1Cb29zdC5yZXBsaXQuYXBwIn0",
+    "signature": "Hzk33VhyZaqFk9oMDKLnFqKwprYp9Aw9Ucbo3VmY+C5c6aSWAzHnw4rbcsKa2BlipFKdeyZGm7P+NLw8rrUVuxs="
   },
   "miniapp": {
     "version": "1",
     "name": "Boost - Yield Revolution",
-    "iconUrl": "https://boost.replit.app/icon.png",
-    "homeUrl": "https://boost.replit.app/mini",
-    "imageUrl": "https://boost.replit.app/og-image.png",
+    "iconUrl": "https://Yield-Boost.replit.app/icon.png",
+    "homeUrl": "https://Yield-Boost.replit.app/mini",
+    "imageUrl": "https://Yield-Boost.replit.app/og-image.png",
     "buttonTitle": "Earn Yield",
-    "splashImageUrl": "https://boost.replit.app/icon.png",
+    "splashImageUrl": "https://Yield-Boost.replit.app/icon.png",
     "splashBackgroundColor": "#10b981",
     "requiredChains": ["eip155:42220"],
     "requiredCapabilities": [
