@@ -8,19 +8,49 @@ The application targets emerging markets (Argentina, Nigeria, Venezuela, Brazil)
 
 ## Recent Changes (November 2025)
 
-**Blockchain Integration - Phase 1 & 2 Complete (Nov 21):**
+**Blockchain Integration - Phases 1-4 Complete (Nov 22):**
+
+*Phase 1 & 2 - Wallet Connection + Read-Only Integration:*
 - Installed and configured wagmi v2, viem v2, RainbowKit v2 for Web3 wallet connection
 - Set up Celo mainnet configuration with public Forno RPC endpoint
 - Integrated RainbowKit ConnectButton in Navigation with MetaMask, WalletConnect, Valora support
 - Added BoostAaveVault contract ABI with full ERC4626 interface for Aave V3 wrapper
-- Built VaultDashboard page with read-only contract integration:
-  - Displays user's cUSD balance, vault shares, principal deposited
-  - Shows total vault assets and current APY (static 8-12%)
-  - Implements proper `enabled` guards on all wagmi hooks to prevent crashes
-  - Loading states with "..." placeholders during RPC queries
-- Navigation flow: Landing → Risk Modal → Vault Dashboard
-- Required WalletConnect project ID (throws error if missing) - configured with placeholder "demo"
-- Degen Mode CTAs disabled with "Coming Q1 2026" messaging
+- Built VaultDashboard page with read-only contract integration displaying balances, shares, APY
+- Proper `enabled` guards on all wagmi hooks to prevent crashes
+- WalletConnect project ID now required (throws error if missing, no dummy fallback)
+
+*Phase 3 - Deposit/Withdraw Transactions:*
+- **DepositDialog**: Two-step flow (approve cUSD → deposit)
+  - Reads current allowance to determine if approval needed
+  - Shows "Max" button to fill available cUSD balance
+  - Loading states for approval and deposit transactions
+  - Auto-refetches allowance after approval via useEffect
+  - Toast notification on successful deposit
+- **WithdrawDialog**: Share redemption with profit calculation
+  - Displays withdrawal preview with assets received, profit earned, donation amount
+  - Pro-rata principal calculation for partial withdrawals: (userPrincipal × sharesRedeemed) / totalUserShares
+  - Donation only deducted from profits, never principal
+  - Shows net amount received after donation
+  - Toast notification with donation details
+
+*Phase 4 - Donation Settings:*
+- **DonationSettingsDialog**: Percentage slider (0-100%) + cause selector
+  - Real-time percentage display updates as slider moves
+  - Vetted causes dropdown: Education Fund Argentina, Healthcare Nigeria, Food Security Venezuela
+  - Custom wallet address option with validation
+  - Reads current settings from contract on open
+  - setMyDonation transaction with loading states
+  
+*Technical Improvements:*
+- Fixed render-phase side effects by moving to useEffect hooks
+- Corrected BigInt handling (BigInt(0) instead of 0n for TypeScript compatibility)
+- All transaction flows use useWriteContract + useWaitForTransactionReceipt
+- Comprehensive error handling with toast notifications
+- Full data-testid coverage for E2E testing
+
+*Navigation Flow:* Landing → Risk Modal → Vault Dashboard → Deposit/Withdraw/Donation Dialogs
+
+*Degen Mode:* CTAs disabled with "Coming Q1 2026" messaging pending Aave+v4 adapter audit
 
 **Narrative Refinement & Legal/Compliance Calibration:**
 - Softened APY claims from guaranteed numbers to "historically X-Y%" language throughout
