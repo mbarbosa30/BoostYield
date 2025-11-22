@@ -1,0 +1,226 @@
+You can totally turn Boost into a Farcaster miniapp – think “Boost inside the feed”: tap a cast → deposit into the vault → optionally donate yield → share a cast about it.
+
+I’ll walk it as a concrete plan, not hand-wavy:
+
+⸻
+
+1. Mental model: what the Boost Mini App actually does
+
+Inside Warpcast / Farcaster clients, the miniapp should let a user:
+	1.	Connect (Sign In with Farcaster) and detect their wallet.
+	2.	Choose a mode
+	•	Inflation Shield → deposit stablecoin into the Aave-only BoostInflationShield vault.
+	•	Max Yield (Experimental) → deposit into BoostSymbioteVault (the JIT + leverage strategy).
+	3.	Set impact
+	•	Choose donation % of profit (0–100%).
+	•	Pick a beneficiary (cause / community wallet).
+	4.	Execute a transaction
+	•	Approve + deposit in one UX flow (using Farcaster Wallet / Base App / other wallet).
+	5.	See & share
+	•	Show current balance, estimated APY, lifetime profit + donations.
+	•	1-tap “Share as cast”: “I’m earning 11.2% and donating 25% of my yield to Mujeres2000.”
+
+That’s the whole miniapp.
+
+⸻
+
+2. Chain choice: Boost vs Farcaster reality
+
+Farcaster miniapps can execute wallet transactions on a limited set of chains (Base, mainnet, Optimism, Arbitrum, Polygon, Zora, Unichain, etc.).
+
+Celo is not in that default list right now, so you have two realistic options:
+
+Option A – “Farcaster-native” Boost on Base
+	•	Deploy BoostInflationShield & (later) BoostSymbioteVault on Base.
+	•	Use the Farcaster Wallet / Base App directly:
+	•	The Mini App SDK can give you an EIP-1193 provider via wallet.getEthereumProvider and even batch transactions via wallet_sendCalls (EIP-5792) so you can do approve + deposit in one confirmation.
+	•	This gives you the cleanest UX inside Farcaster.
+
+Option B – Keep Boost on Celo, embed your own wallet kit
+	•	Keep all contracts on Celo (your original plan).
+	•	Inside the miniapp, integrate a multi-chain wallet kit (Reown AppKit, Dynamic, Privy, etc.) so users can:
+	•	connect a Celo-enabled wallet,
+	•	sign txs to Celo directly inside the Farcaster webview.
+	•	UX is slightly less “native” (not using Farcaster Wallet), but still works.
+
+You can even do: Safe vault on Base + community vaults on Celo later, but for an MVP miniapp I’d either go all-Base or all-Celo.
+
+I’ll assume Base below (easier Farcaster integration), but the flow is identical if you swap in Celo + custom wallet kit.
+
+⸻
+
+3. Mini App skeleton: what you need
+
+3.1. Web app + Farcaster Mini App glue
+
+A Farcaster miniapp is just a web app (Next.js / React / whatever) that:
+	1.	Serves special metadata (.well-known/farcaster.json, OpenGraph tags, etc.) so clients recognize it as a miniapp.
+	2.	Uses the Mini App SDK (@farcaster/miniapp-sdk) to:
+	•	actions.signIn → Sign-In With Farcaster.
+	•	wallet.getEthereumProvider / wallet_sendTransaction / wallet_sendCalls.
+	•	actions.composeCast to let users share actions.
+
+Rough structure:
+
+boost-miniapp/
+  public/
+    .well-known/
+      farcaster.json   # miniapp manifest
+  src/
+    App.tsx            # main React app
+    boostClient.ts     # viem/wagmi clients for Base
+  package.json
+
+public/.well-known/farcaster.json (simplified)
+
+{
+  "miniapp": {
+    "name": "Boost Yield",
+    "iconUrl": "https://boost.xyz/icon.png",
+    "url": "https://boost.xyz",
+    "requiredChains": ["eip155:8453"], 
+    "requiredCapabilities": [
+      "wallet.getEthereumProvider",
+      "actions.signIn",
+      "actions.composeCast"
+    ]
+  }
+}
+
+This tells Farcaster: “I need Base mainnet and wallet + signIn + composeCast.”
+
+3.2. Onchain contracts (already designed)
+
+On Base:
+	•	BoostInflationShield (Aave-only vault, stablecoin).
+	•	BoostSymbioteVault (optional degen vault later).
+
+The miniapp just needs:
+	•	Their addresses,
+	•	Minimal ABIs for:
+	•	deposit,
+	•	withdraw,
+	•	setDonationConfig,
+	•	read-only view functions for balances & profits.
+
+⸻
+
+4. UX flows inside the miniapp
+
+4.1. Landing screen (“mode selector”)
+
+Top-level view:
+	•	Header: “Boost – Earn yield. Donate your profits.”
+	•	Two big cards:
+	1.	Inflation Shield
+	•	Shows current APY, TVL, risk label: “Low risk · Aave lending”.
+	•	CTA: “Open”.
+	2.	Max Yield (Experimental)
+	•	Shows est. APY band, loud risk label: “High risk · Experimental strategy”.
+	•	CTA: “Open (Degen)”.
+
+Under the hood, both do:
+	•	miniappSdk.actions.signIn() to authenticate the Farcaster user and get their fid & wallet address.
+	•	Detect which chains the client supports with sdk.getChains(); if Base isn’t supported, show a friendly error.
+
+4.2. Inflation Shield screen
+
+Sections:
+	1.	Your position
+	•	“Wallet: 0x1234…”
+	•	“Deposited: 250 USDC”
+	•	“Current value: 267.3 USDC”
+	•	“Lifetime profit: 17.3 USDC”
+	•	“Lifetime donated: 4.2 USDC”
+	2.	Donation slider
+	•	Slider 0–100%: “Donate X% of future profit”.
+	•	Dropdown for beneficiary:
+	•	“Mujeres 2000”
+	•	“Commons Lab”
+	•	“Custom address”.
+On change → call setDonationConfig(pct, cause) on BoostInflationShield, via a tx button.
+	3.	Deposit
+	•	Input: amount in USDC.
+	•	Button: “Deposit & Protect”.
+	•	When pressed:
+	•	Use wallet_sendCalls (Mini App SDK) or wallet provider to:
+	1.	approve(BoostInflationShield, amount)
+	2.	deposit(amount) on the vault.
+	•	This gets batched into one confirmation if using wallet_sendCalls (EIP-5792).
+	4.	Withdraw
+	•	Show pre-computed summary:
+	•	“Withdraw now → You’ll receive 260 USDC, donate 3.1 USDC to Mujeres 2000.”
+	•	Button: “Withdraw”.
+	•	Sends withdraw(shares) tx through the same provider.
+	5.	Share cast
+	•	Button: “Share on Farcaster”.
+	•	Calls actions.composeCast with a prefilled message:
+“I’m earning yield with @Boost and donating 25% of my profit to @mujeres2000 on Base. 🟦🟣”
+
+⸻
+
+4.3. Max Yield (Symbiote) screen
+
+You gate this hard:
+	1.	Risk disclaimer
+	•	Modal: “This is an experimental, leveraged strategy. You can lose money.”
+	•	Checkbox “I understand the risks”. Don’t let them proceed otherwise.
+	2.	Metrics via Symbiote
+	•	Call your backend (or directly Symbiote’s getPositionMetrics) to show:
+	•	Est. APY / PnL.
+	•	Current health factor.
+	•	Max drawdown.
+	3.	Simple deposit UX
+	•	Same structure as Shield:
+	•	amount input,
+	•	donation slider,
+	•	deposit button.
+	•	Under the hood:
+	•	deposit(amount, params, multiplier) on BoostSymbioteVault.
+	•	Where params (ticks/window) and multiplier are either:
+	•	chosen from presets (Conservative / Normal / Degen), or
+	•	fixed for v1.
+	4.	Monitoring
+	•	Show health factor color-coded (green / yellow / red).
+	•	If HF < some threshold, hide deposit button and show “Withdraw / Reduce position only”.
+
+Again, you use the same miniapp patterns: get wallet provider, send tx via wallet_sendTransaction or wallet_sendCalls.
+
+⸻
+
+5. Tech stack recommendation
+
+To keep it sane + composable with your other stuff:
+	•	Frontend
+	•	Next.js 14 or Vite + React.
+	•	Tailwind for quick styling.
+	•	@farcaster/miniapp-sdk for Farcaster integration.
+	•	wagmi + viem for EVM contract calls.
+	•	Wallet / onchain
+	•	If on Base:
+	•	Use the Farcaster Wallet / Base App provider from the Mini App SDK (wallet.getEthereumProvider).
+	•	If on Celo:
+	•	Use Reown AppKit or Dynamic inside the miniapp for Celo wallet connections.
+	•	Backend (optional for v1)
+	•	A tiny Node/Express or Next.js API route that:
+	•	Reads Boost vault events and pre-computes:
+	•	TVL, global APY, top causes, etc.
+	•	Exposes them to the miniapp so you’re not over-RPCing on every render.
+
+⸻
+
+6. Publishing & growth
+
+Finally, to actually ship it in Farcaster land:
+	1.	Host the app (Vercel, Cloudflare, etc.): https://boost.xyz.
+	2.	Add .well-known/farcaster.json (manifest) + OG tags.
+	3.	Register the miniapp as your Farcaster account owner (docs walk you through it).
+	4.	Cast something like:
+“Introducing Boost – earn yield & donate profit in one tap. Try the miniapp ⬇️”
+	5.	Encourage people to pin the miniapp and share their deposit casts → this is your built-in acquisition loop.
+
+⸻
+
+If you want, next I can:
+	•	Sketch the actual React component structure for the miniapp (screens, hooks, context), or
+	•	Draft the farcaster.json + a first version of the Inflation Shield screen in JSX that a dev can pretty much paste into a repo.
