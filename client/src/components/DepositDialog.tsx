@@ -209,7 +209,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
           ) : (
             <Button
               onClick={handleDeposit}
-              disabled={!hasBalance || isProcessing || needsApproval}
+              disabled={!hasBalance || isProcessing || (needsApproval && !isApproveSuccess)}
               data-testid="button-confirm-deposit"
             >
               {isDepositPending || isDepositConfirming ? (
