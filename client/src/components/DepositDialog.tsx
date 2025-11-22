@@ -55,7 +55,20 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
     writeContract: deposit,
     data: depositHash,
     isPending: isDepositPending,
+    error: depositError,
   } = useWriteContract();
+
+  // Log deposit errors
+  useEffect(() => {
+    if (depositError) {
+      console.error('Deposit transaction error:', depositError);
+      toast({
+        variant: "destructive",
+        title: "Deposit Failed",
+        description: depositError.message || "Failed to initiate deposit transaction",
+      });
+    }
+  }, [depositError, toast]);
 
   const { isLoading: isDepositConfirming, isSuccess: isDepositSuccess } =
     useWaitForTransactionReceipt({
@@ -111,8 +124,16 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       amountBigInt: amountBigInt.toString(),
       hasBalance,
       needsApproval,
-      isApproveSuccess
+      isApproveSuccess,
+      isDepositPending,
+      isProcessing
     });
+
+    // Prevent multiple simultaneous calls
+    if (isDepositPending || isDepositConfirming) {
+      console.log('Deposit already in progress, ignoring click');
+      return;
+    }
 
     if (!address || !BOOST_VAULT_ADDRESS || !amountBigInt) {
       console.log('handleDeposit: missing required params');
@@ -121,12 +142,13 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
 
     try {
       console.log('Calling deposit with args:', [amountBigInt.toString(), address]);
-      deposit({
+      const result = deposit({
         address: BOOST_VAULT_ADDRESS,
         abi: BoostVaultABI,
         functionName: 'deposit',
         args: [amountBigInt, address],
       });
+      console.log('deposit() returned:', result);
     } catch (error: any) {
       console.error('Deposit error:', error);
       toast({
