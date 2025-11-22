@@ -1,16 +1,83 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { useAccount, useReadContract, useBalance } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Wallet, Zap, Heart, BarChart3, RefreshCw } from "lucide-react";
+import { TrendingUp, Wallet, Zap, Heart, BarChart3 } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
 import { BOOST_VAULT_ADDRESS, CUSD_ADDRESS, BoostVaultABI } from "@/lib/BoostVaultABI";
+
+const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
+const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
+const POLL_INTERVAL_SECONDS = 5;
+
+const POOL_ABI = [
+  {
+    inputs: [{ internalType: 'address', name: 'asset', type: 'address' }],
+    name: 'getReserveData',
+    outputs: [{
+      components: [
+        { internalType: 'uint256', name: 'configuration', type: 'uint256' },
+        { internalType: 'uint128', name: 'liquidityIndex', type: 'uint128' },
+        { internalType: 'uint128', name: 'currentLiquidityRate', type: 'uint128' },
+        { internalType: 'uint128', name: 'variableBorrowIndex', type: 'uint128' },
+        { internalType: 'uint128', name: 'currentVariableBorrowRate', type: 'uint128' },
+        { internalType: 'uint128', name: 'currentStableBorrowRate', type: 'uint128' },
+        { internalType: 'uint40', name: 'lastUpdateTimestamp', type: 'uint40' },
+        { internalType: 'uint16', name: 'id', type: 'uint16' },
+        { internalType: 'address', name: 'aTokenAddress', type: 'address' },
+        { internalType: 'address', name: 'stableDebtTokenAddress', type: 'address' },
+        { internalType: 'address', name: 'variableDebtTokenAddress', type: 'address' },
+        { internalType: 'address', name: 'interestRateStrategyAddress', type: 'address' },
+        { internalType: 'uint128', name: 'accruedToTreasury', type: 'uint128' },
+        { internalType: 'uint128', name: 'unbacked', type: 'uint128' },
+        { internalType: 'uint128', name: 'isolationModeTotalDebt', type: 'uint128' }
+      ],
+      internalType: 'struct DataTypes.ReserveData',
+      name: '',
+      type: 'tuple'
+    }],
+    stateMutability: 'view',
+    type: 'function'
+  }
+] as const;
+
+function useEarningsPrecision(balance: bigint, decimals = 18) {
+  const precisionRef = useRef<number>(2);
+  
+  const { data: reserveData } = useReadContract({
+    address: AAVE_POOL_ADDRESS,
+    abi: POOL_ABI,
+    functionName: 'getReserveData',
+    args: [CUSD_ADDRESS],
+    query: { refetchInterval: 60000 }
+  });
+  
+  const balanceNumber = parseFloat(formatUnits(balance, decimals));
+  
+  if (reserveData && balanceNumber > 0) {
+    const liquidityRateRay = reserveData[2];
+    const apyDecimal = Number(liquidityRateRay) / 1e27;
+    const velocityPerSecond = balanceNumber * apyDecimal / SECONDS_PER_YEAR;
+    const deltaPerPoll = velocityPerSecond * POLL_INTERVAL_SECONDS;
+    
+    if (deltaPerPoll > 0) {
+      const neededPrecision = Math.max(2, Math.min(Math.ceil(-Math.log10(deltaPerPoll)), decimals));
+      precisionRef.current = neededPrecision;
+    }
+  }
+  
+  const fullString = formatUnits(balance, decimals);
+  const parts = fullString.split('.');
+  if (!parts[1]) return fullString;
+  
+  return `${parts[0]}.${parts[1].slice(0, precisionRef.current)}`;
+}
 
 export default function DegenPage() {
   const { address, isConnected } = useAccount();
@@ -88,6 +155,9 @@ export default function DegenPage() {
   const donationPct = Number(userDonationPct || BigInt(0));
   const totalDonated = (profit * BigInt(donationPct)) / BigInt(100);
   const netProfit = profit - totalDonated;
+  
+  const formattedProfit = useEarningsPrecision(profit, 18);
+
 
   // APY calculation (simplified)
   const estimatedAPY = 11.2;
@@ -205,7 +275,7 @@ export default function DegenPage() {
                         Profit Realized
                       </p>
                       <p className="text-xl font-bold text-emerald-600 font-mono">
-                        +${Number(formatUnits(profit, 18)).toFixed(8)}
+                        +${formattedProfit}
                       </p>
                     </div>
                     <div>
