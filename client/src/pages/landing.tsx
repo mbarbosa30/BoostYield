@@ -3,10 +3,6 @@ import { useLocation } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { SafeShowcaseSection } from "@/components/SafeShowcaseSection";
-import { DegenShowcaseSection } from "@/components/DegenShowcaseSection";
-import { CauseBrowseSection } from "@/components/CauseBrowseSection";
-import { FinalCTASection } from "@/components/FinalCTASection";
 import { RiskDisclosureModal } from "@/components/RiskDisclosureModal";
 import type { Currency } from "@/components/CurrencyToggle";
 
@@ -44,15 +40,11 @@ export default function LandingPage() {
           onDegenClick={handleDegenClick}
         />
         <HowItWorksSection />
-        <SafeShowcaseSection onOpenVault={handleSimpleClick} />
-        <DegenShowcaseSection onExploreStrategy={handleDegenClick} />
-        <CauseBrowseSection />
-        <FinalCTASection />
       </main>
 
-      <footer className="border-t py-12 px-6">
-        <div className="max-w-7xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2025 Boost. Not a bank. DeFi carries risks. Built on Celo with Uniswap V4 + Aave.</p>
+      <footer className="border-t py-8 px-6">
+        <div className="max-w-5xl mx-auto text-center text-sm text-muted-foreground">
+          <p>© 2025 Boost. Not a bank. DeFi carries risks.</p>
         </div>
       </footer>
 

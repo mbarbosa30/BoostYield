@@ -33,39 +33,29 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto pt-4">
-          <div className="w-full sm:w-auto">
-            <Button 
-              size="lg"
-              onClick={onSafeClick}
-              className="w-full gap-2 min-w-[240px]"
-              data-testid="button-hero-simple"
-            >
-              <Shield className="h-5 w-5" />
-              Simple & Clear
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2">Easy to understand • Perfect for beginners • Plain language</p>
-          </div>
+          <Button 
+            size="lg"
+            onClick={onSafeClick}
+            className="w-full sm:w-auto gap-2"
+            data-testid="button-hero-simple"
+          >
+            <Shield className="h-5 w-5" />
+            Simple & Clear
+            <ArrowRight className="h-5 w-5" />
+          </Button>
 
-          <div className="w-full sm:w-auto">
-            <Button 
-              size="lg"
-              variant="outline"
-              onClick={onDegenClick}
-              className="w-full gap-2 min-w-[240px]"
-              data-testid="button-hero-advanced"
-            >
-              <Flame className="h-5 w-5" />
-              Advanced View
-              <ArrowRight className="h-5 w-5" />
-            </Button>
-            <p className="text-xs text-muted-foreground mt-2">For crypto natives • Detailed metrics • Full transparency</p>
-          </div>
+          <Button 
+            size="lg"
+            variant="outline"
+            onClick={onDegenClick}
+            className="w-full sm:w-auto gap-2"
+            data-testid="button-hero-advanced"
+          >
+            <Flame className="h-5 w-5" />
+            Advanced View
+            <ArrowRight className="h-5 w-5" />
+          </Button>
         </div>
-
-        <p className="text-sm text-muted-foreground pt-4">
-          Built on Celo • Powered by Uniswap V4 + Aave • Optimized for emerging markets
-        </p>
       </div>
     </div>
   );
