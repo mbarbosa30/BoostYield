@@ -63,7 +63,7 @@ The manifest at `client/public/.well-known/farcaster.json` contains placeholder 
 
 ### Important Notes:
 - The `fc:miniapp` meta tags require **absolute HTTPS URLs** (not relative paths)
-- The action type must be `launch_miniapp` (not `launch_frame`)
+- The action type must be `launch_frame` per the Farcaster specification
 - If you change your domain, update all URLs in both `client/index.html` and `client/public/.well-known/farcaster.json`
 - Current domain: `Yield-Boost.replit.app` (configured with FID 325440)
 
