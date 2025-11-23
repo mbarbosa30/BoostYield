@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAccount, useReadContract, useBalance } from "wagmi";
+import { useAccount, useReadContract, useBalance, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -65,6 +65,7 @@ function useAaveAPY(tokenAddress: `0x${string}`) {
 
 export default function MiniPage() {
   const { address, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
   const [farcasterContext, setFarcasterContext] = useState<FarcasterContext>(null);
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
@@ -77,10 +78,7 @@ export default function MiniPage() {
   const tokenDecimals = tokenConfig.decimals;
   const isStablecoin = STABLECOINS.includes(selectedToken);
 
-  // Initialize Farcaster SDK on page load
-  // Note: Farcaster wallet integration is challenging because Warpcast's wallet
-  // provides Base/Ethereum chains but this app requires Celo. Users must connect
-  // using Celo-compatible wallets (Valora, MetaMask Mobile, etc.) via RainbowKit.
+  // Initialize Farcaster SDK and auto-connect wallet
   useEffect(() => {
     const init = async () => {
       await initializeFarcaster();
@@ -93,12 +91,25 @@ export default function MiniPage() {
           user: context.user?.username,
           fid: context.user?.fid,
           location: context.location,
-          note: 'Please connect a Celo-compatible wallet to proceed'
+          note: 'Auto-connecting Farcaster wallet...'
         });
+
+        // Auto-connect the Farcaster wallet if not already connected
+        if (!isConnected && connectors.length > 0) {
+          const farcasterConnector = connectors.find(c => c.id === 'farcaster');
+          if (farcasterConnector) {
+            try {
+              console.log('🔌 Attempting auto-connect with Farcaster connector...');
+              await connect({ connector: farcasterConnector });
+            } catch (error) {
+              console.error('❌ Auto-connect failed:', error);
+            }
+          }
+        }
       }
     };
     init();
-  }, []);
+  }, [isConnected, connect, connectors]);
 
   // Read user's vault balance
   const { data: userShares } = useReadContract({
