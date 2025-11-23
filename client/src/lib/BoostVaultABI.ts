@@ -141,7 +141,9 @@ export const BoostVaultABI = [
 
 // Token addresses on Celo mainnet (checksummed)
 export const CUSD_ADDRESS = '0x765DE816845861e75A25fCA122bb6898B8B1282a' as const;
-export const USDC_ADDRESS = '0xef4229c8c3250C675F21BCefa42f58EfbfF6002a' as const;
+// Note: Using bridged USDC (Wormhole) as it's supported on Aave V3 Celo
+// Native USDC (0xef4229c8c3250C675F21BCefa42f58EfbfF6002a) is NOT supported on Aave V3
+export const USDC_ADDRESS = '0xcebA9300f2b948710d2653dD7B07f33A8B32118C' as const;
 
 // Token configuration type
 export type TokenSymbol = 'cUSD' | 'USDC';
