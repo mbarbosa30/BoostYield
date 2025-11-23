@@ -44,7 +44,7 @@ export default function LandingPage() {
 
       <footer className="border-t py-8 px-6">
         <div className="max-w-5xl mx-auto text-center text-sm text-muted-foreground">
-          <p>© 2025 Boost. Not a bank. DeFi carries risks.</p>
+          <p>© 2025 Relay Boost. Not a bank. DeFi carries risks.</p>
         </div>
       </footer>
 

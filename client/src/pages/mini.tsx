@@ -148,7 +148,7 @@ export default function MiniPage() {
         <div className="p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold">Boost</h1>
+              <h1 className="text-xl font-bold">Relay Boost</h1>
               {farcasterContext && (
                 <p className="text-sm text-muted-foreground">
                   @{farcasterContext.user?.username || 'anon'}

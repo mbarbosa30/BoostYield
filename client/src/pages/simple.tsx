@@ -227,7 +227,7 @@ export default function SimplePage() {
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
               <TrendingUp className="h-5 w-5 text-primary" />
-              <span className="text-lg font-accent font-semibold">Boost</span>
+              <span className="text-lg font-accent font-semibold">Relay Boost</span>
             </div>
           </Link>
           <div className="flex items-center gap-4">
