@@ -1,6 +1,6 @@
 import { useAccount, useReadContracts } from "wagmi";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, TrendingUp, Heart, Wallet } from "lucide-react";
+import { DollarSign, TrendingUp, Wallet, Coins } from "lucide-react";
 import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
 import { formatUnits } from "viem";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +13,10 @@ interface TokenPosition {
   shares: bigint;
   decimals: number;
   vaultAddress: `0x${string}`;
+  isStablecoin: boolean;
 }
+
+const STABLECOINS = ['cUSD', 'USDC', 'USDT'];
 
 export function PortfolioOverview() {
   const { address } = useAccount();
@@ -114,39 +117,44 @@ export function PortfolioOverview() {
         symbol,
         shares,
         principal,
-        deposited, // Always in correct decimals from previewRedeem or 0
+        deposited,
         decimals: config.decimals,
-        vaultAddress: config.vaultAddress as `0x${string}`
+        vaultAddress: config.vaultAddress as `0x${string}`,
+        isStablecoin: STABLECOINS.includes(symbol)
       });
     }
     
     return positions;
   }, [baseResults, redeemResults, activeVaults]);
 
-  // Calculate totals (normalize to 18 decimals for summing)
-  const { totalDeposited, totalPrincipal, totalYield, activePositions } = useMemo(() => {
+  // Calculate totals ONLY for stablecoins
+  const { stablecoinTotals, stablecoinPositions, volatilePositions } = useMemo(() => {
     const normalize = (value: bigint, decimals: number) => {
       if (decimals === 18) return value;
-      // Convert from 6 decimals to 18 decimals
       return value * BigInt(10 ** (18 - decimals));
     };
 
-    const deposited = portfolioData.reduce((sum, pos) => 
+    const stablecoins = portfolioData.filter(pos => pos.isStablecoin && pos.shares > BigInt(0));
+    const volatile = portfolioData.filter(pos => !pos.isStablecoin && pos.shares > BigInt(0));
+
+    const deposited = stablecoins.reduce((sum, pos) => 
       sum + normalize(pos.deposited, pos.decimals), BigInt(0)
     );
 
-    const principal = portfolioData.reduce((sum, pos) => 
+    const principal = stablecoins.reduce((sum, pos) => 
       sum + normalize(pos.principal, pos.decimals), BigInt(0)
     );
 
     const yield_ = deposited - principal;
-    const active = portfolioData.filter(pos => pos.shares > BigInt(0));
 
     return {
-      totalDeposited: deposited,
-      totalPrincipal: principal,
-      totalYield: yield_,
-      activePositions: active
+      stablecoinTotals: {
+        deposited,
+        principal,
+        yield: yield_
+      },
+      stablecoinPositions: stablecoins,
+      volatilePositions: volatile
     };
   }, [portfolioData]);
 
@@ -155,7 +163,9 @@ export function PortfolioOverview() {
   }
 
   const isLoading = isLoadingBase || (redeemContracts.length > 0 && isLoadingRedeem);
-  const hasPositions = activePositions.length > 0;
+  const hasStablecoins = stablecoinPositions.length > 0;
+  const hasVolatile = volatilePositions.length > 0;
+  const hasAnyPositions = hasStablecoins || hasVolatile;
 
   return (
     <Card className="mb-6">
@@ -163,11 +173,11 @@ export function PortfolioOverview() {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-2xl">Portfolio Overview</CardTitle>
-            <CardDescription>Combined positions across all vaults</CardDescription>
+            <CardDescription>Your positions across all vaults</CardDescription>
           </div>
           <Badge variant="secondary">
             <Wallet className="w-3 h-3 mr-1" />
-            {activePositions.length} Active
+            {stablecoinPositions.length + volatilePositions.length} Active
           </Badge>
         </div>
       </CardHeader>
@@ -176,72 +186,120 @@ export function PortfolioOverview() {
           <div className="text-center py-8 text-muted-foreground">
             <p>Loading your portfolio...</p>
           </div>
-        ) : !hasPositions ? (
+        ) : !hasAnyPositions ? (
           <div className="text-center py-8 text-muted-foreground">
             <p>No deposits yet. Connect your wallet and deposit to start earning.</p>
           </div>
         ) : (
           <div className="space-y-6">
-            {/* Aggregated Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 rounded-lg bg-muted/50">
-                <DollarSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-1">Total Deposited</p>
-                <p className="text-2xl font-bold" data-testid="portfolio-total-deposited">
-                  ${Number(formatUnits(totalDeposited, 18)).toFixed(2)}
-                </p>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
-                <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
-                <p className="text-sm text-muted-foreground mb-1">Total Yield Earned</p>
-                <p className="text-xl font-bold text-emerald-600 font-mono" data-testid="portfolio-total-yield">
-                  +${Number(formatUnits(totalYield, 18)).toFixed(2)}
-                </p>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-muted/50">
-                <Heart className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-1">Active Tokens</p>
-                <p className="text-2xl font-bold">{activePositions.length}</p>
-              </div>
-            </div>
+            {/* Stablecoin Savings Section */}
+            {hasStablecoins && (
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Stablecoin Savings</h3>
+                
+                {/* Aggregated Stats for Stablecoins Only */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                  <div className="text-center p-4 rounded-lg bg-muted/50">
+                    <DollarSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-1">Total Deposited</p>
+                    <p className="text-2xl font-bold" data-testid="portfolio-stable-deposited">
+                      ${Number(formatUnits(stablecoinTotals.deposited, 18)).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
+                    <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
+                    <p className="text-sm text-muted-foreground mb-1">Total Yield Earned</p>
+                    <p className="text-xl font-bold text-emerald-600 font-mono" data-testid="portfolio-stable-yield">
+                      +${Number(formatUnits(stablecoinTotals.yield, 18)).toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-muted/50">
+                    <Coins className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-1">Stablecoins</p>
+                    <p className="text-2xl font-bold">{stablecoinPositions.length}</p>
+                  </div>
+                </div>
 
-            {/* Individual Token Breakdown */}
-            <div>
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Token Breakdown</h3>
-              <div className="space-y-2">
-                {activePositions.map((position) => {
-                  const deposited = Number(formatUnits(position.deposited, position.decimals));
-                  const principal = Number(formatUnits(position.principal, position.decimals));
-                  const yield_ = deposited - principal;
-                  
-                  return (
-                    <div 
-                      key={position.symbol} 
-                      className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover-elevate"
-                      data-testid={`portfolio-token-${position.symbol.toLowerCase()}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-sm font-bold text-primary">{position.symbol}</span>
+                {/* Stablecoin Breakdown */}
+                <div className="space-y-2">
+                  {stablecoinPositions.map((position) => {
+                    const deposited = Number(formatUnits(position.deposited, position.decimals));
+                    const principal = Number(formatUnits(position.principal, position.decimals));
+                    const yield_ = deposited - principal;
+                    
+                    return (
+                      <div 
+                        key={position.symbol} 
+                        className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover-elevate"
+                        data-testid={`portfolio-token-${position.symbol.toLowerCase()}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <span className="text-sm font-bold text-primary">{position.symbol}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{position.symbol}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Principal: ${principal.toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{position.symbol}</p>
-                          <p className="text-xs text-muted-foreground">
-                            Principal: ${principal.toFixed(2)}
+                        <div className="text-right">
+                          <p className="font-bold">${deposited.toFixed(2)}</p>
+                          <p className="text-xs text-emerald-600 font-mono">
+                            +${yield_.toFixed(2)}
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-bold">${deposited.toFixed(2)}</p>
-                        <p className="text-xs text-emerald-600 font-mono">
-                          +${yield_.toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Other Assets Section (Volatile Assets like CELO) */}
+            {hasVolatile && (
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground mb-2">Other Assets</h3>
+                <p className="text-xs text-muted-foreground mb-3">
+                  Token amounts shown (not USD value). Prices fluctuate.
+                </p>
+                
+                <div className="space-y-2">
+                  {volatilePositions.map((position) => {
+                    const deposited = Number(formatUnits(position.deposited, position.decimals));
+                    const principal = Number(formatUnits(position.principal, position.decimals));
+                    const yield_ = deposited - principal;
+                    
+                    return (
+                      <div 
+                        key={position.symbol} 
+                        className="flex items-center justify-between p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/10 hover-elevate"
+                        data-testid={`portfolio-token-${position.symbol.toLowerCase()}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                            <span className="text-sm font-bold text-amber-600">{position.symbol}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{position.symbol}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Volatile asset
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">{deposited.toFixed(4)} {position.symbol}</p>
+                          <p className="text-xs text-emerald-600 font-mono">
+                            +{yield_.toFixed(4)} {position.symbol}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
