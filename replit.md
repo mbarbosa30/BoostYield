@@ -59,6 +59,28 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
 - **Smooth Animations:** 60 FPS earnings display using `requestAnimationFrame` with interpolated values between blockchain polls
 - **Account Association:** Configured with real signature from FID 325440 for domain `relayboost.app`
 
+### Informational Pages
+
+Two standalone pages provide educational content and roadmap transparency:
+
+**`/how-it-works`** - Educational page explaining platform mechanics:
+- **Vault System:** ERC4626 standard, Aave V3 integration, deposit/withdrawal flow
+- **Supported Tokens:** Details on all 4 tokens (cUSD, USDC, USDT, CELO) with their characteristics
+- **Yield Generation:** Explanation of lending pool mechanics and historical APY ranges (8-18% for stablecoins)
+- **Impact Feature:** How the optional donation system works (0-50% of yield)
+- **Security Notes:** Aave V3 TVL, security audits, public contract verification
+
+**`/roadmap`** - Platform development phases:
+- **Phase 1 (Live):** Safe vaults with Aave V3 lending, current 4-token support, donation feature, Farcaster miniapp
+- **Phase 2 (Upcoming):** Risk appetite customization with conservative/moderate/aggressive levels, 2-3x leverage, rehypothecation strategies (borrowing against deposits for leveraged yield), targeting 30-300%+ APY
+- **Phase 3 (Planned):** Uniswap V4 integration for automated yield conversion, auto-compounding, custom yield routing, community-suggested token pairs
+- **Phase 4 (Future):** $BOOST governance token with DAO voting on strategies, staking rewards, fee sharing, community grant funding
+
+Both pages are accessible via:
+- Navigation component (desktop, md+ breakpoint) in top navbar
+- Landing page footer (all screen sizes) for mobile access
+- Standard layout with Navigation component, Card-based content, "Back to Home" links
+
 ## Deployment
 
 ### Production Domain
