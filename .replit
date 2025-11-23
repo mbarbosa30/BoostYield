@@ -54,6 +54,10 @@ externalPort = 5000
 localPort = 44949
 externalPort = 4200
 
+[[ports]]
+localPort = 46813
+externalPort = 8008
+
 [env]
 PORT = "5000"
 
@@ -83,4 +87,4 @@ waitForPort = 5000
 [userenv.shared]
 VITE_WALLETCONNECT_PROJECT_ID = "demo"
 VITE_CELO_RPC_URL = "https://forno.celo.org"
-VITE_BOOST_VAULT_ADDRESS = "0x775e8a5cbf69143482c89dcf9461d96cd49efb18"
+VITE_BOOST_VAULT_CUSD_ADDRESS = "0x775e8a5cbf69143482c89dcf9461d96cd49efb18"

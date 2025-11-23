@@ -139,8 +139,38 @@ export const BoostVaultABI = [
   }
 ] as const;
 
-// cUSD token address on Celo mainnet (checksummed)
+// Token addresses on Celo mainnet (checksummed)
 export const CUSD_ADDRESS = '0x765DE816845861e75A25fCA122bb6898B8B1282a' as const;
+export const USDC_ADDRESS = '0xef4229c8c3250C675F21BCefa42f58EfbfF6002a' as const;
 
-// Contract addresses - to be set after deployment
-export const BOOST_VAULT_ADDRESS = import.meta.env.VITE_BOOST_VAULT_ADDRESS as `0x${string}` | undefined;
+// Token configuration type
+export type TokenSymbol = 'cUSD' | 'USDC';
+
+export interface TokenConfig {
+  symbol: TokenSymbol;
+  name: string;
+  address: `0x${string}`;
+  vaultAddress: `0x${string}` | undefined;
+  decimals: number;
+}
+
+// Token configurations
+export const TOKEN_CONFIGS: Record<TokenSymbol, TokenConfig> = {
+  'cUSD': {
+    symbol: 'cUSD',
+    name: 'Celo Dollar',
+    address: CUSD_ADDRESS,
+    vaultAddress: import.meta.env.VITE_BOOST_VAULT_CUSD_ADDRESS as `0x${string}` | undefined,
+    decimals: 18,
+  },
+  'USDC': {
+    symbol: 'USDC',
+    name: 'USD Coin',
+    address: USDC_ADDRESS,
+    vaultAddress: import.meta.env.VITE_BOOST_VAULT_USDC_ADDRESS as `0x${string}` | undefined,
+    decimals: 6,
+  },
+};
+
+// Legacy export for backward compatibility
+export const BOOST_VAULT_ADDRESS = import.meta.env.VITE_BOOST_VAULT_CUSD_ADDRESS as `0x${string}` | undefined;
