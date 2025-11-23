@@ -27,7 +27,7 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Earn 8-18% APY on stablecoins (cUSD, USDC, USDT) or CELO.<br />
+            Earn real yields on stablecoins (cUSD, USDC, USDT) or CELO.<br />
             Powered by Aave V3 on Celo. Donate part of your earnings to causes you care about.
           </p>
           

@@ -13,7 +13,7 @@ export function IntegrationsSection() {
     {
       icon: Zap,
       name: "Aave V3",
-      description: "Leading DeFi lending protocol powering real yields of 8-18% APY",
+      description: "Leading DeFi lending protocol powering competitive real yields",
       color: "text-purple-600",
       bgColor: "bg-purple-50 dark:bg-purple-950/20"
     },

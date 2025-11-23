@@ -11,7 +11,7 @@ export function HowItWorksSection() {
     {
       icon: Shield,
       title: "Earn Real Yields",
-      description: "Your deposits earn 8-18% APY from Aave V3. Withdraw anytime, no lockups or hidden fees.",
+      description: "Your deposits earn competitive yields from Aave V3. Withdraw anytime, no lockups or hidden fees.",
     },
     {
       icon: Heart,
