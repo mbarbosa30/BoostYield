@@ -1,9 +1,10 @@
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useReadContracts } from "wagmi";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, Heart, Wallet } from "lucide-react";
 import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
 import { formatUnits } from "viem";
 import { Badge } from "@/components/ui/badge";
+import { useMemo } from "react";
 
 interface TokenPosition {
   symbol: string;
@@ -17,73 +18,144 @@ interface TokenPosition {
 export function PortfolioOverview() {
   const { address } = useAccount();
 
-  // Fetch data for all 4 vaults in parallel
-  const tokens = Object.entries(TOKEN_CONFIGS);
-  
-  const portfolioData = tokens
-    .filter(([, config]) => config.vaultAddress && config.vaultAddress !== '0x0000000000000000000000000000000000000000')
-    .map(([symbol, config]) => {
+  // Get all active vaults
+  const activeVaults = useMemo(() => 
+    Object.entries(TOKEN_CONFIGS).filter(
+      ([, config]) => config.vaultAddress && config.vaultAddress !== '0x0000000000000000000000000000000000000000'
+    ), []
+  );
+
+  // Build all contract calls at top level
+  const allContracts = useMemo(() => {
+    if (!address) return [];
+    
+    return activeVaults.flatMap(([, config]) => {
       const vaultAddr = config.vaultAddress as `0x${string}`;
-      
-      const { data: shares } = useReadContract({
-        address: vaultAddr,
-        abi: BoostVaultABI,
-        functionName: 'balanceOf',
-        args: address ? [address] : undefined,
-        query: { enabled: !!address }
-      });
-
-      const { data: principal } = useReadContract({
-        address: vaultAddr,
-        abi: BoostVaultABI,
-        functionName: 'principalOf',
-        args: address ? [address] : undefined,
-        query: { enabled: !!address }
-      });
-
-      const { data: assetsForShares } = useReadContract({
-        address: vaultAddr,
-        abi: BoostVaultABI,
-        functionName: 'previewRedeem',
-        args: shares ? [shares] : undefined,
-        query: { enabled: !!shares && shares > BigInt(0) }
-      });
-
-      return {
-        symbol,
-        deposited: assetsForShares || BigInt(0),
-        principal: principal || BigInt(0),
-        shares: shares || BigInt(0),
-        decimals: config.decimals,
-        vaultAddress: vaultAddr
-      } satisfies TokenPosition;
+      return [
+        {
+          address: vaultAddr,
+          abi: BoostVaultABI,
+          functionName: 'balanceOf',
+          args: [address],
+        },
+        {
+          address: vaultAddr,
+          abi: BoostVaultABI,
+          functionName: 'principalOf',
+          args: [address],
+        }
+      ];
     });
+  }, [address, activeVaults]);
+
+  // Fetch shares and principal for all vaults with live updates
+  const { data: baseResults, isLoading: isLoadingBase } = useReadContracts({
+    contracts: allContracts as any,
+    query: {
+      enabled: allContracts.length > 0,
+      refetchInterval: 5000,
+    }
+  });
+
+  // Build previewRedeem contracts only for vaults with shares
+  const redeemContracts = useMemo(() => {
+    if (!baseResults) return [];
+    
+    const contracts: any[] = [];
+    for (let i = 0; i < activeVaults.length; i++) {
+      const sharesIdx = i * 2;
+      const shares = baseResults[sharesIdx]?.result as bigint | undefined;
+      
+      if (shares && shares > BigInt(0)) {
+        const [, config] = activeVaults[i];
+        contracts.push({
+          address: config.vaultAddress as `0x${string}`,
+          abi: BoostVaultABI,
+          functionName: 'previewRedeem',
+          args: [shares],
+        });
+      }
+    }
+    return contracts;
+  }, [baseResults, activeVaults]);
+
+  // Fetch previewRedeem for positions with shares
+  const { data: redeemResults, isLoading: isLoadingRedeem } = useReadContracts({
+    contracts: redeemContracts as any,
+    query: {
+      enabled: redeemContracts.length > 0,
+      refetchInterval: 5000,
+    }
+  });
+
+  // Parse all results into token positions
+  const portfolioData: TokenPosition[] = useMemo(() => {
+    if (!baseResults) return [];
+    
+    const positions: TokenPosition[] = [];
+    let redeemIdx = 0;
+    
+    for (let i = 0; i < activeVaults.length; i++) {
+      const [symbol, config] = activeVaults[i];
+      const sharesIdx = i * 2;
+      const principalIdx = i * 2 + 1;
+      
+      const shares = (baseResults[sharesIdx]?.result as bigint | undefined) || BigInt(0);
+      const principal = (baseResults[principalIdx]?.result as bigint | undefined) || BigInt(0);
+      
+      // Only use previewRedeem result if shares > 0, otherwise deposited = 0
+      let deposited = BigInt(0);
+      if (shares > BigInt(0) && redeemResults) {
+        deposited = (redeemResults[redeemIdx]?.result as bigint | undefined) || BigInt(0);
+        redeemIdx++;
+      }
+      
+      positions.push({
+        symbol,
+        shares,
+        principal,
+        deposited, // Always in correct decimals from previewRedeem or 0
+        decimals: config.decimals,
+        vaultAddress: config.vaultAddress as `0x${string}`
+      });
+    }
+    
+    return positions;
+  }, [baseResults, redeemResults, activeVaults]);
 
   // Calculate totals (normalize to 18 decimals for summing)
-  const normalize = (value: bigint, decimals: number) => {
-    if (decimals === 18) return value;
-    // Convert from 6 decimals to 18 decimals
-    return value * BigInt(10 ** (18 - decimals));
-  };
+  const { totalDeposited, totalPrincipal, totalYield, activePositions } = useMemo(() => {
+    const normalize = (value: bigint, decimals: number) => {
+      if (decimals === 18) return value;
+      // Convert from 6 decimals to 18 decimals
+      return value * BigInt(10 ** (18 - decimals));
+    };
 
-  const totalDeposited = portfolioData.reduce((sum, pos) => 
-    sum + normalize(pos.deposited, pos.decimals), BigInt(0)
-  );
+    const deposited = portfolioData.reduce((sum, pos) => 
+      sum + normalize(pos.deposited, pos.decimals), BigInt(0)
+    );
 
-  const totalPrincipal = portfolioData.reduce((sum, pos) => 
-    sum + normalize(pos.principal, pos.decimals), BigInt(0)
-  );
+    const principal = portfolioData.reduce((sum, pos) => 
+      sum + normalize(pos.principal, pos.decimals), BigInt(0)
+    );
 
-  const totalYield = totalDeposited - totalPrincipal;
+    const yield_ = deposited - principal;
+    const active = portfolioData.filter(pos => pos.shares > BigInt(0));
 
-  // Filter positions with actual deposits
-  const activePositions = portfolioData.filter(pos => pos.shares > BigInt(0));
-  
-  const hasPositions = activePositions.length > 0;
+    return {
+      totalDeposited: deposited,
+      totalPrincipal: principal,
+      totalYield: yield_,
+      activePositions: active
+    };
+  }, [portfolioData]);
 
   if (!address) {
     return null;
   }
+
+  const isLoading = isLoadingBase || (redeemContracts.length > 0 && isLoadingRedeem);
+  const hasPositions = activePositions.length > 0;
 
   return (
     <Card className="mb-6">
@@ -100,7 +172,11 @@ export function PortfolioOverview() {
         </div>
       </CardHeader>
       <CardContent>
-        {!hasPositions ? (
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>Loading your portfolio...</p>
+          </div>
+        ) : !hasPositions ? (
           <div className="text-center py-8 text-muted-foreground">
             <p>No deposits yet. Connect your wallet and deposit to start earning.</p>
           </div>
