@@ -1,0 +1,190 @@
+Nice, you’ve already done the hard/wise thing: start with simple Aave yield and only then ask “how can v4 help without turning this into another Bunni speedrun to rekt?” 👍
+
+Let’s keep that energy.
+
+I’ll break it into two parts:
+	1.	How Uni v4 (with or without hooks) can help your current multi-asset vault
+	2.	How to do “yield in CELO” in a clean, non-insane way
+
+And I’ll be explicit about where hooks are actually needed vs “plain v4 swap is enough”.
+
+⸻
+
+1. Multi-asset deposits + “pick the best stable” using Uniswap v4
+
+Right now:
+	•	Users can deposit: cUSD, USDC, USDT, CELO
+	•	Main yield source: Aave on those assets.
+
+You want:
+	•	If user has any supported stable, auto-pick the one with the highest yield and swap into it.
+	•	Do this without overcomplicating or adding crazy risk.
+
+Key idea: one canonical “inside” asset
+
+Internally, pick one “canonical” yield asset at a time, e.g.:
+	•	Today: USDC on Aave has the best net APY.
+	•	Tomorrow: maybe cUSD on Aave is better.
+
+All deposits get normalized to “best stable now”.
+
+You don’t need a hook for this; you just need:
+	•	A small controller that knows which token is currentBestStable.
+	•	Uniswap v4 pools (or router) to swap deposit tokens → currentBestStable.
+
+Flow for deposits:
+	1.	User deposits any supported token:
+	•	cUSD, USDC, USDT, maybe even CELO.
+	2.	Your vault contract checks:
+	•	“Is tokenIn == currentBestStable?”
+	•	If yes → supply directly to Aave.
+	•	If no → do:
+	•	Swap tokenIn → currentBestStable via Uni v4 (no fancy hook needed).
+	•	Supply currentBestStable to Aave.
+	3.	Mint your Boost shares to user based on total portfolio value.
+
+Flow for strategy change (best stable changes):
+	•	Off-chain script / keeper:
+	1.	Reads Aave APYs for cUSD/USDC/USDT.
+	2.	Decides “new best stable” (e.g. USDT).
+	3.	On-chain rebalancer:
+	•	Withdraws some/all of currentBestStable from Aave.
+	•	Swaps USDC → USDT via Uni v4.
+	•	Supplies USDT to Aave.
+	4.	Updates currentBestStable in vault.
+
+From the user’s perspective:
+
+“I threw in cUSD, Boost routed it to whatever is currently best, and I just see one ‘BoostUSD’ balance.”
+
+🎯 Where v4 helps: it’s just your swap venue for “input token → best stable”, plus rebalancing.
+🔪 Where hooks are not needed: this whole “choose best stable & auto-swap” can run on top of plain v4 periphery.
+
+⸻
+
+If you really want a simple v4 hook in here
+
+Keep the hook brain-dead simple, for example:
+	•	Deploy your own Boost stable pool (e.g. USDC/cUSD) with a BoostFeeHook.
+	•	Hook responsibilities:
+	•	On each swap:
+	•	Take X% of LP fee and send it to a Boost community/donation address.
+	•	Optionally emit a nice event for analytics.
+
+No Aave in the hook, no leverage, no JIT, no external calls besides moving the fee.
+That:
+	•	Gives you “we use v4 hooks” for hackathon cred,
+	•	Adds a tiny extra yield stream or donation stream,
+	•	Doesn’t blow up your risk like Symbiote-style hooks would.
+
+⸻
+
+2. “Get my yield in CELO” – passive accumulation
+
+You also want:
+
+“Option to choose to get the yield in CELO (so it would automatically use the earnings to swap for CELO, as a kind of passive accumulation).”
+
+There are two clean ways to frame this:
+
+Option A – Convert profit to CELO on withdraw
+
+Simplest, least magic, very understandable:
+	1.	Internally, you still earn yield in stables (via Aave).
+	2.	For each user you track:
+	•	principal (how much they actually put in),
+	•	valueNow (their share of total),
+	•	profit = max(0, valueNow - principal).
+	3.	User toggles a flag: yieldInCelo = true/false.
+	4.	On withdraw:
+	•	Compute principal and profit as usual.
+	•	If yieldInCelo == false:
+	•	They just receive everything in stable (minus any donations).
+	•	If yieldInCelo == true:
+	•	You swap only the profit portion from stable → CELO via Uni v4.
+	•	Send:
+	•	principal back in stable,
+	•	profit in CELO.
+
+From the user’s mental model:
+
+“My savings stayed in dollars while they were earning; when I withdraw, my gains are auto-flipped into CELO so I keep stacking it.”
+
+Tech-wise:
+	•	All compounding / risk stays in stable.
+	•	CELO accumulation is just a final swap at exit.
+	•	You still can apply the donation logic before/after the CELO swap.
+
+Option B – Periodic “harvest & swap to CELO”
+
+More “passive DCA”, but more complexity:
+	1.	Vault accrues yield in stable inside Aave.
+	2.	Every X hours/days a keeper:
+	•	Harvests yield (or reads totalUnderlying - totalPrincipal),
+	•	Swaps some portion of that to CELO on behalf of all yieldInCelo users,
+	•	Credits them with a running CELO balance.
+	3.	At withdraw, user receives:
+	•	Stable principal,
+	•	Any remaining stable profit (if you mix modes),
+	•	Their accumulated CELO.
+
+This is closer to “auto-DCA into CELO over time”, but:
+	•	Requires more complex accounting per user (CELO sub-balances).
+	•	More moving parts (keepers, extra swaps, more gas).
+
+For a first implementation, I’d strongly recommend Option A (convert on withdraw):
+	•	Easier to reason about.
+	•	Still gives a very tangible UX: “I used this vault to grow my CELO stack.”
+
+⸻
+
+3. How hooks could touch the CELO bit, without overkill
+
+Again, you don’t need hooks to do yield→CELO. But if you want a legit hook use-case:
+	•	Deploy a Boost CELO pool (e.g. USDC/CELO or cUSD/CELO) with a small, focused hook:
+	•	Hook can:
+	•	Lower fees for “vault-originated” swaps (you mark them via a known hook caller),
+	•	Or route a small cut of swap fees to your donation vault.
+
+But you should not:
+	•	Put Aave calls in the hook,
+	•	Put leverage or loans in the hook,
+	•	Have the hook try to do your vault accounting.
+
+Let the vault decide when and how much to swap; let v4 (and maybe a tiny hook) just be the execution layer.
+
+⸻
+
+4. Putting it all together (picture)
+
+Today:
+	•	User deposits: cUSD / USDC / USDT / CELO.
+	•	Vault:
+	•	If CELO: swap → best stable via Uni v4.
+	•	If stable: swap to best stable if needed → supply to Aave.
+	•	Boost shares minted.
+
+Later (withdraw):
+	•	Compute principal + profit.
+	•	Apply donation % to profit if user set it.
+	•	If user chose “yield in CELO”:
+	•	Swap profit (or profit minus donation) → CELO via Uni v4, send CELO.
+	•	Send principal (and any leftover) in stable.
+	•	Else:
+	•	Send everything back in stable.
+
+Optional v4 hooks:
+	•	Your own BoostFeeHook on a couple of small pools:
+	•	Shave part of LP fee to your impact vault, or
+	•	Give fee discounts to Boost vault swaps.
+
+All of this:
+	•	Keeps Uniswap v4 as a tool, not the whole brain.
+	•	Leaves Aave as the simple, “boring” yield engine.
+	•	Gives you two very understandable advanced features:
+	•	“We always route you into the best stable yield.”
+	•	“You can choose to stack CELO with your profits.”
+
+If you want, I can sketch:
+	•	A simple state model for userPrincipal, yieldInCelo, donationPct, and how the withdraw math changes with the CELO option, or
+	•	A minimal Solidity pseudo-implementation of “withdraw with optional CELO conversion” using a v4 router, wired into your existing Aave-only shield vault.
