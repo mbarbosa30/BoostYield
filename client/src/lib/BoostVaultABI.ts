@@ -146,9 +146,11 @@ export const CUSD_ADDRESS = '0x765DE816845861e75A25fCA122bb6898B8B1282a' as cons
 export const USDC_ADDRESS = '0xcebA9300f2b948710d2653dD7B07f33A8B32118C' as const;
 // Native USDT deployed by Tether on Celo (March 2024)
 export const USDT_ADDRESS = '0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e' as const;
+// Native CELO token (both gas token and ERC-20)
+export const CELO_ADDRESS = '0x471EcE3750Da237f93B8E339c536989b8978a438' as const;
 
 // Token configuration type
-export type TokenSymbol = 'cUSD' | 'USDC' | 'USDT';
+export type TokenSymbol = 'cUSD' | 'USDC' | 'USDT' | 'CELO';
 
 export interface TokenConfig {
   symbol: TokenSymbol;
@@ -180,6 +182,13 @@ export const TOKEN_CONFIGS: Record<TokenSymbol, TokenConfig> = {
     address: USDT_ADDRESS,
     vaultAddress: import.meta.env.VITE_BOOST_VAULT_USDT_ADDRESS as `0x${string}` | undefined,
     decimals: 6,
+  },
+  'CELO': {
+    symbol: 'CELO',
+    name: 'Celo Native Asset',
+    address: CELO_ADDRESS,
+    vaultAddress: import.meta.env.VITE_BOOST_VAULT_CELO_ADDRESS as `0x${string}` | undefined,
+    decimals: 18,
   },
 };
 

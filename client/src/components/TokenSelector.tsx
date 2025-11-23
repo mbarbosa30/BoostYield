@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function TokenSelector() {
   const { selectedToken, setSelectedToken } = useToken();
-  const tokens: TokenSymbol[] = ['cUSD', 'USDC'];
+  const tokens: TokenSymbol[] = ['cUSD', 'USDC', 'USDT', 'CELO'];
 
   return (
     <div className="flex items-center gap-2">
