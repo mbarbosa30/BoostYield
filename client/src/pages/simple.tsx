@@ -354,13 +354,13 @@ export default function SimplePage() {
                         </p>
                         <p className="text-xl font-bold text-emerald-600 font-mono">
                           {isStablecoin 
-                            ? `+$${formattedEarned}`
+                            ? `+$${parseFloat(formattedEarned) < 0.01 && parseFloat(formattedEarned) > 0 ? parseFloat(formattedEarned).toFixed(4) : formattedEarned}`
                             : `+${formattedEarned} ${selectedToken}`
                           }
                         </p>
                         {isStablecoin && parseFloat(formattedEarned) > 0 && parseFloat(formattedEarned) < 0.01 && (
                           <p className="text-xs text-muted-foreground mt-1">
-                            (less than $0.01)
+                            (earning, but less than $0.01)
                           </p>
                         )}
                       </div>

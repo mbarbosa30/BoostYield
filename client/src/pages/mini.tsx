@@ -252,12 +252,23 @@ export default function MiniPage() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Profit</span>
                   <span className="font-semibold text-emerald-600">
-                    {isStablecoin 
-                      ? `+$${Number(formatUnits(profit, tokenDecimals)).toFixed(2)}`
-                      : `+${Number(formatUnits(profit, tokenDecimals)).toFixed(4)} ${selectedToken}`
-                    }
+                    {(() => {
+                      const profitNum = Number(formatUnits(profit, tokenDecimals));
+                      if (isStablecoin) {
+                        return profitNum < 0.01 && profitNum > 0 
+                          ? `+$${profitNum.toFixed(4)}`
+                          : `+$${profitNum.toFixed(2)}`;
+                      } else {
+                        return `+${profitNum.toFixed(4)} ${selectedToken}`;
+                      }
+                    })()}
                   </span>
                 </div>
+                {isStablecoin && Number(formatUnits(profit, tokenDecimals)) > 0 && Number(formatUnits(profit, tokenDecimals)) < 0.01 && (
+                  <div className="text-xs text-muted-foreground text-center mt-1">
+                    (earning, but less than $0.01)
+                  </div>
+                )}
                 {donationPct > 0 && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Donated</span>
