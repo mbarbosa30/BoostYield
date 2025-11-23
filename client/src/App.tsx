@@ -6,6 +6,7 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { config } from './lib/wagmi';
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { TokenProvider } from "@/contexts/TokenContext";
 import LandingPage from "@/pages/landing";
 import VaultPage from "@/pages/vault";
 import MiniPage from "@/pages/mini";
@@ -32,10 +33,12 @@ function App() {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
+          <TokenProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </TokenProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
