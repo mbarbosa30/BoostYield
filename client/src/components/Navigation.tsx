@@ -24,18 +24,17 @@ export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-lg border-b">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
         <Link href="/" data-testid="link-home">
-          <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="text-xl font-accent font-semibold">Relay Boost</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover-elevate active-elevate-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-md">
+            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <span className="text-base sm:text-xl font-accent font-semibold">Relay Boost</span>
           </div>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <CurrencyToggle value={currency} onValueChange={onCurrencyChange} />
+        <div className="flex items-center gap-2 sm:gap-4">
           <ThemeToggle />
-          <ConnectButton />
+          <ConnectButton showBalance={false} chainStatus="icon" accountStatus="avatar" />
         </div>
       </div>
     </nav>

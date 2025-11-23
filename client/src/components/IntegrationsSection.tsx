@@ -48,30 +48,30 @@ export function IntegrationsSection() {
   ];
 
   return (
-    <section className="py-20 px-6 bg-muted/30">
+    <section className="py-12 sm:py-20 px-3 sm:px-6 bg-muted/30">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-3 font-accent">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-3 font-accent">
             Built on Trusted Infrastructure
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             Powered by the best protocols in DeFi to ensure security, reliability, and real yields
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {integrations.map((integration, index) => {
             const Icon = integration.icon;
             return (
               <Card key={index} className="border-2 hover-elevate transition-all">
-                <CardContent className="pt-6">
-                  <div className={`h-12 w-12 mb-4 rounded-xl ${integration.bgColor} flex items-center justify-center`}>
-                    <Icon className={`h-6 w-6 ${integration.color}`} />
+                <CardContent className="pt-4 sm:pt-6 pb-4 sm:pb-6">
+                  <div className={`h-10 w-10 sm:h-12 sm:w-12 mb-3 sm:mb-4 rounded-xl ${integration.bgColor} flex items-center justify-center`}>
+                    <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${integration.color}`} />
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">
                     {integration.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {integration.description}
                   </p>
                 </CardContent>

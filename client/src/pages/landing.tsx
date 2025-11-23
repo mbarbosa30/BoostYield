@@ -35,7 +35,7 @@ export default function LandingPage() {
     <div className="min-h-screen">
       <Navigation currency={currency} onCurrencyChange={setCurrency} />
       
-      <main className="pt-16">
+      <main className="pt-14 sm:pt-16">
         <HeroSection 
           onSafeClick={handleSimpleClick}
           onDegenClick={handleDegenClick}
@@ -44,8 +44,8 @@ export default function LandingPage() {
         <IntegrationsSection />
       </main>
 
-      <footer className="border-t py-8 px-6">
-        <div className="max-w-5xl mx-auto text-center text-sm text-muted-foreground">
+      <footer className="border-t py-6 sm:py-8 px-3 sm:px-6">
+        <div className="max-w-5xl mx-auto text-center text-xs sm:text-sm text-muted-foreground">
           <p>© 2025 Relay Boost. Not a bank. DeFi carries risks.</p>
         </div>
       </footer>
