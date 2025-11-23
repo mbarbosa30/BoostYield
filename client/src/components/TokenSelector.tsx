@@ -1,12 +1,17 @@
 import { TOKEN_CONFIGS, type TokenSymbol } from "@/lib/BoostVaultABI";
 import { useToken } from "@/contexts/TokenContext";
-import { Check } from "lucide-react";
 
 export function TokenSelector() {
   const { selectedToken, setSelectedToken } = useToken();
   const tokens: TokenSymbol[] = ['cUSD', 'USDC', 'USDT', 'CELO'];
 
-  const handleClick = (token: TokenSymbol) => {
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const token = e.target.value as TokenSymbol;
+    console.log('🔘 Token selected:', token);
+    setSelectedToken(token);
+  };
+
+  const handleButtonClick = (token: TokenSymbol) => {
     console.log('🔘 Button clicked:', token);
     setSelectedToken(token);
   };
@@ -14,7 +19,30 @@ export function TokenSelector() {
   return (
     <div className="flex items-center gap-1.5 sm:gap-2">
       <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Token:</span>
-      <div className="flex rounded-lg border-2 border-border bg-background p-1 gap-1">
+      
+      {/* Mobile: Native Select Dropdown */}
+      <select
+        value={selectedToken}
+        onChange={handleChange}
+        className="sm:hidden min-h-[44px] px-3 py-2 rounded-md border-2 border-border bg-background text-sm font-medium appearance-none cursor-pointer"
+        data-testid="select-token-mobile"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+          backgroundPosition: 'right 0.5rem center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '1.5em 1.5em',
+          paddingRight: '2.5rem'
+        }}
+      >
+        {tokens.map((token) => (
+          <option key={token} value={token}>
+            {token}
+          </option>
+        ))}
+      </select>
+
+      {/* Desktop: Pill Buttons */}
+      <div className="hidden sm:flex rounded-lg border border-border bg-muted/30 p-1 gap-1">
         {tokens.map((token) => {
           const config = TOKEN_CONFIGS[token];
           const isSelected = selectedToken === token;
@@ -22,20 +50,19 @@ export function TokenSelector() {
           return (
             <button
               key={token}
-              onClick={() => handleClick(token)}
+              onClick={() => handleButtonClick(token)}
               className={`
-                relative text-xs sm:text-sm px-2.5 sm:px-3 min-h-[38px] sm:min-h-[34px] 
-                rounded-md font-bold transition-all flex items-center justify-center gap-1
+                text-sm px-3 min-h-[32px] 
+                rounded-md font-medium transition-all
                 ${isSelected 
-                  ? 'bg-emerald-600 text-white shadow-md scale-105 ring-2 ring-emerald-500/50' 
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  ? 'bg-primary text-primary-foreground shadow-sm' 
+                  : 'bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted'
                 }
               `}
               data-testid={`button-token-${token.toLowerCase()}`}
               title={config.name}
             >
-              {isSelected && <Check className="w-3 h-3" />}
-              <span>{token}</span>
+              {token}
             </button>
           );
         })}
