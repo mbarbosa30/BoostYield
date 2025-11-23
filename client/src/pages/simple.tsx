@@ -354,15 +354,10 @@ export default function SimplePage() {
                         </p>
                         <p className="text-xl font-bold text-emerald-600 font-mono">
                           {isStablecoin 
-                            ? `+$${parseFloat(formattedEarned) < 0.01 && parseFloat(formattedEarned) > 0 ? parseFloat(formattedEarned).toFixed(4) : formattedEarned}`
+                            ? `+$${formattedEarned}`
                             : `+${formattedEarned} ${selectedToken}`
                           }
                         </p>
-                        {isStablecoin && parseFloat(formattedEarned) > 0 && parseFloat(formattedEarned) < 0.01 && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            (earning, but less than $0.01)
-                          </p>
-                        )}
                       </div>
                       <div className="text-center p-4 rounded-lg bg-muted/50">
                         <CheckCircle className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
