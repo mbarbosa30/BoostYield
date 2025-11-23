@@ -11,6 +11,8 @@ import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
 import { TokenSelector } from "@/components/TokenSelector";
+import { YieldPreferenceSelector } from "@/components/YieldPreferenceSelector";
+import { TokenSuggestionForm } from "@/components/TokenSuggestionForm";
 import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
 import { useToken } from "@/contexts/TokenContext";
 
@@ -133,7 +135,15 @@ export default function SimplePage() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [tokenSuggestOpen, setTokenSuggestOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
+
+  // Listen for token suggestion events
+  useEffect(() => {
+    const handleOpenSuggestion = () => setTokenSuggestOpen(true);
+    window.addEventListener('openTokenSuggestion', handleOpenSuggestion);
+    return () => window.removeEventListener('openTokenSuggestion', handleOpenSuggestion);
+  }, []);
 
   const tokenConfig = TOKEN_CONFIGS[selectedToken];
   const vaultAddress = tokenConfig.vaultAddress;
@@ -444,6 +454,9 @@ export default function SimplePage() {
               </Button>
             </div>
 
+            {/* Yield Preference */}
+            <YieldPreferenceSelector variant="simple" />
+
             {/* Safety Info */}
             <Card className="border-muted bg-muted/30">
               <CardContent className="pt-6">
@@ -480,6 +493,11 @@ export default function SimplePage() {
       <DonationSettingsDialog
         open={donationOpen}
         onOpenChange={setDonationOpen}
+      />
+      <TokenSuggestionForm
+        open={tokenSuggestOpen}
+        onOpenChange={setTokenSuggestOpen}
+        variant="simple"
       />
     </div>
   );

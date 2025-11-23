@@ -1,0 +1,127 @@
+Gotcha, that helps a lot. So:
+	•	Stables (cUSD / USDC / USDT) → can be auto-swapped between each other into the best-yielding stable at deposit.
+	•	CELO → is its own thing, never auto-swapped on deposit.
+
+Let’s reshape the design with that hard rule.
+
+⸻
+
+1. Two clearly separate buckets
+
+Think of Boost now as:
+	1.	Stable Yield Vault (“Inflation Shield”)
+	•	Accepts: cUSD, USDC, USDT.
+	•	Internally: one canonical stable at a time (e.g. USDC on Aave).
+	•	Auto-swap at deposit only between stables when needed.
+	2.	CELO Vault (“CELO Accumulation”) – optional but nice
+	•	Accepts: CELO.
+	•	Internally: just CELO (maybe lent on Aave or staked).
+	•	No swap on deposit. Ever.
+
+In the UI it’s literally two cards:
+	•	“Save in dollars (stablecoins)”
+	•	“Earn in CELO”
+
+And the deposit logic is different for each.
+
+⸻
+
+2. Stable vault deposit flow (with v4 swaps)
+
+Vault: BoostStableVault
+
+State:
+
+address public bestStable;                // e.g. USDC
+mapping(address => bool) public isStable; // cUSD, USDC, USDT = true
+address public swapRouter;               // Uniswap v4 swap helper
+
+Deposit flow (stable vault only):
+
+function depositStable(address tokenIn, uint256 amount) external {
+    require(isStable[tokenIn], "not a stable");
+
+    IERC20(tokenIn).transferFrom(msg.sender, address(this), amount);
+
+    uint256 stableAmount;
+    if (tokenIn == bestStable) {
+        stableAmount = amount;
+    } else {
+        IERC20(tokenIn).approve(swapRouter, amount);
+        stableAmount = ISwapRouter(swapRouter).swapToBestStable(
+            tokenIn,
+            amount,
+            bestStable,
+            minOut  // slippage from user
+        );
+    }
+
+    // supply 'stableAmount' of 'bestStable' to Aave
+    _depositToAave(bestStable, stableAmount);
+
+    // mint Boost shares & update principal in *bestStable* units
+    _mintSharesAndTrackPrincipal(msg.sender, stableAmount);
+}
+
+	•	Only stables go through this.
+	•	bestStable can change over time via a rebalancing script, but CELO is never part of it.
+
+Withdraw stays as we already discussed: pull bestStable from Aave, compute profit, apply donation, send bestStable back.
+
+⸻
+
+3. CELO vault deposit flow (no swaps)
+
+Vault: BoostCeloVault
+
+Deposit flow:
+
+function depositCelo(uint256 amount) external {
+    // CELO only
+    IERC20(CELO).transferFrom(msg.sender, address(this), amount);
+
+    // If there is Aave CELO market, or staking:
+    _depositCeloIntoStrategy(amount); // optional, or just hold CELO
+
+    _mintSharesAndTrackPrincipalInCelo(msg.sender, amount);
+}
+
+Withdraw:
+	•	Pull CELO from whatever strategy (or just the vault balance),
+	•	Compute principal & profit in CELO,
+	•	Apply donation % to CELO profit if user wants,
+	•	Send CELO out.
+
+No Uniswap involvement at all for the CELO vault.
+
+⸻
+
+4. “Yield in CELO” under this rule
+
+Your constraint is “no auto-swap on deposits involving CELO”, which we respect.
+
+You can still, later, offer:
+	•	In the stable vault only:
+	•	An option at withdraw to convert profit from stable → CELO via a single swap.
+	•	That doesn’t touch deposits, and it doesn’t change the fact that CELO deposits are never swapped.
+
+So:
+	•	Depositing CELO → goes only to BoostCeloVault, no swap.
+	•	Depositing stables → can go to BoostStableVault, with stable-to-stable swap at deposit.
+	•	Withdrawing from stable vault (optional v2/3):
+	•	principal back in stable,
+	•	profit swapped into CELO if the user toggled “yield in CELO”.
+
+That keeps CELO “special” and respects your constraint, while still allowing a future “stack CELO with my dollar yield” UX if you want it.
+
+⸻
+
+5. TL;DR
+	•	Yes, we now treat CELO as a separate path, not part of the “best stable” auto-swap logic.
+	•	Auto-swap at deposit only applies to cUSD / USDC / USDT → bestStable.
+	•	CELO:
+	•	either gets its own simple CELO vault,
+	•	or is just not supported in the stable product at all.
+	•	Later you can still add “convert profit to CELO at withdraw” from the stable vault only, without ever auto-swapping CELO deposits.
+
+If you’d like, next step I can sketch the exact function signatures for depositStable and depositCelo that fit neatly with your current BoostYield repo structure.

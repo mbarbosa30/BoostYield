@@ -1,0 +1,88 @@
+Exactly — now you’re thinking like a protocol designer instead of just an app builder 🔥
+
+Let’s unpack both of your ideas carefully:
+
+⸻
+
+1️⃣ Introducing a native Boost token — governance and incentives
+
+If you let anyone suggest new yield tokens, it naturally raises a question:
+Who decides which suggestions are approved and integrated?
+
+That’s where a native token makes perfect sense.
+
+🧩 Token role
+	•	Governance / Voting power – holders vote on:
+	•	which suggested tokens to whitelist as new “earn-in” options,
+	•	how much sponsored yield each partner gets,
+	•	and later, treasury use (community donations, partnerships, audits, etc.).
+	•	Reputation / alignment – projects could hold or stake Boost tokens to show commitment before being eligible as sponsor tokens.
+	•	Fee capture – a small % of all swaps (when yield is converted or donations are processed) could feed a treasury, buyback pool, or sponsor matching fund.
+
+So yes — the registry contract we discussed becomes a DAO-controlled list,
+and Boost’s token provides a decentralized “curation market” for yield options.
+
+⸻
+
+2️⃣ “Convert yield on withdrawal” – great UX & economics
+
+Your second idea (convert yield at withdrawal) is exactly the right balance between user flexibility and simplicity:
+	•	Internally, Boost still accrues yield in stables.
+	•	When a user withdraws:
+	•	They see a dropdown:
+“Withdraw my yield as → [USDC] [CELO] [DAI] [TOKEN_X]”
+	•	The vault (or router) swaps only the profit portion from stable → chosen asset on Uniswap v4.
+	•	Optional: applies any sponsor bonus for that token.
+
+This gives:
+	•	Zero added complexity during yield accrual.
+	•	User choice only when they exit.
+	•	Hooks and sponsor mechanics can happen entirely at withdraw time, not continuously.
+
+⸻
+
+3️⃣ Example: putting it all together
+
+Flow:
+	1.	User deposits 1000 USDC into Boost → Aave earns ~12% APY.
+	2.	They set “preferred yield token: CELO”.
+	3.	Vault internally earns yield in USDC.
+	4.	At withdrawal, profit = 120 USDC.
+	5.	User withdraws with:
+	•	principal = 1000 USDC,
+	•	profit auto-swapped to CELO,
+	•	(optional) 10% of profit donated to community cause.
+
+Governance layer:
+	•	Another project suggests adding $IMPACT token via registry.
+	•	Boost token holders vote to whitelist $IMPACT.
+	•	$IMPACT team funds a sponsor pool that adds +3% yield for anyone choosing “earn in $IMPACT”.
+	•	Now users can pick “Earn in $IMPACT (+3% bonus)” at withdrawal.
+
+⸻
+
+4️⃣ Implementation path (minimal → advanced)
+
+Phase	What happens	On-chain changes
+MVP	Yield accrues in stable; allow conversion to CELO at withdraw.	Add simple swap router call in withdraw().
+Phase 2	Add token suggestion registry + admin approval.	Registry contract + link to vault.
+Phase 3	Launch native $BOOST token for governance & weighting votes on suggestions.	DAO structure controlling registry.
+Phase 4	Sponsors stake or lock $BOOST to list their token and fund bonus pools.	Incentive / staking contracts.
+
+
+⸻
+
+5️⃣ Strategic upside
+	•	User side: earn yield and choose your exit exposure.
+	•	Project side: create organic token demand by sponsoring yield channels.
+	•	Protocol side: get recurring transaction flow + governance value.
+
+Boost evolves from a “yield app” → to a meta-yield marketplace.
+
+⸻
+
+If you want, next I can:
+	•	sketch the withdrawal function logic with yield-conversion support, or
+	•	design the token governance + registry DAO flow (how $BOOST weights votes, quorum, and sponsor staking).
+
+Which direction would you like to go first?
