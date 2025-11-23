@@ -294,272 +294,234 @@ export default function SimplePage() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-3 sm:px-6 pt-6 sm:pt-8 pb-12 space-y-4 sm:space-y-6">
-        {/* Page Title */}
-        <div className="text-center mb-4 sm:mb-8">
-          <h1 className="text-2xl sm:text-4xl font-accent font-bold mb-2 sm:mb-3">Grow Your Money</h1>
-          <p className="text-base sm:text-lg text-muted-foreground">
-            Save safely and earn {earningRate}
-          </p>
-        </div>
-
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 pt-4 sm:pt-6 pb-12 space-y-3 sm:space-y-4">
         {/* How It Works - Simple Steps */}
         {!isConnected && (
-          <Card className="border-emerald-200 bg-white dark:bg-card">
-            <CardHeader>
-              <CardTitle className="text-2xl">How It Works</CardTitle>
-              <CardDescription className="text-base">Three simple steps to start growing your savings</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">1</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Connect Your Wallet</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Use MetaMask or Valora - we keep your money safe
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">2</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Save Your Money</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Put in as much or as little as you want - start with any amount
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-emerald-700 dark:text-emerald-400 font-bold">3</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-1">Watch It Grow</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your money grows automatically - take it out anytime you need it
-                  </p>
-                </div>
-              </div>
+          <>
+            <div className="text-center mb-3 sm:mb-4">
+              <h1 className="text-2xl sm:text-3xl font-accent font-bold mb-2">Grow Your Money</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                Save safely and earn {earningRate}
+              </p>
+            </div>
 
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
-                  <Button
-                    onClick={openConnectModal}
-                    size="lg"
-                    className="w-full h-14 text-lg"
-                    data-testid="button-connect-wallet"
-                  >
-                    <Shield className="w-5 h-5 mr-2" />
-                    Connect Wallet to Start
-                  </Button>
-                )}
-              </ConnectButton.Custom>
-            </CardContent>
-          </Card>
+            <Card className="border-emerald-200 bg-white dark:bg-card">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl sm:text-2xl">How It Works</CardTitle>
+                <CardDescription className="text-sm sm:text-base">Three simple steps to start</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm sm:text-base text-emerald-700 dark:text-emerald-400 font-bold">1</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1 text-sm sm:text-base">Connect Your Wallet</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Use MetaMask or Valora - we keep your money safe
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm sm:text-base text-emerald-700 dark:text-emerald-400 font-bold">2</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1 text-sm sm:text-base">Save Your Money</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Put in as much or as little as you want
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm sm:text-base text-emerald-700 dark:text-emerald-400 font-bold">3</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1 text-sm sm:text-base">Watch It Grow</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
+                      Your money grows automatically - take it out anytime
+                    </p>
+                  </div>
+                </div>
+
+                <ConnectButton.Custom>
+                  {({ openConnectModal }) => (
+                    <Button
+                      onClick={openConnectModal}
+                      size="lg"
+                      className="w-full min-h-[44px] sm:h-14 text-base sm:text-lg mt-2"
+                      data-testid="button-connect-wallet"
+                    >
+                      <Shield className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      Connect Wallet to Start
+                    </Button>
+                  )}
+                </ConnectButton.Custom>
+              </CardContent>
+            </Card>
+          </>
         )}
 
         {isConnected && (
           <>
-            {/* Portfolio Overview - Combined View */}
-            <PortfolioOverview />
-
-            {/* Your Money Summary */}
-            <Card className="border-emerald-200">
-              <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20">
-                <CardTitle className="text-2xl">Your Money</CardTitle>
-                <CardDescription className="text-base">See how much you have and how much you earned</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-6 space-y-6">
-                {isLoadingShares ? (
-                  <div className="flex items-center justify-center py-12">
-                    <div className="text-muted-foreground">Loading your money...</div>
+            {isLoadingShares ? (
+              <Card>
+                <CardContent className="pt-4 pb-4">
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-sm sm:text-base text-muted-foreground">Loading your money...</div>
                   </div>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center p-4 rounded-lg bg-muted/50">
-                        <DollarSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground mb-1">You Saved</p>
-                        <p className="text-2xl font-bold">
-                          {isStablecoin 
-                            ? `$${Number(formatUnits(savedAmount, tokenDecimals)).toFixed(2)}`
-                            : `${Number(formatUnits(savedAmount, tokenDecimals)).toFixed(4)} ${selectedToken}`
-                          }
-                        </p>
-                      </div>
-                      <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
-                        <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
-                        <p className="text-sm text-muted-foreground mb-1">
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {/* Hero Earnings Card - PROMINENTLY DISPLAYED */}
+                <Card className="border-emerald-300 bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 dark:from-emerald-950/30 dark:via-green-950/20 dark:to-emerald-950/30">
+                  <CardContent className="pt-4 pb-4 sm:pt-6 sm:pb-6">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
+                        <p className="text-sm sm:text-base font-medium text-muted-foreground">
                           You Earned
                         </p>
-                        <p className="text-xl font-bold text-emerald-600 font-mono">
-                          {isStablecoin 
-                            ? `+$${formattedEarned}`
-                            : `+${formattedEarned} ${selectedToken}`
-                          }
-                        </p>
                       </div>
-                      <div className="text-center p-4 rounded-lg bg-muted/50">
-                        <CheckCircle className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground mb-1">Total Now</p>
-                        <p className="text-2xl font-bold">
-                          {isStablecoin 
-                            ? `$${Number(formatUnits(yourMoney, tokenDecimals)).toFixed(2)}`
-                            : `${Number(formatUnits(yourMoney, tokenDecimals)).toFixed(4)} ${selectedToken}`
-                          }
-                        </p>
-                      </div>
+                      <p className="text-4xl sm:text-5xl md:text-6xl font-bold text-emerald-600 font-mono mb-2" data-testid="text-earned-amount">
+                        {isStablecoin 
+                          ? `+$${formattedEarned}`
+                          : `+${formattedEarned} ${selectedToken}`
+                        }
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Growing at {earningRate}
+                      </p>
                     </div>
+                  </CardContent>
+                </Card>
 
-                    {Number(formatUnits(savedAmount, 18)) > 0 && (
-                      <div className="pt-4 border-t">
-                        <p className="text-sm text-muted-foreground mb-2">Your money is growing</p>
-                        <Progress value={Math.min((Number(formatUnits(earned, 18)) / Number(formatUnits(savedAmount, 18))) * 100, 100)} className="h-3" />
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Earning {earningRate} - much better than banks
-                        </p>
-                      </div>
-                    )}
-                  </>
+                {/* Primary Action - Save Money Button */}
+                <Button
+                  onClick={() => setDepositOpen(true)}
+                  size="lg"
+                  className="w-full min-h-[56px] sm:h-16 text-lg sm:text-xl font-semibold"
+                  data-testid="button-save-money"
+                >
+                  <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 mr-2" />
+                  Save Money
+                </Button>
+
+                {/* Simplified Stats */}
+                <div className="grid grid-cols-2 gap-3">
+                  <Card>
+                    <CardContent className="pt-4 pb-4 text-center">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1">You Saved</p>
+                      <p className="text-lg sm:text-xl font-bold" data-testid="text-saved-amount">
+                        {isStablecoin 
+                          ? `$${Number(formatUnits(savedAmount, tokenDecimals)).toFixed(2)}`
+                          : `${Number(formatUnits(savedAmount, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                        }
+                      </p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-4 pb-4 text-center">
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Now</p>
+                      <p className="text-lg sm:text-xl font-bold" data-testid="text-total-amount">
+                        {isStablecoin 
+                          ? `$${Number(formatUnits(yourMoney, tokenDecimals)).toFixed(2)}`
+                          : `${Number(formatUnits(yourMoney, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                        }
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Secondary Action - Withdraw */}
+                <Button
+                  onClick={() => setWithdrawOpen(true)}
+                  variant="outline"
+                  size="lg"
+                  className="w-full min-h-[44px] sm:h-12"
+                  data-testid="button-take-out"
+                >
+                  Take Out Money
+                </Button>
+
+                {/* Share Cast Button (Farcaster only) */}
+                {isFarcaster && (
+                  <ShareCastButton
+                    stats={{
+                      deposited: assetsForShares || BigInt(0),
+                      profit: earned,
+                      donationPct,
+                      totalDonated: donated,
+                      cause: "impact causes"
+                    }}
+                  />
                 )}
-              </CardContent>
-            </Card>
 
-            {/* Share Your Growth - Donation Feature */}
-            <Card className="border-pink-200 bg-gradient-to-br from-pink-50/50 to-transparent dark:from-pink-950/10">
-              <CardHeader>
-                <div className="flex items-center gap-2 mb-2">
-                  <Heart className="w-6 h-6 text-pink-600" />
-                  <CardTitle className="text-2xl">Share Your Growth</CardTitle>
-                </div>
-                <CardDescription className="text-base">
-                  Help others while your money grows. Give part of what you earn - not your savings.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-4 rounded-lg bg-white dark:bg-card">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <p className="font-semibold text-lg">
-                        {donationPct === 0 ? "Not sharing yet" : `Sharing ${donationPct}% of growth`}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {donationPct === 0 
-                          ? "Start sharing to make an impact"
-                          : "Your earnings help families in need"}
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => setDonationOpen(true)}
-                      size="lg"
-                      variant={donationPct > 0 ? "outline" : "default"}
-                      data-testid="button-share-growth"
-                    >
-                      {donationPct > 0 ? "Change Amount" : "Start Sharing"}
-                    </Button>
-                  </div>
-
-                  {donationPct > 0 && (
-                    <div className="pt-3 border-t space-y-2">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">You earned</span>
-                        <span className="font-medium">
-                          {isStablecoin 
-                            ? `$${Number(formatUnits(earned, tokenDecimals)).toFixed(2)}`
-                            : `${Number(formatUnits(earned, tokenDecimals)).toFixed(4)} ${selectedToken}`
-                          }
-                        </span>
+                {/* Compact Donation Section */}
+                {donationPct > 0 ? (
+                  <Card className="border-pink-200 bg-pink-50/30 dark:bg-pink-950/10">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Heart className="w-5 h-5 text-pink-600" />
+                          <div>
+                            <p className="font-semibold text-sm sm:text-base">Sharing {donationPct}% of growth</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground">
+                              {isStablecoin 
+                                ? `$${Number(formatUnits(donated, tokenDecimals)).toFixed(2)}`
+                                : `${Number(formatUnits(donated, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                              } donated
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => setDonationOpen(true)}
+                          variant="outline"
+                          size="sm"
+                          className="min-h-[44px]"
+                          data-testid="button-share-growth"
+                        >
+                          Change
+                        </Button>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">You shared</span>
-                        <span className="font-medium text-pink-600">
-                          {isStablecoin 
-                            ? `$${Number(formatUnits(donated, tokenDecimals)).toFixed(2)}`
-                            : `${Number(formatUnits(donated, tokenDecimals)).toFixed(4)} ${selectedToken}`
-                          }
-                        </span>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Button
+                    onClick={() => setDonationOpen(true)}
+                    variant="outline"
+                    className="w-full min-h-[44px] border-pink-200"
+                    data-testid="button-share-growth"
+                  >
+                    <Heart className="w-4 h-4 mr-2 text-pink-600" />
+                    Share Your Growth (Optional)
+                  </Button>
+                )}
+
+                {/* Portfolio Overview - Collapsible */}
+                <PortfolioOverview />
+
+                {/* Additional Options - Compact */}
+                <div className="space-y-2">
+                  <YieldPreferenceSelector variant="simple" />
+
+                  {/* Safety Info - Compact */}
+                  <Card className="border-muted bg-muted/20">
+                    <CardContent className="pt-3 pb-3">
+                      <div className="flex items-start gap-2">
+                        <Shield className="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" />
+                        <div className="text-xs sm:text-sm">
+                          <p className="font-semibold mb-1">Protected & Flexible</p>
+                          <p className="text-muted-foreground">Take out anytime • Blockchain secured</p>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between font-semibold">
-                        <span>You keep</span>
-                        <span className="text-emerald-600">
-                          {isStablecoin 
-                            ? `$${Number(formatUnits(earned - donated, tokenDecimals)).toFixed(2)}`
-                            : `${Number(formatUnits(earned - donated, tokenDecimals)).toFixed(4)} ${selectedToken}`
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                    </CardContent>
+                  </Card>
                 </div>
-
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-pink-50 dark:bg-pink-950/10 text-sm">
-                  <Heart className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-muted-foreground">
-                    <strong className="text-foreground">No-loss giving:</strong> You only share from what you earn, never from your savings. 
-                    Your money keeps growing while helping others.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <Button
-                onClick={() => setDepositOpen(true)}
-                size="lg"
-                className="h-14 sm:h-16 text-base sm:text-lg"
-                data-testid="button-save-money"
-              >
-                <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                Save Money
-              </Button>
-              <Button
-                onClick={() => setWithdrawOpen(true)}
-                variant="outline"
-                size="lg"
-                className="h-14 sm:h-16 text-base sm:text-lg"
-                data-testid="button-take-out"
-              >
-                Take Out Money
-              </Button>
-            </div>
-
-            {/* Share Cast Button (Farcaster only) */}
-            {isFarcaster && (
-              <ShareCastButton
-                stats={{
-                  deposited: assetsForShares || BigInt(0),
-                  profit: earned,
-                  donationPct,
-                  totalDonated: donated,
-                  cause: "impact causes"
-                }}
-              />
+              </>
             )}
-
-            {/* Yield Preference */}
-            <YieldPreferenceSelector variant="simple" />
-
-            {/* Safety Info */}
-            <Card className="border-muted bg-muted/30">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-3">
-                  <Shield className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                  <div className="space-y-2 text-sm">
-                    <p className="font-semibold">Your money is protected</p>
-                    <ul className="space-y-1 text-muted-foreground">
-                      <li>• Take out your money anytime</li>
-                      <li>• Secured by blockchain technology</li>
-                      <li>• Used by thousands of people worldwide</li>
-                    </ul>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </>
         )}
       </div>
