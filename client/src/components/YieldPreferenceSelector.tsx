@@ -21,6 +21,15 @@ export function YieldPreferenceSelector({ variant = 'simple' }: YieldPreferenceS
   // Fetch current preference
   const { data: preference } = useQuery<YieldPreference>({
     queryKey: ['/api/yield-preference', address],
+    queryFn: async () => {
+      if (!address) return null;
+      const response = await fetch(`/api/yield-preference/${address}`);
+      if (!response.ok) {
+        if (response.status === 404) return null; // No preference set yet
+        throw new Error(`Failed to fetch preference: ${response.statusText}`);
+      }
+      return response.json();
+    },
     enabled: !!address,
   });
 
@@ -36,10 +45,11 @@ export function YieldPreferenceSelector({ variant = 'simple' }: YieldPreferenceS
     mutationFn: async (preferredToken: string) => {
       if (!address) throw new Error('Wallet not connected');
       
-      return apiRequest('POST', '/api/yield-preference', {
+      const response = await apiRequest('POST', '/api/yield-preference', {
         walletAddress: address,
         preferredYieldToken: preferredToken,
       });
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/yield-preference', address] });

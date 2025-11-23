@@ -26,7 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const tokenSuggestionSchema = z.object({
   tokenName: z.string().min(1, "Token name is required"),
@@ -51,6 +51,7 @@ export function TokenSuggestionForm({ open, onOpenChange, variant = 'simple' }: 
   const { toast } = useToast();
   const [submitted, setSubmitted] = useState(false);
 
+  // Only initialize form when dialog is open to avoid hook issues
   const form = useForm<TokenSuggestionFormData>({
     resolver: zodResolver(tokenSuggestionSchema),
     defaultValues: {
@@ -64,18 +65,30 @@ export function TokenSuggestionForm({ open, onOpenChange, variant = 'simple' }: 
     },
   });
 
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      form.reset();
+      setSubmitted(false);
+    }
+  }, [open, form]);
+
   const submitSuggestion = useMutation({
     mutationFn: async (data: TokenSuggestionFormData) => {
       if (!address) throw new Error('Wallet not connected');
 
-      return apiRequest('POST', '/api/token-suggestion', {
+      const response = await apiRequest('POST', '/api/token-suggestion', {
         ...data,
         submitterAddress: address,
         chainId: '42220',
         status: 'pending',
       });
+      return response.json();
     },
     onSuccess: () => {
+      // Invalidate token suggestions query for future admin views
+      queryClient.invalidateQueries({ queryKey: ['/api/token-suggestions'] });
+      
       setSubmitted(true);
       toast({
         title: "Suggestion submitted!",

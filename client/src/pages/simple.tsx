@@ -241,7 +241,7 @@ export default function SimplePage() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
-            <TokenSelector selectedToken={selectedToken} onTokenChange={setSelectedToken} />
+            <TokenSelector />
             <ConnectButton />
           </div>
         </div>
