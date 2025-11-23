@@ -42,6 +42,8 @@ All three UIs share:
 - Real-time APY fetching from Aave V3 pool based on selected token
 - Smooth 60 FPS earnings animations using `requestAnimationFrame`
 - Dynamic vault address configuration via TokenContext with zero-address validation
+- **YieldPreferenceSelector:** Users can choose to receive yield in stablecoins (SAME) or convert to CELO at withdrawal (Phase 1 MVP complete)
+- **TokenSuggestionForm:** Community-driven token suggestion system for future yield conversion options with partnership pipeline
 
 ### Farcaster Miniapp Integration
 
@@ -66,7 +68,13 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
     - Note: Using bridged USDC as native USDC (0xef4229c8c3250C675F21BCefa42f58EfbfF6002a) is not supported on Aave V3 Celo
   - USDT (native Tether): 0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e (6 decimals) ✅ Active
   - CELO (native asset): 0x471EcE3750Da237f93B8E339c536989b8978a438 (18 decimals) ✅ Active
-- **DeFi Protocols:** Uniswap V4 (for liquidity pools), Aave V3 Pool (0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402) for lending/borrowing and leveraged strategies.
+- **DeFi Protocols:** 
+  - Aave V3 Pool (0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402) for lending/borrowing and leveraged strategies
+  - Uniswap V4 (for future yield conversion swaps):
+    - PoolManager: 0x288dc841A52FCA2707c6947B3A777c5E56cd87BC
+    - UniversalRouter: 0xcb695bc5d3aa22cad1e6df07801b061a05a0233a
+    - Permit2: 0x000000000022D473030F116dDEE9F6B43aC78BA3
+    - V4Quoter: 0x9cF4222e95B2D4B51Edf35D3B31B93b6CdD0BdA7
 - **Smart Contracts:**
   - cUSD Vault: `BoostAaveVault` at 0x775e8a5cbf69143482c89dcf9461d96cd49efb18 (ERC4626)
   - USDC Vault: `BoostAaveVault` at 0xEE191B1aa821C42E4646ca5FdC5ACDd3aBE31F90 (ERC4626)
