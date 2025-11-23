@@ -62,11 +62,12 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
 - **Target Chain:** Celo (mainnet) for gasless transactions and native stablecoins (cUSD, native USDC).
 - **Supported Tokens:**
   - cUSD: 0x765DE816845861e75A25fCA122bb6898B8B1282a (18 decimals)
-  - USDC (native): 0xef4229c8c3250C675F21BCefa42f58EfbfF6002a (6 decimals)
+  - USDC (bridged/Wormhole): 0xcebA9300f2b948710d2653dD7B07f33A8B32118C (6 decimals)
+    - Note: Using bridged USDC as native USDC (0xef4229c8c3250C675F21BCefa42f58EfbfF6002a) is not supported on Aave V3 Celo
 - **DeFi Protocols:** Uniswap V4 (for liquidity pools), Aave V3 Pool (0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402) for lending/borrowing and leveraged strategies.
 - **Smart Contracts:**
   - cUSD Vault: `BoostAaveVault` at 0x775e8a5cbf69143482c89dcf9461d96cd49efb18 (ERC4626)
-  - USDC Vault: TBD (requires deployment with same BoostAaveVault contract)
+  - USDC Vault: `BoostAaveVault` at 0xEE191B1aa821C42E4646ca5FdC5ACDd3aBE31F90 (ERC4626)
 
 ### Third-Party Services
 

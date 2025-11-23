@@ -167,7 +167,7 @@ export const TOKEN_CONFIGS: Record<TokenSymbol, TokenConfig> = {
   },
   'USDC': {
     symbol: 'USDC',
-    name: 'USD Coin',
+    name: 'USDC (Bridged)',
     address: USDC_ADDRESS,
     vaultAddress: import.meta.env.VITE_BOOST_VAULT_USDC_ADDRESS as `0x${string}` | undefined,
     decimals: 6,

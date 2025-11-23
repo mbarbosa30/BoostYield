@@ -24,6 +24,7 @@ export function TokenSelector() {
               disabled={!isAvailable}
               className="toggle-elevate"
               data-testid={`button-token-${token.toLowerCase()}`}
+              title={config.name}
             >
               {token}
             </Button>
