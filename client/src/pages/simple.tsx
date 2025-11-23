@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "wouter";
-import { useAccount, useReadContract, useBalance } from "wagmi";
+import { Link, useRoute } from "wouter";
+import { useAccount, useReadContract, useBalance, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,10 @@ import { TokenSelector } from "@/components/TokenSelector";
 import { YieldPreferenceSelector } from "@/components/YieldPreferenceSelector";
 import { TokenSuggestionForm } from "@/components/TokenSuggestionForm";
 import { PortfolioOverview } from "@/components/PortfolioOverview";
+import { ShareCastButton } from "@/components/ShareCastButton";
 import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
 import { useToken } from "@/contexts/TokenContext";
+import { initializeFarcaster, getFarcasterContext, isFarcasterMiniapp, type FarcasterContext } from "@/lib/farcasterClient";
 
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
 const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
@@ -133,12 +135,54 @@ function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigi
 
 export default function SimplePage() {
   const { address, isConnected } = useAccount();
+  const { connect, connectors } = useConnect();
   const { selectedToken, setSelectedToken } = useToken();
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
   const [tokenSuggestOpen, setTokenSuggestOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
+  const [farcasterContext, setFarcasterContext] = useState<FarcasterContext>(null);
+  
+  // Check if we're on the /mini route
+  const [isMiniRoute] = useRoute("/mini");
+  const isFarcaster = isMiniRoute || isFarcasterMiniapp();
+
+  // Initialize Farcaster SDK and auto-connect wallet (only in Farcaster context)
+  useEffect(() => {
+    if (!isFarcaster) return;
+    
+    const init = async () => {
+      await initializeFarcaster();
+      const context = await getFarcasterContext();
+      setFarcasterContext(context);
+      
+      if (context) {
+        console.log('✅ Farcaster miniapp context available:', {
+          user: context.user?.username,
+          fid: context.user?.fid,
+          location: context.location,
+          note: 'Auto-connecting Farcaster wallet...'
+        });
+
+        // Auto-connect the Farcaster wallet if not already connected
+        if (!isConnected && connectors.length > 0) {
+          const farcasterConnector = connectors.find(c => c.id === 'farcaster-miniapp');
+          if (farcasterConnector) {
+            try {
+              console.log('🔌 Attempting auto-connect with Farcaster connector...');
+              await connect({ connector: farcasterConnector });
+            } catch (error) {
+              console.error('❌ Auto-connect failed:', error);
+            }
+          } else {
+            console.warn('⚠️ Farcaster connector not found. Available connectors:', connectors.map(c => c.id));
+          }
+        }
+      }
+    };
+    init();
+  }, [isFarcaster, isConnected, connect, connectors]);
 
   // Listen for token suggestion events
   useEffect(() => {
@@ -483,6 +527,19 @@ export default function SimplePage() {
                 Take Out Money
               </Button>
             </div>
+
+            {/* Share Cast Button (Farcaster only) */}
+            {isFarcaster && (
+              <ShareCastButton
+                stats={{
+                  deposited: assetsForShares || BigInt(0),
+                  profit: earned,
+                  donationPct,
+                  totalDonated: donated,
+                  cause: "impact causes"
+                }}
+              />
+            )}
 
             {/* Yield Preference */}
             <YieldPreferenceSelector variant="simple" />

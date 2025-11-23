@@ -9,7 +9,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { TokenProvider } from "@/contexts/TokenContext";
 import LandingPage from "@/pages/landing";
 import VaultPage from "@/pages/vault";
-import MiniPage from "@/pages/mini";
 import DegenPage from "@/pages/degen";
 import SimplePage from "@/pages/simple";
 import NotFound from "@/pages/not-found";
@@ -20,7 +19,7 @@ function Router() {
     <Switch>
       <Route path="/" component={LandingPage} />
       <Route path="/vault" component={VaultPage} />
-      <Route path="/mini" component={MiniPage} />
+      <Route path="/mini" component={SimplePage} />
       <Route path="/degen" component={DegenPage} />
       <Route path="/simple" component={SimplePage} />
       <Route component={NotFound} />
