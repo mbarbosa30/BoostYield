@@ -19,7 +19,7 @@ export function YieldPreferenceSelector({ variant = 'simple' }: YieldPreferenceS
   const [selectedToken, setSelectedToken] = useState<string>('SAME');
 
   // Fetch current preference
-  const { data: preference } = useQuery<YieldPreference>({
+  const { data: preference } = useQuery<YieldPreference | null>({
     queryKey: ['/api/yield-preference', address],
     queryFn: async () => {
       if (!address) return null;
@@ -33,7 +33,8 @@ export function YieldPreferenceSelector({ variant = 'simple' }: YieldPreferenceS
     enabled: !!address,
   });
 
-  // Update local state when preference loads
+  // Update local state when preference loads (only if it exists)
+  // If null (no preference), selectedToken stays at default 'SAME'
   useEffect(() => {
     if (preference) {
       setSelectedToken(preference.preferredYieldToken);

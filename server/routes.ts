@@ -12,7 +12,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const preference = await storage.getYieldPreference(walletAddress);
       
       if (!preference) {
-        return res.json({ preferredYieldToken: 'SAME' });
+        return res.status(404).json({ error: 'Preference not found' });
       }
       
       res.json(preference);
