@@ -49,6 +49,8 @@ All three UIs share:
 
 A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with complete DeFi functionality:
 - **SDK Integration:** Uses `@farcaster/miniapp-sdk` with proper `sdk.actions.ready()` lifecycle management
+- **Wallet Connection:** Uses standard RainbowKit for wallet connections. Note: Warpcast's native wallet supports Base/Ethereum but not Celo, so users connect via Celo-compatible wallets (Valora, MetaMask Mobile) through WalletConnect
+- **Context Awareness:** Detects Farcaster context via `sdk.context` to enable miniapp-specific features (e.g., ShareCastButton)
 - **Manifest:** Published at `/.well-known/farcaster.json` with app metadata, splash screen configuration, and Celo chain requirements (eip155:42220)
 - **Rich Embeds:** OpenGraph meta tags (`fc:miniapp`, `fc:frame`) enable rich social sharing in Farcaster feeds with 3:2 aspect ratio images
 - **Full DeFi Flows:** Complete deposit, withdraw, and donation functionality within the Farcaster client
