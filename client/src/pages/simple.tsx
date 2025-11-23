@@ -280,25 +280,25 @@ export default function SimplePage() {
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-background dark:from-background dark:to-background">
       {/* Compact Header */}
       <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-4xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
           <Link href="/" data-testid="link-home">
-            <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <span className="text-lg font-accent font-semibold">Relay Boost</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover-elevate active-elevate-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-md">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <span className="text-base sm:text-lg font-accent font-semibold">Relay Boost</span>
             </div>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5 sm:gap-4">
             <TokenSelector />
-            <ConnectButton />
+            <ConnectButton showBalance={false} chainStatus="icon" accountStatus="avatar" />
           </div>
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-6 pt-8 pb-12 space-y-6">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 pt-6 sm:pt-8 pb-12 space-y-4 sm:space-y-6">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-accent font-bold mb-3">Grow Your Money</h1>
-          <p className="text-lg text-muted-foreground">
+        <div className="text-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-accent font-bold mb-2 sm:mb-3">Grow Your Money</h1>
+          <p className="text-base sm:text-lg text-muted-foreground">
             Save safely and earn {earningRate}
           </p>
         </div>
@@ -507,21 +507,21 @@ export default function SimplePage() {
             </Card>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <Button
                 onClick={() => setDepositOpen(true)}
                 size="lg"
-                className="h-16 text-lg"
+                className="h-14 sm:h-16 text-base sm:text-lg"
                 data-testid="button-save-money"
               >
-                <DollarSign className="w-5 h-5 mr-2" />
+                <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Save Money
               </Button>
               <Button
                 onClick={() => setWithdrawOpen(true)}
                 variant="outline"
                 size="lg"
-                className="h-16 text-lg"
+                className="h-14 sm:h-16 text-base sm:text-lg"
                 data-testid="button-take-out"
               >
                 Take Out Money

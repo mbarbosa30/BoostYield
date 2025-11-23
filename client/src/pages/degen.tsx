@@ -220,37 +220,37 @@ export default function DegenPage() {
     <div className="min-h-screen bg-background">
       {/* Compact Header */}
       <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
           <Link href="/" data-testid="link-home">
-            <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <span className="text-lg font-accent font-semibold">Relay Boost</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 cursor-pointer hover-elevate active-elevate-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-md">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              <span className="text-base sm:text-lg font-accent font-semibold">Relay Boost</span>
             </div>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3">
             <TokenSelector />
-            <ConnectButton />
+            <ConnectButton showBalance={false} chainStatus="icon" accountStatus="avatar" />
           </div>
         </div>
       </header>
 
-      <div className="max-w-6xl mx-auto px-6 pt-8 pb-12 space-y-6">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 pt-6 sm:pt-8 pb-12 space-y-4 sm:space-y-6">
         {/* Page Title */}
         <div>
-          <h1 className="text-4xl font-accent font-bold mb-2">Yield Protocol</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-4xl font-accent font-bold mb-2">Yield Protocol</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Aave V3 optimized vault · Celo mainnet · ERC4626 compliant
           </p>
         </div>
 
         {/* Protocol Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Current APY</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-emerald-600">
+              <div className="text-2xl sm:text-3xl font-bold text-emerald-600">
                 {currentAPY > 0 ? `${currentAPY.toFixed(2)}%` : 'Loading...'}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Real-time Aave V3 rate</p>
@@ -262,7 +262,7 @@ export default function DegenPage() {
               <CardDescription>Total Value Locked</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">${tvl.toLocaleString()}</div>
+              <div className="text-2xl sm:text-3xl font-bold">${tvl.toLocaleString()}</div>
               <p className="text-xs text-muted-foreground mt-1">Protocol deposits</p>
             </CardContent>
           </Card>
@@ -402,16 +402,16 @@ export default function DegenPage() {
             </Card>
 
             {/* Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <Button
                 onClick={() => setDepositOpen(true)}
                 size="lg"
-                className="h-auto py-4"
+                className="h-auto py-3 sm:py-4"
                 data-testid="button-open-deposit"
               >
-                <TrendingUp className="w-5 h-5 mr-2" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 <div className="text-left">
-                  <div className="font-semibold">Deploy Capital</div>
+                  <div className="text-sm sm:text-base font-semibold">Deploy Capital</div>
                   <div className="text-xs opacity-80">Add {selectedToken} to earn yield</div>
                 </div>
               </Button>
@@ -419,11 +419,11 @@ export default function DegenPage() {
                 onClick={() => setWithdrawOpen(true)}
                 variant="outline"
                 size="lg"
-                className="h-auto py-4"
+                className="h-auto py-3 sm:py-4"
                 data-testid="button-open-withdraw"
               >
                 <div className="text-left">
-                  <div className="font-semibold">Withdraw Position</div>
+                  <div className="text-sm sm:text-base font-semibold">Withdraw Position</div>
                   <div className="text-xs opacity-80">Redeem shares for {selectedToken}</div>
                 </div>
               </Button>

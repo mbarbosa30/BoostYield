@@ -7,9 +7,9 @@ export function TokenSelector() {
   const tokens: TokenSymbol[] = ['cUSD', 'USDC', 'USDT', 'CELO'];
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-muted-foreground">Token:</span>
-      <div className="flex rounded-lg border p-1 gap-1">
+    <div className="flex items-center gap-1 sm:gap-2">
+      <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Token:</span>
+      <div className="flex rounded-lg border p-0.5 sm:p-1 gap-0.5 sm:gap-1">
         {tokens.map((token) => {
           const config = TOKEN_CONFIGS[token];
           const isSelected = selectedToken === token;
@@ -22,7 +22,7 @@ export function TokenSelector() {
               variant={isSelected ? "default" : "ghost"}
               onClick={() => isAvailable && setSelectedToken(token)}
               disabled={!isAvailable}
-              className="toggle-elevate"
+              className="toggle-elevate text-xs sm:text-sm px-2 sm:px-3 min-h-[44px] sm:min-h-8"
               data-testid={`button-token-${token.toLowerCase()}`}
               title={config.name}
             >
