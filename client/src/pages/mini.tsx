@@ -75,12 +75,22 @@ export default function MiniPage() {
   const tokenAddress = tokenConfig.address;
   const tokenDecimals = tokenConfig.decimals;
 
-  // Initialize Farcaster SDK
+  // Initialize Farcaster SDK and attempt wallet connection
+  // Note: Farcaster's native wallet provider supports Ethereum/Base but not Celo
+  // Users must connect using Celo-compatible wallets (Valora, MetaMask, etc.) via RainbowKit
   useEffect(() => {
     const init = async () => {
       await initializeFarcaster();
       const context = await getFarcasterContext();
       setFarcasterContext(context);
+      
+      // Log Farcaster context for debugging
+      if (context) {
+        console.log('Farcaster miniapp context:', {
+          user: context.user?.username,
+          fid: context.user?.fid
+        });
+      }
     };
     init();
   }, []);

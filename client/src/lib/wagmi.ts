@@ -8,7 +8,7 @@ const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project
 
 // Celo mainnet configuration
 export const config = getDefaultConfig({
-  appName: 'Boost - DeFi Yield Platform',
+  appName: 'Relay Boost - DeFi Yield Platform',
   projectId,
   chains: [celo],
   transports: {
