@@ -57,7 +57,18 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
 - **Viral Sharing:** `ShareCastButton` composes pre-filled casts with yield stats and donation impact
 - **Real-time APY:** Fetches live APY from Aave V3's `currentLiquidityRate` (Ray format, 1e27) displayed across all pages
 - **Smooth Animations:** 60 FPS earnings display using `requestAnimationFrame` with interpolated values between blockchain polls
-- **Account Association:** Configured with real signature from FID 325440 for domain `Yield-Boost.replit.app`
+- **Account Association:** Configured with real signature from FID 325440 for domain `Yield-Boost.replit.app` (⚠️ Note: Signature needs regeneration for production domain `relayboost.app`)
+
+## Deployment
+
+### Production Domain
+- **Primary Domain:** https://relayboost.app
+- **Development Domain:** https://Yield-Boost.replit.app
+
+### Farcaster Integration Notes
+The Farcaster `accountAssociation` signature in `/.well-known/farcaster.json` is cryptographically tied to the domain it was created for. The current signature was generated for `Yield-Boost.replit.app`. For proper Farcaster verification on the production domain `relayboost.app`, a new signature must be generated with the updated domain using the Farcaster account association API.
+
+All Farcaster manifest URLs and HTML meta tags have been updated to use `relayboost.app`.
 
 ## External Dependencies
 
