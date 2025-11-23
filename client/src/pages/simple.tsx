@@ -20,6 +20,7 @@ import { useToken } from "@/contexts/TokenContext";
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
 const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
 const POLL_INTERVAL_MS = 5000;
+const STABLECOINS = ['cUSD', 'USDC', 'USDT'];
 
 const POOL_ABI = [
   {
@@ -151,6 +152,7 @@ export default function SimplePage() {
   const tokenAddress = tokenConfig.address;
   const tokenDecimals = tokenConfig.decimals;
   const isTokenSupported = !!vaultAddress;
+  const isStablecoin = STABLECOINS.includes(selectedToken);
 
   // Read user's vault balance
   const { data: userShares, isLoading: isLoadingShares } = useReadContract({
@@ -338,7 +340,12 @@ export default function SimplePage() {
                       <div className="text-center p-4 rounded-lg bg-muted/50">
                         <DollarSign className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground mb-1">You Saved</p>
-                        <p className="text-2xl font-bold">${Number(formatUnits(savedAmount, 18)).toFixed(2)}</p>
+                        <p className="text-2xl font-bold">
+                          {isStablecoin 
+                            ? `$${Number(formatUnits(savedAmount, tokenDecimals)).toFixed(2)}`
+                            : `${Number(formatUnits(savedAmount, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                          }
+                        </p>
                       </div>
                       <div className="text-center p-4 rounded-lg bg-emerald-50 dark:bg-emerald-950/20">
                         <TrendingUp className="w-8 h-8 mx-auto mb-2 text-emerald-600" />
@@ -346,13 +353,21 @@ export default function SimplePage() {
                           You Earned
                         </p>
                         <p className="text-xl font-bold text-emerald-600 font-mono">
-                          +${formattedEarned}
+                          {isStablecoin 
+                            ? `+$${formattedEarned}`
+                            : `+${formattedEarned} ${selectedToken}`
+                          }
                         </p>
                       </div>
                       <div className="text-center p-4 rounded-lg bg-muted/50">
                         <CheckCircle className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
                         <p className="text-sm text-muted-foreground mb-1">Total Now</p>
-                        <p className="text-2xl font-bold">${Number(formatUnits(yourMoney, 18)).toFixed(2)}</p>
+                        <p className="text-2xl font-bold">
+                          {isStablecoin 
+                            ? `$${Number(formatUnits(yourMoney, tokenDecimals)).toFixed(2)}`
+                            : `${Number(formatUnits(yourMoney, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                          }
+                        </p>
                       </div>
                     </div>
 
@@ -408,18 +423,29 @@ export default function SimplePage() {
                     <div className="pt-3 border-t space-y-2">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">You earned</span>
-                        <span className="font-medium">${Number(formatUnits(earned, 18)).toFixed(2)}</span>
+                        <span className="font-medium">
+                          {isStablecoin 
+                            ? `$${Number(formatUnits(earned, tokenDecimals)).toFixed(2)}`
+                            : `${Number(formatUnits(earned, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                          }
+                        </span>
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">You shared</span>
                         <span className="font-medium text-pink-600">
-                          ${Number(formatUnits(donated, 18)).toFixed(2)}
+                          {isStablecoin 
+                            ? `$${Number(formatUnits(donated, tokenDecimals)).toFixed(2)}`
+                            : `${Number(formatUnits(donated, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                          }
                         </span>
                       </div>
                       <div className="flex items-center justify-between font-semibold">
                         <span>You keep</span>
                         <span className="text-emerald-600">
-                          ${Number(formatUnits(earned - donated, 18)).toFixed(2)}
+                          {isStablecoin 
+                            ? `$${Number(formatUnits(earned - donated, tokenDecimals)).toFixed(2)}`
+                            : `${Number(formatUnits(earned - donated, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                          }
                         </span>
                       </div>
                     </div>

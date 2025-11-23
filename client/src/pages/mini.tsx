@@ -15,6 +15,7 @@ import { TokenSelector } from "@/components/TokenSelector";
 import { initializeFarcaster, getFarcasterContext, type FarcasterContext } from "@/lib/farcasterClient";
 
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
+const STABLECOINS = ['cUSD', 'USDC', 'USDT'];
 
 const POOL_ABI = [
   {
@@ -74,6 +75,7 @@ export default function MiniPage() {
   const vaultAddress = tokenConfig.vaultAddress;
   const tokenAddress = tokenConfig.address;
   const tokenDecimals = tokenConfig.decimals;
+  const isStablecoin = STABLECOINS.includes(selectedToken);
 
   // Initialize Farcaster SDK on page load
   // Note: Farcaster wallet integration is challenging because Warpcast's wallet
@@ -241,20 +243,29 @@ export default function MiniPage() {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Deposited</span>
                   <span className="font-semibold">
-                    ${Number(formatUnits(deposited, 18)).toFixed(2)}
+                    {isStablecoin 
+                      ? `$${Number(formatUnits(deposited, tokenDecimals)).toFixed(2)}`
+                      : `${Number(formatUnits(deposited, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                    }
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Profit</span>
                   <span className="font-semibold text-emerald-600">
-                    +${Number(formatUnits(profit, 18)).toFixed(2)}
+                    {isStablecoin 
+                      ? `+$${Number(formatUnits(profit, tokenDecimals)).toFixed(2)}`
+                      : `+${Number(formatUnits(profit, tokenDecimals)).toFixed(4)} ${selectedToken}`
+                    }
                   </span>
                 </div>
                 {donationPct > 0 && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Donated</span>
                     <span className="font-semibold text-pink-600">
-                      ${Number(formatUnits(BigInt(totalDonated.toString()), 18)).toFixed(2)}
+                      {isStablecoin 
+                        ? `$${Number(formatUnits(BigInt(totalDonated.toString()), tokenDecimals)).toFixed(2)}`
+                        : `${Number(formatUnits(BigInt(totalDonated.toString()), tokenDecimals)).toFixed(4)} ${selectedToken}`
+                      }
                     </span>
                   </div>
                 )}
