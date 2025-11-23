@@ -22,7 +22,10 @@ export function TokenSelector() {
       <div className="sm:hidden">
         <Select 
           value={selectedToken} 
-          onValueChange={(value) => setSelectedToken(value as TokenSymbol)}
+          onValueChange={(value) => {
+            console.log('TokenSelector onValueChange:', value);
+            setSelectedToken(value as TokenSymbol);
+          }}
         >
           <SelectTrigger 
             className="w-[100px] min-h-[44px]"
@@ -30,7 +33,7 @@ export function TokenSelector() {
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[100]">
             {tokens.map((token) => {
               const config = TOKEN_CONFIGS[token];
               return (
