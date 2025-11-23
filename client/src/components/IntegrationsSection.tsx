@@ -1,4 +1,4 @@
-import { Network, Zap, Coins, Shuffle, MessageSquare } from "lucide-react";
+import { Network, Zap, Coins, Shuffle, MessageSquare, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export function IntegrationsSection() {
@@ -37,6 +37,13 @@ export function IntegrationsSection() {
       description: "Social DeFi integration with viral sharing and in-app transactions",
       color: "text-violet-600",
       bgColor: "bg-violet-50 dark:bg-violet-950/20"
+    },
+    {
+      icon: Heart,
+      name: "RelayFunder",
+      description: "Key partner for yield donations powering refugee communities worldwide",
+      color: "text-rose-600",
+      bgColor: "bg-rose-50 dark:bg-rose-950/20"
     }
   ];
 
