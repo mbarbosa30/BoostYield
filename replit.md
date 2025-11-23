@@ -64,14 +64,14 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
   - cUSD: 0x765DE816845861e75A25fCA122bb6898B8B1282a (18 decimals) ✅ Active
   - USDC (bridged/Wormhole): 0xcebA9300f2b948710d2653dD7B07f33A8B32118C (6 decimals) ✅ Active
     - Note: Using bridged USDC as native USDC (0xef4229c8c3250C675F21BCefa42f58EfbfF6002a) is not supported on Aave V3 Celo
-  - USDT (native Tether): 0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e (6 decimals) ⏳ Pending vault deployment
-  - CELO (native asset): 0x471EcE3750Da237f93B8E339c536989b8978a438 (18 decimals) ⏳ Pending vault deployment
+  - USDT (native Tether): 0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e (6 decimals) ✅ Active
+  - CELO (native asset): 0x471EcE3750Da237f93B8E339c536989b8978a438 (18 decimals) ✅ Active
 - **DeFi Protocols:** Uniswap V4 (for liquidity pools), Aave V3 Pool (0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402) for lending/borrowing and leveraged strategies.
 - **Smart Contracts:**
   - cUSD Vault: `BoostAaveVault` at 0x775e8a5cbf69143482c89dcf9461d96cd49efb18 (ERC4626)
   - USDC Vault: `BoostAaveVault` at 0xEE191B1aa821C42E4646ca5FdC5ACDd3aBE31F90 (ERC4626)
-  - USDT Vault: Pending deployment
-  - CELO Vault: Pending deployment
+  - USDT Vault: `BoostAaveVault` at 0xF0401D830B2e0daeda33ee58e04124A67EdcC734 (ERC4626)
+  - CELO Vault: `BoostAaveVault` at 0xFCC13010E9e6FfE7E6d90c24896f5b9CCB14C78B (ERC4626)
 
 ### Third-Party Services
 
