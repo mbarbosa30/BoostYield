@@ -15,7 +15,7 @@ Risk messaging: Calibrated for investor/regulator friendliness while maintaining
 
 The frontend is a React SPA built with TypeScript, utilizing Wouter for routing and TanStack React Query for server state management. UI components are built with Shadcn/ui on Radix UI primitives, styled with Tailwind CSS, following a "New York" design system. It supports dual light/dark themes and distinct component variants for "Safe" and "Degen" modes. The design emphasizes a mobile-first, banking app-like simplicity with a "3 screens max" philosophy and robust accessibility. Key patterns include compound components, controlled components, and `data-testid` for E2E testing. Currency flexibility supports USD, ARS, NGN, and BRL.
 
-**Dual-Token Support:** The application supports both cUSD and native USDC on Celo through a unified `TokenContext` that provides runtime token switching. Token configuration is centralized in `TOKEN_CONFIGS` mapping (in `BoostVaultABI.ts`), with each token specifying its address, decimals, and corresponding vault address. The `TokenSelector` component allows users to toggle between tokens across all pages (/simple, /degen, /mini), with all vault operations (deposit, withdraw, APY fetching, balance checking) dynamically adapting to the selected token.
+**Multi-Token Support:** The application supports multiple stablecoins and native assets on Celo through a unified `TokenContext` that provides runtime token switching. Token configuration is centralized in `TOKEN_CONFIGS` mapping (in `BoostVaultABI.ts`), with each token specifying its address, decimals, and corresponding vault address. Currently supported tokens include cUSD (18 decimals), USDC bridged (6 decimals), USDT (6 decimals), and CELO (18 decimals). The `TokenSelector` component allows users to toggle between available tokens across all pages (/simple, /degen, /mini), with all vault operations (deposit, withdraw, APY fetching, balance checking) dynamically adapting to the selected token. Tokens without deployed vault contracts are automatically disabled in the UI via zero-address validation.
 
 ### Backend Architecture
 
@@ -37,11 +37,11 @@ The platform features three distinct user interfaces:
 - **`/mini`**: A mobile-optimized Farcaster miniapp with streamlined UX for in-app DeFi transactions and viral sharing
 
 All three UIs share:
-- Core transaction dialogs (Deposit, Withdraw, Donation Settings) that dynamically adapt to the selected token (cUSD/USDC)
-- TokenSelector component for runtime token switching
+- Core transaction dialogs (Deposit, Withdraw, Donation Settings) that dynamically adapt to the selected token (cUSD/USDC/USDT/CELO)
+- TokenSelector component for runtime token switching with automatic availability detection
 - Real-time APY fetching from Aave V3 pool based on selected token
 - Smooth 60 FPS earnings animations using `requestAnimationFrame`
-- Dynamic vault address configuration via TokenContext
+- Dynamic vault address configuration via TokenContext with zero-address validation
 
 ### Farcaster Miniapp Integration
 
@@ -59,15 +59,19 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
 
 ### Blockchain Infrastructure
 
-- **Target Chain:** Celo (mainnet) for gasless transactions and native stablecoins (cUSD, native USDC).
+- **Target Chain:** Celo (mainnet) for gasless transactions and native stablecoins.
 - **Supported Tokens:**
-  - cUSD: 0x765DE816845861e75A25fCA122bb6898B8B1282a (18 decimals)
-  - USDC (bridged/Wormhole): 0xcebA9300f2b948710d2653dD7B07f33A8B32118C (6 decimals)
+  - cUSD: 0x765DE816845861e75A25fCA122bb6898B8B1282a (18 decimals) ✅ Active
+  - USDC (bridged/Wormhole): 0xcebA9300f2b948710d2653dD7B07f33A8B32118C (6 decimals) ✅ Active
     - Note: Using bridged USDC as native USDC (0xef4229c8c3250C675F21BCefa42f58EfbfF6002a) is not supported on Aave V3 Celo
+  - USDT (native Tether): 0x48065fbBE25f71C9282ddf5e1cD6D6A887483D5e (6 decimals) ⏳ Pending vault deployment
+  - CELO (native asset): 0x471EcE3750Da237f93B8E339c536989b8978a438 (18 decimals) ⏳ Pending vault deployment
 - **DeFi Protocols:** Uniswap V4 (for liquidity pools), Aave V3 Pool (0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402) for lending/borrowing and leveraged strategies.
 - **Smart Contracts:**
   - cUSD Vault: `BoostAaveVault` at 0x775e8a5cbf69143482c89dcf9461d96cd49efb18 (ERC4626)
   - USDC Vault: `BoostAaveVault` at 0xEE191B1aa821C42E4646ca5FdC5ACDd3aBE31F90 (ERC4626)
+  - USDT Vault: Pending deployment
+  - CELO Vault: Pending deployment
 
 ### Third-Party Services
 

@@ -160,34 +160,42 @@ export interface TokenConfig {
   decimals: number;
 }
 
+// Helper to validate vault address (exclude zero address placeholders)
+function normalizeVaultAddress(address: string | undefined): `0x${string}` | undefined {
+  if (!address || address === '0x0000000000000000000000000000000000000000') {
+    return undefined;
+  }
+  return address as `0x${string}`;
+}
+
 // Token configurations
 export const TOKEN_CONFIGS: Record<TokenSymbol, TokenConfig> = {
   'cUSD': {
     symbol: 'cUSD',
     name: 'Celo Dollar',
     address: CUSD_ADDRESS,
-    vaultAddress: import.meta.env.VITE_BOOST_VAULT_CUSD_ADDRESS as `0x${string}` | undefined,
+    vaultAddress: normalizeVaultAddress(import.meta.env.VITE_BOOST_VAULT_CUSD_ADDRESS),
     decimals: 18,
   },
   'USDC': {
     symbol: 'USDC',
     name: 'USDC (Bridged)',
     address: USDC_ADDRESS,
-    vaultAddress: import.meta.env.VITE_BOOST_VAULT_USDC_ADDRESS as `0x${string}` | undefined,
+    vaultAddress: normalizeVaultAddress(import.meta.env.VITE_BOOST_VAULT_USDC_ADDRESS),
     decimals: 6,
   },
   'USDT': {
     symbol: 'USDT',
     name: 'Tether USD',
     address: USDT_ADDRESS,
-    vaultAddress: import.meta.env.VITE_BOOST_VAULT_USDT_ADDRESS as `0x${string}` | undefined,
+    vaultAddress: normalizeVaultAddress(import.meta.env.VITE_BOOST_VAULT_USDT_ADDRESS),
     decimals: 6,
   },
   'CELO': {
     symbol: 'CELO',
     name: 'Celo Native Asset',
     address: CELO_ADDRESS,
-    vaultAddress: import.meta.env.VITE_BOOST_VAULT_CELO_ADDRESS as `0x${string}` | undefined,
+    vaultAddress: normalizeVaultAddress(import.meta.env.VITE_BOOST_VAULT_CELO_ADDRESS),
     decimals: 18,
   },
 };
