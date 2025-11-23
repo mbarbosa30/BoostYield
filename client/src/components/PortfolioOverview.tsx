@@ -11,7 +11,7 @@ interface TokenPosition {
   principal: bigint;
   shares: bigint;
   decimals: number;
-  vaultAddress: string;
+  vaultAddress: `0x${string}`;
 }
 
 export function PortfolioOverview() {
@@ -20,42 +20,44 @@ export function PortfolioOverview() {
   // Fetch data for all 4 vaults in parallel
   const tokens = Object.entries(TOKEN_CONFIGS);
   
-  const portfolioData: TokenPosition[] = tokens.map(([symbol, config]) => {
-    const { data: shares } = useReadContract({
-      address: config.vaultAddress as `0x${string}`,
-      abi: BoostVaultABI,
-      functionName: 'balanceOf',
-      args: address ? [address] : undefined,
-      query: { enabled: !!address && config.vaultAddress !== '0x0000000000000000000000000000000000000000' }
-    });
+  const portfolioData = tokens
+    .filter(([, config]) => config.vaultAddress && config.vaultAddress !== '0x0000000000000000000000000000000000000000')
+    .map(([symbol, config]) => {
+      const vaultAddr = config.vaultAddress as `0x${string}`;
+      
+      const { data: shares } = useReadContract({
+        address: vaultAddr,
+        abi: BoostVaultABI,
+        functionName: 'balanceOf',
+        args: address ? [address] : undefined,
+        query: { enabled: !!address }
+      });
 
-    const { data: principal } = useReadContract({
-      address: config.vaultAddress as `0x${string}`,
-      abi: BoostVaultABI,
-      functionName: 'principalOf',
-      args: address ? [address] : undefined,
-      query: { enabled: !!address && config.vaultAddress !== '0x0000000000000000000000000000000000000000' }
-    });
+      const { data: principal } = useReadContract({
+        address: vaultAddr,
+        abi: BoostVaultABI,
+        functionName: 'principalOf',
+        args: address ? [address] : undefined,
+        query: { enabled: !!address }
+      });
 
-    const { data: assetsForShares } = useReadContract({
-      address: config.vaultAddress as `0x${string}`,
-      abi: BoostVaultABI,
-      functionName: 'previewRedeem',
-      args: shares ? [shares] : undefined,
-      query: { enabled: !!shares && shares > BigInt(0) }
-    });
+      const { data: assetsForShares } = useReadContract({
+        address: vaultAddr,
+        abi: BoostVaultABI,
+        functionName: 'previewRedeem',
+        args: shares ? [shares] : undefined,
+        query: { enabled: !!shares && shares > BigInt(0) }
+      });
 
-    return {
-      symbol,
-      deposited: assetsForShares || BigInt(0),
-      principal: principal || BigInt(0),
-      shares: shares || BigInt(0),
-      decimals: config.decimals,
-      vaultAddress: config.vaultAddress
-    };
-  }).filter(position => 
-    position.vaultAddress !== '0x0000000000000000000000000000000000000000'
-  );
+      return {
+        symbol,
+        deposited: assetsForShares || BigInt(0),
+        principal: principal || BigInt(0),
+        shares: shares || BigInt(0),
+        decimals: config.decimals,
+        vaultAddress: vaultAddr
+      } satisfies TokenPosition;
+    });
 
   // Calculate totals (normalize to 18 decimals for summing)
   const normalize = (value: bigint, decimals: number) => {

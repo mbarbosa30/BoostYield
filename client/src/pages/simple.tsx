@@ -13,6 +13,7 @@ import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
 import { TokenSelector } from "@/components/TokenSelector";
 import { YieldPreferenceSelector } from "@/components/YieldPreferenceSelector";
 import { TokenSuggestionForm } from "@/components/TokenSuggestionForm";
+import { PortfolioOverview } from "@/components/PortfolioOverview";
 import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
 import { useToken } from "@/contexts/TokenContext";
 
@@ -317,6 +318,9 @@ export default function SimplePage() {
 
         {isConnected && (
           <>
+            {/* Portfolio Overview - Combined View */}
+            <PortfolioOverview />
+
             {/* Your Money Summary */}
             <Card className="border-emerald-200">
               <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20">

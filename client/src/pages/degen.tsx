@@ -10,6 +10,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
+import { PortfolioOverview } from "@/components/PortfolioOverview";
 import { TOKEN_CONFIGS, BoostVaultABI } from "@/lib/BoostVaultABI";
 import { useToken } from "@/contexts/TokenContext";
 import { TokenSelector } from "@/components/TokenSelector";
@@ -301,6 +302,9 @@ export default function DegenPage() {
           </Card>
         ) : (
           <>
+            {/* Portfolio Overview - Combined View */}
+            <PortfolioOverview />
+
             {/* Position Overview */}
             <Card>
               <CardHeader>
