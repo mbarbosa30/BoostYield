@@ -32,11 +32,11 @@ function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider>
+        <RainbowKitProvider modalSize="compact">
           <TokenProvider>
             <TooltipProvider>
-              <Toaster />
               <Router />
+              <Toaster />
             </TooltipProvider>
           </TokenProvider>
         </RainbowKitProvider>
