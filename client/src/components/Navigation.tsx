@@ -28,7 +28,7 @@ export function Navigation({ currency, onCurrencyChange }: NavigationProps) {
         <Link href="/" data-testid="link-home">
           <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
             <TrendingUp className="h-6 w-6 text-primary" />
-            <span className="text-xl font-accent font-semibold">Boost</span>
+            <span className="text-xl font-accent font-semibold">Relay Boost</span>
           </div>
         </Link>
 

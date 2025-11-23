@@ -29,7 +29,7 @@ export function ShareCastButton({ stats }: ShareCastButtonProps) {
         ? ((profitUSD / depositedUSD) * 100).toFixed(1)
         : '0';
 
-      let castText = `I'm earning ${apy}% APY with Boost on Celo`;
+      let castText = `I'm earning ${apy}% APY with Relay Boost on Celo`;
 
       if (stats.donationPct > 0 && stats.cause) {
         castText += `\n\nDonating ${stats.donationPct}% of my yield to ${stats.cause}`;

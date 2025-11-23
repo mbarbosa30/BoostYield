@@ -1,8 +1,8 @@
-# Boost - DeFi Yield Platform
+# Relay Boost - DeFi Yield Platform
 
 ## Overview
 
-Boost is a DeFi application designed to democratize yield generation, targeting emerging markets with high inflation. It offers two primary modes: "Inflation Shield" for stablecoin vaults, catering to unbanked users seeking safe yields, and "Max Yield" for experienced traders, providing leveraged strategies. The platform promotes an "impact flywheel" by enabling users to donate a portion of their earnings to vetted causes. It is mobile-first, integrates with the Celo blockchain for gasless transactions, and provides local currency context. The platform leverages Uniswap V4 and Aave protocols, aiming for historical yields of 8-18% for safe vaults and 30-300%+ for leveraged strategies.
+Relay Boost is a DeFi application designed to democratize yield generation, targeting emerging markets with high inflation. It offers two primary modes: "Inflation Shield" for stablecoin vaults, catering to unbanked users seeking safe yields, and "Max Yield" for experienced traders, providing leveraged strategies. The platform promotes an "impact flywheel" by enabling users to donate a portion of their earnings to vetted causes. It is mobile-first, integrates with the Celo blockchain for gasless transactions, and provides local currency context. The platform leverages Uniswap V4 and Aave protocols, aiming for historical yields of 8-18% for safe vaults and 30-300%+ for leveraged strategies.
 
 ## User Preferences
 

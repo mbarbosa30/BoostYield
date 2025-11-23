@@ -1,11 +1,11 @@
-# Boost Design Guidelines
+# Relay Boost Design Guidelines
 
 ## Brand Narrative
 **"From Survival to Thriving – The People's Yield Revolution"**
 
-Boost is a movement, not just an app. In 2025, billions remain unbanked or battle hyperinflation in Argentina, Nigeria, Venezuela. Traditional finance has failed the masses. Crypto promised freedom, but DeFi became a playground for the tech-savvy elite with complicated interfaces and hidden risks.
+Relay Boost is a movement, not just an app. In 2025, billions remain unbanked or battle hyperinflation in Argentina, Nigeria, Venezuela. Traditional finance has failed the masses. Crypto promised freedom, but DeFi became a playground for the tech-savvy elite with complicated interfaces and hidden risks.
 
-Boost democratizes DeFi's best-kept secrets through radical simplicity and superior yields. It's a shield against economic chaos for everyday survivors, rocket fuel for bold risk-takers, and a bridge to impact for everyone.
+Relay Boost democratizes DeFi's best-kept secrets through radical simplicity and superior yields. It's a shield against economic chaos for everyday survivors, rocket fuel for bold risk-takers, and a bridge to impact for everyone.
 
 ### Core Personas
 - **Maria in Buenos Aires**: Deposits $500 USDC, beats 100% inflation with 12% APY, sends 25% of yield to local school fund
@@ -67,7 +67,7 @@ Boost democratizes DeFi's best-kept secrets through radical simplicity and super
 ## Component Library
 
 ### Navigation
-- Logo: "Boost" (bold, accent font)
+- Logo: "Relay Boost" (bold, accent font)
 - Tagline option: "The People's Yield Revolution"
 - Fixed top navbar with glass morphism
 - Currency toggle and connect wallet right
