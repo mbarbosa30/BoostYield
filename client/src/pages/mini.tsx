@@ -96,7 +96,7 @@ export default function MiniPage() {
 
         // Auto-connect the Farcaster wallet if not already connected
         if (!isConnected && connectors.length > 0) {
-          const farcasterConnector = connectors.find(c => c.id === 'farcaster');
+          const farcasterConnector = connectors.find(c => c.id === 'farcaster-miniapp');
           if (farcasterConnector) {
             try {
               console.log('🔌 Attempting auto-connect with Farcaster connector...');
@@ -104,6 +104,8 @@ export default function MiniPage() {
             } catch (error) {
               console.error('❌ Auto-connect failed:', error);
             }
+          } else {
+            console.warn('⚠️ Farcaster connector not found. Available connectors:', connectors.map(c => c.id));
           }
         }
       }
