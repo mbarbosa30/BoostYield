@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
@@ -45,8 +45,20 @@ export default function LandingPage() {
       </main>
 
       <footer className="border-t py-6 sm:py-8 px-3 sm:px-6">
-        <div className="max-w-5xl mx-auto text-center text-xs sm:text-sm text-muted-foreground">
-          <p>© 2025 Relay Boost. Not a bank. DeFi carries risks.</p>
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+            <div className="flex gap-6">
+              <Link href="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground" data-testid="link-how-it-works">
+                How It Works
+              </Link>
+              <Link href="/roadmap" className="text-sm text-muted-foreground hover:text-foreground" data-testid="link-roadmap">
+                Roadmap
+              </Link>
+            </div>
+          </div>
+          <div className="text-center text-xs sm:text-sm text-muted-foreground">
+            <p>© 2025 Relay Boost. Not a bank. DeFi carries risks.</p>
+          </div>
         </div>
       </footer>
 

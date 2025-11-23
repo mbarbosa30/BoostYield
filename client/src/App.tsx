@@ -11,6 +11,8 @@ import LandingPage from "@/pages/landing";
 import VaultPage from "@/pages/vault";
 import DegenPage from "@/pages/degen";
 import SimplePage from "@/pages/simple";
+import HowItWorksPage from "@/pages/how-it-works";
+import RoadmapPage from "@/pages/roadmap";
 import NotFound from "@/pages/not-found";
 import '@rainbow-me/rainbowkit/styles.css';
 
@@ -22,6 +24,8 @@ function Router() {
       <Route path="/mini" component={SimplePage} />
       <Route path="/degen" component={DegenPage} />
       <Route path="/simple" component={SimplePage} />
+      <Route path="/how-it-works" component={HowItWorksPage} />
+      <Route path="/roadmap" component={RoadmapPage} />
       <Route component={NotFound} />
     </Switch>
   );
