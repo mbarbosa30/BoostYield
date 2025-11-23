@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { BoostVaultABI, BOOST_VAULT_ADDRESS } from "@/lib/BoostVaultABI";
+import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
 import { Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -35,6 +36,11 @@ export function WithdrawDialog({
   const [shareAmount, setShareAmount] = useState('');
   const { address } = useAccount();
   const { toast } = useToast();
+  const { selectedToken } = useToken();
+
+  const tokenConfig = TOKEN_CONFIGS[selectedToken];
+  const vaultAddress = tokenConfig.vaultAddress;
+  const tokenDecimals = tokenConfig.decimals;
 
   // Debug logging
   useEffect(() => {
@@ -52,12 +58,12 @@ export function WithdrawDialog({
 
   // Preview redemption
   const { data: previewAssets } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
     args: shareAmountBigInt > BigInt(0) ? [shareAmountBigInt] : undefined,
     query: {
-      enabled: !!BOOST_VAULT_ADDRESS && shareAmountBigInt > BigInt(0),
+      enabled: !!vaultAddress && shareAmountBigInt > BigInt(0),
     },
   });
 
@@ -91,8 +97,8 @@ export function WithdrawDialog({
   const netReceived = assetsOut - donationAmount;
 
   const handleRedeem = async () => {
-    if (!address || !BOOST_VAULT_ADDRESS || !shareAmountBigInt) {
-      console.error('❌ Missing required data:', { address, BOOST_VAULT_ADDRESS, shareAmountBigInt: shareAmountBigInt.toString() });
+    if (!address || !vaultAddress || !shareAmountBigInt) {
+      console.error('❌ Missing required data:', { address, vaultAddress, shareAmountBigInt: shareAmountBigInt.toString() });
       return;
     }
 
@@ -104,7 +110,7 @@ export function WithdrawDialog({
 
     try {
       redeem({
-        address: BOOST_VAULT_ADDRESS,
+        address: vaultAddress,
         abi: BoostVaultABI,
         functionName: 'redeem',
         args: [shareAmountBigInt, address, address],
@@ -125,13 +131,13 @@ export function WithdrawDialog({
       toast({
         title: "Withdrawal Successful",
         description: donationAmount > BigInt(0)
-          ? `Withdrew ${parseFloat(formatUnits(netReceived, 18)).toFixed(2)} cUSD (donated ${parseFloat(formatUnits(donationAmount, 18)).toFixed(2)} cUSD)`
-          : `Withdrew ${parseFloat(formatUnits(assetsOut, 18)).toFixed(2)} cUSD`,
+          ? `Withdrew ${parseFloat(formatUnits(netReceived, tokenDecimals)).toFixed(2)} ${selectedToken} (donated ${parseFloat(formatUnits(donationAmount, tokenDecimals)).toFixed(2)} ${selectedToken})`
+          : `Withdrew ${parseFloat(formatUnits(assetsOut, tokenDecimals)).toFixed(2)} ${selectedToken}`,
       });
       setShareAmount('');
       onOpenChange(false);
     }
-  }, [isRedeemSuccess, open, netReceived, donationAmount, assetsOut, toast, onOpenChange]);
+  }, [isRedeemSuccess, open, netReceived, donationAmount, assetsOut, selectedToken, tokenDecimals, toast, onOpenChange]);
 
   const isProcessing = isRedeemPending || isRedeemConfirming;
 
@@ -141,7 +147,7 @@ export function WithdrawDialog({
         <DialogHeader>
           <DialogTitle>Withdraw from Vault</DialogTitle>
           <DialogDescription>
-            Redeem your vault shares for cUSD
+            Redeem your vault shares for {selectedToken}
           </DialogDescription>
         </DialogHeader>
 
@@ -184,25 +190,25 @@ export function WithdrawDialog({
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Assets received:</span>
-                  <span className="font-mono">{parseFloat(formatUnits(assetsOut, 18)).toFixed(2)} cUSD</span>
+                  <span className="font-mono">{parseFloat(formatUnits(assetsOut, tokenDecimals)).toFixed(2)} {selectedToken}</span>
                 </div>
                 {profit > BigInt(0) && (
                   <>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Profit earned:</span>
-                      <span className="font-mono text-green-600">+{parseFloat(formatUnits(profit, 18)).toFixed(2)} cUSD</span>
+                      <span className="font-mono text-green-600">+{parseFloat(formatUnits(profit, tokenDecimals)).toFixed(2)} {selectedToken}</span>
                     </div>
                     {donationPct > 0 && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Donation ({donationPct}%):</span>
-                        <span className="font-mono">-{parseFloat(formatUnits(donationAmount, 18)).toFixed(2)} cUSD</span>
+                        <span className="font-mono">-{parseFloat(formatUnits(donationAmount, tokenDecimals)).toFixed(2)} {selectedToken}</span>
                       </div>
                     )}
                   </>
                 )}
                 <div className="flex justify-between font-medium pt-2 border-t">
                   <span>You receive:</span>
-                  <span className="font-mono">{parseFloat(formatUnits(netReceived, 18)).toFixed(2)} cUSD</span>
+                  <span className="font-mono">{parseFloat(formatUnits(netReceived, tokenDecimals)).toFixed(2)} {selectedToken}</span>
                 </div>
               </div>
             </div>

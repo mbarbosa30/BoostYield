@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { BoostVaultABI, BOOST_VAULT_ADDRESS, CUSD_ADDRESS } from "@/lib/BoostVaultABI";
+import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 interface DepositDialogProps {
@@ -26,15 +27,21 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
   const [amount, setAmount] = useState('');
   const { address } = useAccount();
   const { toast } = useToast();
+  const { selectedToken } = useToken();
+  
+  const tokenConfig = TOKEN_CONFIGS[selectedToken];
+  const tokenAddress = tokenConfig.address;
+  const vaultAddress = tokenConfig.vaultAddress;
+  const tokenDecimals = tokenConfig.decimals;
 
   // Read current allowance
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
-    address: CUSD_ADDRESS,
+    address: tokenAddress,
     abi: erc20Abi,
     functionName: 'allowance',
-    args: address && BOOST_VAULT_ADDRESS ? [address, BOOST_VAULT_ADDRESS] : undefined,
+    args: address && vaultAddress ? [address, vaultAddress] : undefined,
     query: {
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
     },
   });
 
@@ -68,7 +75,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       // Extract meaningful error message
       let errorMessage = "Transaction failed";
       if (depositError.message.includes("execution reverted")) {
-        errorMessage = "Contract rejected the deposit. Please ensure you have approved enough cUSD and have sufficient balance.";
+        errorMessage = `Contract rejected the deposit. Please ensure you have approved enough ${selectedToken} and have sufficient balance.`;
       } else if (depositError.message.includes("user rejected")) {
         errorMessage = "Transaction was cancelled";
       }
@@ -86,7 +93,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       hash: depositHash,
     });
 
-  const amountBigInt = amount ? parseUnits(amount, 18) : BigInt(0);
+  const amountBigInt = amount ? parseUnits(amount, tokenDecimals) : BigInt(0);
   const needsApproval = allowance !== undefined && amountBigInt > allowance;
   const hasBalance = cusdBalance !== undefined && amountBigInt > BigInt(0) && amountBigInt <= cusdBalance;
 
@@ -116,28 +123,28 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
     if (isDepositSuccess && open) {
       toast({
         title: "Deposit Successful",
-        description: `Successfully deposited ${amount} cUSD to the vault`,
+        description: `Successfully deposited ${amount} ${selectedToken} to the vault`,
       });
       setAmount('');
       onOpenChange(false);
     }
-  }, [isDepositSuccess, open, amount, toast, onOpenChange]);
+  }, [isDepositSuccess, open, amount, selectedToken, toast, onOpenChange]);
 
   const handleApprove = async () => {
-    if (!BOOST_VAULT_ADDRESS || !amountBigInt) return;
+    if (!vaultAddress || !amountBigInt) return;
 
     try {
       approve({
-        address: CUSD_ADDRESS,
+        address: tokenAddress,
         abi: erc20Abi,
         functionName: 'approve',
-        args: [BOOST_VAULT_ADDRESS, amountBigInt],
+        args: [vaultAddress, amountBigInt],
       });
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Approval Failed",
-        description: error.message || "Failed to approve cUSD",
+        description: error.message || `Failed to approve ${selectedToken}`,
       });
     }
   };
@@ -145,7 +152,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
   const handleDeposit = async () => {
     console.log('handleDeposit called', {
       address,
-      BOOST_VAULT_ADDRESS,
+      vaultAddress,
       amountBigInt: amountBigInt.toString(),
       hasBalance,
       needsApproval,
@@ -160,7 +167,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       return;
     }
 
-    if (!address || !BOOST_VAULT_ADDRESS || !amountBigInt) {
+    if (!address || !vaultAddress || !amountBigInt) {
       console.log('handleDeposit: missing required params');
       return;
     }
@@ -171,7 +178,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       console.log('DepositPending before call:', isDepositPending);
       
       const result = deposit({
-        address: BOOST_VAULT_ADDRESS,
+        address: vaultAddress,
         abi: BoostVaultABI,
         functionName: 'deposit',
         args: [amountBigInt, address],
@@ -189,7 +196,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
       toast({
         variant: "destructive",
         title: "Deposit Failed",
-        description: error.message || "Failed to deposit cUSD",
+        description: error.message || `Failed to deposit ${selectedToken}`,
       });
     }
   };
@@ -200,15 +207,15 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent data-testid="dialog-deposit">
         <DialogHeader>
-          <DialogTitle>Deposit cUSD</DialogTitle>
+          <DialogTitle>Deposit {selectedToken}</DialogTitle>
           <DialogDescription>
-            Deposit cUSD to earn 8-12% APY from Aave V3 lending
+            Deposit {selectedToken} to earn 8-12% APY from Aave V3 lending
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount (cUSD)</Label>
+            <Label htmlFor="amount">Amount ({selectedToken})</Label>
             <Input
               id="amount"
               type="number"
@@ -220,13 +227,13 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
             />
             {cusdBalance !== undefined && (
               <p className="text-sm text-muted-foreground">
-                Available: {parseFloat(formatUnits(cusdBalance, 18)).toFixed(2)} cUSD
+                Available: {parseFloat(formatUnits(cusdBalance, tokenDecimals)).toFixed(2)} {selectedToken}
                 {cusdBalance > BigInt(0) && (
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-auto p-0 ml-2"
-                    onClick={() => setAmount(formatUnits(cusdBalance, 18))}
+                    onClick={() => setAmount(formatUnits(cusdBalance, tokenDecimals))}
                     data-testid="button-max"
                   >
                     Max
@@ -274,7 +281,7 @@ export function DepositDialog({ open, onOpenChange, cusdBalance }: DepositDialog
                   Approving...
                 </>
               ) : (
-                'Approve cUSD'
+                `Approve ${selectedToken}`
               )}
             </Button>
           ) : (

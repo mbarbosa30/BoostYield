@@ -10,7 +10,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
-import { BOOST_VAULT_ADDRESS, CUSD_ADDRESS, BoostVaultABI } from "@/lib/BoostVaultABI";
+import { TokenSelector } from "@/components/TokenSelector";
+import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
 
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
 const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
@@ -47,12 +49,12 @@ const POOL_ABI = [
   }
 ] as const;
 
-function useAaveAPY() {
+function useAaveAPY(tokenAddress: `0x${string}`) {
   const { data: reserveData } = useReadContract({
     address: AAVE_POOL_ADDRESS,
     abi: POOL_ABI,
     functionName: 'getReserveData',
-    args: [CUSD_ADDRESS],
+    args: [tokenAddress],
     query: { refetchInterval: 60000 }
   });
   
@@ -63,7 +65,7 @@ function useAaveAPY() {
   return apyDecimal * 100; // Convert to percentage
 }
 
-function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigint, lastUpdateTime: number, decimals = 18) {
+function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigint, lastUpdateTime: number, tokenAddress: `0x${string}`, decimals = 18) {
   const [displayValue, setDisplayValue] = useState('0.00');
   const precisionRef = useRef<number>(2);
   const velocityRef = useRef<number>(0);
@@ -72,7 +74,7 @@ function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigi
     address: AAVE_POOL_ADDRESS,
     abi: POOL_ABI,
     functionName: 'getReserveData',
-    args: [CUSD_ADDRESS],
+    args: [tokenAddress],
     query: { refetchInterval: 60000 }
   });
   
@@ -127,25 +129,31 @@ function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigi
 
 export default function SimplePage() {
   const { address, isConnected } = useAccount();
+  const { selectedToken, setSelectedToken } = useToken();
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
 
+  const tokenConfig = TOKEN_CONFIGS[selectedToken];
+  const vaultAddress = tokenConfig.vaultAddress;
+  const tokenAddress = tokenConfig.address;
+  const tokenDecimals = tokenConfig.decimals;
+
   // Read user's vault balance
   const { data: userShares, isLoading: isLoadingShares } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: { 
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
       refetchInterval: 5000 // Refetch every 5 seconds
     }
   });
 
   const { data: assetsForShares, dataUpdatedAt } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
     args: userShares ? [userShares] : undefined,
@@ -166,33 +174,33 @@ export default function SimplePage() {
   useEffect(() => {
     if (assetsForShares) {
       console.log('📊 Assets for shares:', assetsForShares.toString());
-      console.log('📊 Formatted:', formatUnits(assetsForShares, 18));
+      console.log('📊 Formatted:', formatUnits(assetsForShares, tokenDecimals));
       console.log('📊 Updated at:', new Date(dataUpdatedAt).toISOString());
     }
-  }, [assetsForShares, dataUpdatedAt]);
+  }, [assetsForShares, dataUpdatedAt, tokenDecimals]);
 
   const { data: userPrincipal } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'principalOf',
     args: address ? [address] : undefined,
     query: { 
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
       refetchInterval: POLL_INTERVAL_MS
     }
   });
 
   const { data: userDonationPct } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'donationPctOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!address && !!vaultAddress }
   });
 
-  const { data: cusdBalance } = useBalance({
+  const { data: tokenBalance } = useBalance({
     address: address,
-    token: CUSD_ADDRESS,
+    token: tokenAddress,
     query: { enabled: !!address }
   });
 
@@ -204,8 +212,8 @@ export default function SimplePage() {
   const donated = (earned * BigInt(donationPct)) / BigInt(100);
   const yourMoney = totalAmount - donated;
   
-  const formattedEarned = useInterpolatedEarnings(earned, savedAmount, lastUpdate, 18);
-  const currentAPY = useAaveAPY();
+  const formattedEarned = useInterpolatedEarnings(earned, savedAmount, lastUpdate, tokenAddress, tokenDecimals);
+  const currentAPY = useAaveAPY(tokenAddress);
 
   // Convert to local display (simplified - in production would use exchange rates)
   const earningRate = currentAPY > 0 ? `${currentAPY.toFixed(2)}% per year` : "loading...";
@@ -214,14 +222,17 @@ export default function SimplePage() {
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-background dark:from-background dark:to-background">
       {/* Compact Header */}
       <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
               <TrendingUp className="h-5 w-5 text-primary" />
               <span className="text-lg font-accent font-semibold">Boost</span>
             </div>
           </Link>
-          <ConnectButton />
+          <div className="flex items-center gap-4">
+            <TokenSelector selectedToken={selectedToken} onTokenChange={setSelectedToken} />
+            <ConnectButton />
+          </div>
         </div>
       </header>
 
@@ -456,7 +467,7 @@ export default function SimplePage() {
       <DepositDialog
         open={depositOpen}
         onOpenChange={setDepositOpen}
-        cusdBalance={cusdBalance?.value}
+        cusdBalance={tokenBalance?.value}
       />
       <WithdrawDialog
         open={withdrawOpen}

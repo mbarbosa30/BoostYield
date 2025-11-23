@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { BoostVaultABI, BOOST_VAULT_ADDRESS } from "@/lib/BoostVaultABI";
+import { BoostVaultABI, TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
 import { Loader2, Heart } from "lucide-react";
 
 interface DonationSettingsDialogProps {
@@ -54,25 +55,29 @@ export function DonationSettingsDialog({ open, onOpenChange }: DonationSettingsD
   const [customAddress, setCustomAddress] = useState('');
   const { address } = useAccount();
   const { toast } = useToast();
+  const { selectedToken } = useToken();
+
+  const tokenConfig = TOKEN_CONFIGS[selectedToken];
+  const vaultAddress = tokenConfig.vaultAddress;
 
   // Read current donation settings
   const { data: currentPct } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'donationPctOf',
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
     },
   });
 
   const { data: currentBeneficiary } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'beneficiaryOf',
     args: address ? [address] : undefined,
     query: {
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
     },
   });
 
@@ -112,11 +117,11 @@ export function DonationSettingsDialog({ open, onOpenChange }: DonationSettingsD
   const canSave = isValidAddress && percentage[0] >= 0 && percentage[0] <= 100;
 
   const handleSave = async () => {
-    if (!BOOST_VAULT_ADDRESS || !canSave) return;
+    if (!vaultAddress || !canSave) return;
 
     try {
       setDonation({
-        address: BOOST_VAULT_ADDRESS,
+        address: vaultAddress,
         abi: BoostVaultABI,
         functionName: 'setMyDonation',
         args: [percentage[0], beneficiaryAddress as `0x${string}`],
