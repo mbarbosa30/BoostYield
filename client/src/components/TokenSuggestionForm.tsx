@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
