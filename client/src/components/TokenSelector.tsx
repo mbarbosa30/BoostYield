@@ -22,7 +22,10 @@ export function TokenSelector() {
     <>
       {/* Mobile: Dropdown Select */}
       <div className="sm:hidden">
-        <Select value={selectedToken} onValueChange={(value) => setSelectedToken(value as TokenSymbol)}>
+        <Select 
+          value={selectedToken} 
+          onValueChange={(value) => setSelectedToken(value as TokenSymbol)}
+        >
           <SelectTrigger 
             className="w-[100px] min-h-[44px]"
             data-testid="select-token-mobile"
@@ -60,7 +63,7 @@ export function TokenSelector() {
                 size="sm"
                 variant={isSelected ? "default" : "ghost"}
                 onClick={() => setSelectedToken(token)}
-                className="toggle-elevate text-sm px-3"
+                className="text-sm px-3 relative cursor-pointer"
                 data-testid={`button-token-${token.toLowerCase()}`}
                 title={config.name}
               >
