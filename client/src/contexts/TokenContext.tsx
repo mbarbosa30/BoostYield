@@ -14,8 +14,11 @@ export function TokenProvider({ children }: { children: ReactNode }) {
 
   // Validate token selection - only allow tokens with configured vaults
   const handleTokenChange = (token: TokenSymbol) => {
+    console.log('🔄 TokenContext handleTokenChange called with:', token);
     const config = TOKEN_CONFIGS[token];
+    console.log('🔍 Token config:', config);
     if (config.vaultAddress) {
+      console.log('✅ Valid vault address, changing token to:', token);
       setSelectedToken(token);
     } else {
       console.warn(`Token ${token} selected but vault address not configured. Keeping current token: ${selectedToken}`);

@@ -6,6 +6,11 @@ export function TokenSelector() {
   const { selectedToken, setSelectedToken } = useToken();
   const tokens: TokenSymbol[] = ['cUSD', 'USDC', 'USDT', 'CELO'];
 
+  const handleClick = (token: TokenSymbol) => {
+    console.log('🔘 Button clicked:', token);
+    setSelectedToken(token);
+  };
+
   return (
     <div className="flex items-center gap-1.5 sm:gap-2">
       <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Token:</span>
@@ -19,7 +24,7 @@ export function TokenSelector() {
               key={token}
               size="sm"
               variant={isSelected ? "default" : "ghost"}
-              onClick={() => setSelectedToken(token)}
+              onClick={() => handleClick(token)}
               className="text-xs sm:text-sm px-2 sm:px-3 min-h-[36px] sm:min-h-[32px] relative cursor-pointer"
               data-testid={`button-token-${token.toLowerCase()}`}
               title={config.name}
