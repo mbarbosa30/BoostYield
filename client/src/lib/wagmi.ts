@@ -2,16 +2,9 @@ import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { http } from 'wagmi';
 import { celo } from 'wagmi/chains';
 
-// WalletConnect project ID is REQUIRED for RainbowKit
+// WalletConnect project ID (optional for viewing, required for connecting wallet)
 // Get one free at https://cloud.walletconnect.com
-const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-
-if (!projectId) {
-  throw new Error(
-    'VITE_WALLETCONNECT_PROJECT_ID environment variable is required. ' +
-    'Get a free project ID at https://cloud.walletconnect.com/sign-up'
-  );
-}
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id';
 
 // Celo mainnet configuration
 export const config = getDefaultConfig({
