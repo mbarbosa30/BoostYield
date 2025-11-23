@@ -1,0 +1,147 @@
+Here’s a story-driven, presentation-ready deck for Relay Boost × nanoPay × $BOOST — written as a narrative that feels human, not financial.
+Each slide blends emotion, clarity, and imagination — the kind you’d use to inspire partners, NGOs, or communities rather than investors.
+
+⸻
+
+🟣 Slide 1 — The World Has a Yield Problem
+
+Visual: A map glowing with unstable currencies — Argentina, Nigeria, Venezuela — inflation graphs rising.
+
+Story:
+
+In too many places, money is losing its meaning.
+Savings vanish overnight. Aid runs dry in months.
+And DeFi — meant to fix this — became a playground for whales.
+
+What if yield could actually help people live better lives?
+
+⸻
+
+🟢 Slide 2 — Introducing Relay Boost
+
+Visual: A phone showing the Relay Boost app: Deposit → Earn → Donate.
+
+Story:
+
+Relay Boost lets anyone, anywhere, turn their savings into a force for good.
+Deposit stablecoins like USDC or cUSD.
+Boost automatically finds the best yield — on Aave, Uniswap, or Morpho.
+You earn. And part of your profit can support causes you love.
+
+You never lose money — yet you still make an impact.
+
+⸻
+
+💛 Slide 3 — The Magic Behind the Scenes
+
+Visual: A DeFi flow diagram simplified: Deposit → Auto-Swap → Best APY → Yield → Donation.
+
+Story:
+
+Boost is like a smart heart for your assets.
+It constantly scans DeFi for the best stable yield.
+If rates rise elsewhere, it moves your funds automatically.
+If you hold CELO, ETH, or GHO — it converts and rebalances for you.
+
+Always earning. Always optimized. Always transparent.
+
+⸻
+
+💜 Slide 4 — Earn and Give — The Humanitarian Loop
+
+Visual: Animated flow: Your Yield → Cause → Community Vault → More Yield.
+
+Story:
+
+Every donor becomes a sustainable patron.
+Because you donate from your yield, not your principal.
+That means your kindness never runs out — it compounds.
+
+It’s humanitarian aid that regenerates itself.
+
+⸻
+
+💫 Slide 5 — One More Thing: nanoPay.live
+
+Visual: Two phones exchanging tokens via QR; a “gasless” icon glowing.
+
+Story:
+
+We didn’t stop at earning and giving.
+We made your yield spendable.
+
+nanoPay.live is a feather-light wallet for everyone — even offline.
+Powered by x402 + EIP-3009, it sends stablecoins with zero gas,
+using short claim links, SMS, or QR.
+
+It’s not just fast — it’s trust-scored, safe, and human.
+
+Send money like a message. Even when you’re offline.
+
+⸻
+
+🪙 Slide 6 — The $BOOST Token — Trust That Flows
+
+Visual: $BOOST token orbiting the Boost-nanoPay loop.
+
+Story:
+
+$BOOST is the pulse of this new economy.
+Every time you deposit, donate, or help others, you earn it.
+Holders vote on new yield sources — CELO, ETH, GHO — and on which causes to fund next.
+
+$BOOST isn’t speculation. It’s participation.
+
+The more good you do, the more $BOOST you gain.
+
+⸻
+
+🔄 Slide 7 — The Complete Loop
+
+Visual: Circular animation:
+Deposit → Earn → Donate → Spend → Reinvest → Vote → BOOST → Deposit
+
+Story:
+
+Relay Boost turns finance into a living organism.
+Deposits grow. Yields fund communities. nanoPay moves it to real life.
+$BOOST keeps the whole system fair, transparent, and community-driven.
+
+From DeFi to everyday life — the flow never stops.
+
+⸻
+
+🌍 Slide 8 — The Vision
+
+Visual: People across continents glowing in one shared network.
+
+Story:
+
+We believe money should be regenerative, not extractive.
+
+Relay Boost, nanoPay, and $BOOST together form
+the world’s first People’s Yield Network —
+where earning, giving, and spending work in harmony.
+
+No intermediaries. No barriers. Just trust, flow, and humanity.
+
+⸻
+
+✨ Final Slide — Join the Flow
+
+Visual: Single glowing line connecting “You → World”.
+
+Story:
+
+Deposit your first $10.
+Watch it grow.
+See part of your yield feed a real cause.
+
+You’re not just saving money — you’re rewriting what money means.
+
+Relay Boost × nanoPay × $BOOST
+Open finance for a living world.
+
+⸻
+
+Would you like me to prepare this as a Figma storyboard layout (with frame ratios, text blocks, and visual annotations) or as a Google Slides / Pitch-ready template next?
