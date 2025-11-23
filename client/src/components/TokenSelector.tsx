@@ -13,10 +13,8 @@ export function TokenSelector() {
   const { selectedToken, setSelectedToken } = useToken();
   const tokens: TokenSymbol[] = ['cUSD', 'USDC', 'USDT', 'CELO'];
 
-  const availableTokens = tokens.filter(token => {
-    const config = TOKEN_CONFIGS[token];
-    return config.vaultAddress !== undefined;
-  });
+  // Debug: Log TOKEN_CONFIGS to see what's actually loaded
+  console.log('TOKEN_CONFIGS:', TOKEN_CONFIGS);
 
   return (
     <>
@@ -33,7 +31,7 @@ export function TokenSelector() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {availableTokens.map((token) => {
+            {tokens.map((token) => {
               const config = TOKEN_CONFIGS[token];
               return (
                 <SelectItem 
@@ -53,7 +51,7 @@ export function TokenSelector() {
       <div className="hidden sm:flex items-center gap-2">
         <span className="text-sm text-muted-foreground">Token:</span>
         <div className="flex rounded-lg border p-1 gap-1">
-          {availableTokens.map((token) => {
+          {tokens.map((token) => {
             const config = TOKEN_CONFIGS[token];
             const isSelected = selectedToken === token;
 
