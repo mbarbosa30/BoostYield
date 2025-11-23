@@ -5,18 +5,18 @@ export function HowItWorksSection() {
   const steps = [
     {
       icon: Wallet,
-      title: "Connect Your Wallet",
-      description: "Simple one-click connection. Low fees so you can start with any amount.",
+      title: "Connect & Choose Token",
+      description: "Connect your wallet and choose cUSD, USDC, USDT, or CELO. Available on web or Farcaster miniapp.",
     },
     {
       icon: Shield,
-      title: "Start Earning",
-      description: "Your money grows automatically. Withdraw anytime, no lockups.",
+      title: "Earn Real Yields",
+      description: "Your deposits earn 8-18% APY from Aave V3. Withdraw anytime, no lockups or hidden fees.",
     },
     {
       icon: Heart,
       title: "Share Your Growth",
-      description: "Optionally donate part of your earnings to causes you care about.",
+      description: "Donate a portion of your earnings to vetted causes. Create social impact while building wealth.",
     },
   ];
 

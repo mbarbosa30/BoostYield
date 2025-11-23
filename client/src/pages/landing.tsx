@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { HowItWorksSection } from "@/components/HowItWorksSection";
+import { IntegrationsSection } from "@/components/IntegrationsSection";
 import { RiskDisclosureModal } from "@/components/RiskDisclosureModal";
 import type { Currency } from "@/components/CurrencyToggle";
 
@@ -40,6 +41,7 @@ export default function LandingPage() {
           onDegenClick={handleDegenClick}
         />
         <HowItWorksSection />
+        <IntegrationsSection />
       </main>
 
       <footer className="border-t py-8 px-6">

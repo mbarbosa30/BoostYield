@@ -22,14 +22,26 @@ export function HeroSection({ onSafeClick, onDegenClick }: HeroSectionProps) {
       <div className="relative max-w-5xl mx-auto text-center space-y-8">
         <div className="space-y-6">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold font-accent leading-tight">
-            Save Money.<br />
-            <span className="text-primary">Earn While Giving Back.</span>
+            Beat Inflation.<br />
+            <span className="text-primary">Earn Real Yields.</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
-            Earn up to 11% yearly on your savings while helping others.<br />
-            Choose the experience that fits you best.
+            Earn 8-18% APY on stablecoins (cUSD, USDC, USDT) or CELO.<br />
+            Powered by Aave V3 on Celo. Donate part of your earnings to causes you care about.
           </p>
+          
+          <div className="flex flex-wrap gap-3 justify-center items-center text-sm">
+            <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
+              🌍 Emerging Markets Focus
+            </span>
+            <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
+              📱 Mobile-First on Celo
+            </span>
+            <span className="px-4 py-2 rounded-full bg-primary/10 text-primary font-medium">
+              💚 Social Impact Built-In
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto pt-4">
