@@ -10,7 +10,9 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
-import { BOOST_VAULT_ADDRESS, CUSD_ADDRESS, BoostVaultABI } from "@/lib/BoostVaultABI";
+import { TOKEN_CONFIGS, BoostVaultABI } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
+import { TokenSelector } from "@/components/TokenSelector";
 
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
 const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60;
@@ -47,12 +49,12 @@ const POOL_ABI = [
   }
 ] as const;
 
-function useAaveAPY() {
+function useAaveAPY(tokenAddress: `0x${string}`) {
   const { data: reserveData } = useReadContract({
     address: AAVE_POOL_ADDRESS,
     abi: POOL_ABI,
     functionName: 'getReserveData',
-    args: [CUSD_ADDRESS],
+    args: [tokenAddress],
     query: { refetchInterval: 60000 }
   });
   
@@ -63,7 +65,7 @@ function useAaveAPY() {
   return apyDecimal * 100; // Convert to percentage
 }
 
-function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigint, lastUpdateTime: number, decimals = 18) {
+function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigint, lastUpdateTime: number, tokenAddress: `0x${string}`, decimals = 18) {
   const [displayValue, setDisplayValue] = useState('0.00');
   const precisionRef = useRef<number>(2);
   const velocityRef = useRef<number>(0);
@@ -72,7 +74,7 @@ function useInterpolatedEarnings(baseEarnedAmount: bigint, principalAmount: bigi
     address: AAVE_POOL_ADDRESS,
     abi: POOL_ABI,
     functionName: 'getReserveData',
-    args: [CUSD_ADDRESS],
+    args: [tokenAddress],
     query: { refetchInterval: 60000 }
   });
   
@@ -131,21 +133,27 @@ export default function DegenPage() {
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(Date.now());
+  const { selectedToken } = useToken();
+
+  const tokenConfig = TOKEN_CONFIGS[selectedToken];
+  const vaultAddress = tokenConfig.vaultAddress;
+  const tokenAddress = tokenConfig.address;
+  const tokenDecimals = tokenConfig.decimals;
 
   // Read user's vault balance
   const { data: userShares, isLoading: isLoadingShares } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
     query: { 
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
       refetchInterval: 5000 // Refetch every 5 seconds
     }
   });
 
   const { data: assetsForShares, dataUpdatedAt } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
     args: userShares ? [userShares] : undefined,
@@ -163,34 +171,34 @@ export default function DegenPage() {
   }, [dataUpdatedAt]);
 
   const { data: userPrincipal } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'principalOf',
     args: address ? [address] : undefined,
     query: { 
-      enabled: !!address && !!BOOST_VAULT_ADDRESS,
+      enabled: !!address && !!vaultAddress,
       refetchInterval: POLL_INTERVAL_MS
     }
   });
 
   const { data: userDonationPct } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'donationPctOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!address && !!vaultAddress }
   });
 
   const { data: totalAssets } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'totalAssets',
-    query: { enabled: !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!vaultAddress }
   });
 
   const { data: cusdBalance } = useBalance({
     address: address,
-    token: CUSD_ADDRESS,
+    token: tokenAddress,
     query: { enabled: !!address }
   });
 
@@ -202,23 +210,26 @@ export default function DegenPage() {
   const totalDonated = (profit * BigInt(donationPct)) / BigInt(100);
   const netProfit = profit - totalDonated;
   
-  const formattedProfit = useInterpolatedEarnings(profit, principal, lastUpdate, 18);
-  const currentAPY = useAaveAPY();
+  const formattedProfit = useInterpolatedEarnings(profit, principal, lastUpdate, tokenAddress, tokenDecimals);
+  const currentAPY = useAaveAPY(tokenAddress);
 
-  const tvl = totalAssets ? Number(formatUnits(BigInt(totalAssets.toString()), 18)) : 0;
+  const tvl = totalAssets ? Number(formatUnits(BigInt(totalAssets.toString()), tokenDecimals)) : 0;
 
   return (
     <div className="min-h-screen bg-background">
       {/* Compact Header */}
       <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-lg border-b">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-4">
           <Link href="/" data-testid="link-home">
             <div className="flex items-center gap-2 cursor-pointer hover-elevate active-elevate-2 px-3 py-2 rounded-md">
               <TrendingUp className="h-5 w-5 text-primary" />
               <span className="text-lg font-accent font-semibold">Boost</span>
             </div>
           </Link>
-          <ConnectButton />
+          <div className="flex items-center gap-3">
+            <TokenSelector />
+            <ConnectButton />
+          </div>
         </div>
       </header>
 
@@ -397,7 +408,7 @@ export default function DegenPage() {
                 <TrendingUp className="w-5 h-5 mr-2" />
                 <div className="text-left">
                   <div className="font-semibold">Deploy Capital</div>
-                  <div className="text-xs opacity-80">Add cUSD to earn yield</div>
+                  <div className="text-xs opacity-80">Add {selectedToken} to earn yield</div>
                 </div>
               </Button>
               <Button
@@ -409,7 +420,7 @@ export default function DegenPage() {
               >
                 <div className="text-left">
                   <div className="font-semibold">Withdraw Position</div>
-                  <div className="text-xs opacity-80">Redeem shares for cUSD</div>
+                  <div className="text-xs opacity-80">Redeem shares for {selectedToken}</div>
                 </div>
               </Button>
             </div>
@@ -419,7 +430,7 @@ export default function DegenPage() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Vault Contract</span>
-                  <code className="text-xs">{BOOST_VAULT_ADDRESS}</code>
+                  <code className="text-xs">{vaultAddress}</code>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Not financial advice. DYOR. Past performance doesn't guarantee future returns.

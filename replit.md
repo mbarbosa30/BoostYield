@@ -15,6 +15,8 @@ Risk messaging: Calibrated for investor/regulator friendliness while maintaining
 
 The frontend is a React SPA built with TypeScript, utilizing Wouter for routing and TanStack React Query for server state management. UI components are built with Shadcn/ui on Radix UI primitives, styled with Tailwind CSS, following a "New York" design system. It supports dual light/dark themes and distinct component variants for "Safe" and "Degen" modes. The design emphasizes a mobile-first, banking app-like simplicity with a "3 screens max" philosophy and robust accessibility. Key patterns include compound components, controlled components, and `data-testid` for E2E testing. Currency flexibility supports USD, ARS, NGN, and BRL.
 
+**Dual-Token Support:** The application supports both cUSD and native USDC on Celo through a unified `TokenContext` that provides runtime token switching. Token configuration is centralized in `TOKEN_CONFIGS` mapping (in `BoostVaultABI.ts`), with each token specifying its address, decimals, and corresponding vault address. The `TokenSelector` component allows users to toggle between tokens across all pages (/simple, /degen, /mini), with all vault operations (deposit, withdraw, APY fetching, balance checking) dynamically adapting to the selected token.
+
 ### Backend Architecture
 
 The backend is an Express.js REST API running on Node.js. It uses Vite middleware for development (HMR, SSR) and serves static files in production. Routes are centralized with an `/api` prefix. An abstract `IStorage` interface allows flexible data storage, currently implemented with in-memory `MemStorage` but designed for PostgreSQL with Drizzle ORM. API design prioritizes storage abstraction, raw body preservation for webhooks, and credential-based requests for session management.
@@ -33,7 +35,13 @@ The platform features three distinct user interfaces:
 - **`/degen`**: A crypto-native interface with sophisticated Wall Street terminology, data-dense dashboards, a dark theme, and professional impact metrics for donations ("Zero-Fee Philanthropy")
 - **`/simple`**: An emerging markets interface with plain language, bright design, progress visualizations, and community-focused messaging for donations ("Share Your Growth")
 - **`/mini`**: A mobile-optimized Farcaster miniapp with streamlined UX for in-app DeFi transactions and viral sharing
-All three UIs share core transaction dialogs (Deposit, Withdraw, Donation Settings) for consistent functionality and display real-time APY from Aave V3 with smooth 60 FPS earnings animations using `requestAnimationFrame`.
+
+All three UIs share:
+- Core transaction dialogs (Deposit, Withdraw, Donation Settings) that dynamically adapt to the selected token (cUSD/USDC)
+- TokenSelector component for runtime token switching
+- Real-time APY fetching from Aave V3 pool based on selected token
+- Smooth 60 FPS earnings animations using `requestAnimationFrame`
+- Dynamic vault address configuration via TokenContext
 
 ### Farcaster Miniapp Integration
 
@@ -51,9 +59,14 @@ A fully-integrated mobile-first `/mini` route serves as a Farcaster miniapp with
 
 ### Blockchain Infrastructure
 
-- **Target Chain:** Celo (mainnet) for gasless transactions and native stablecoins (cUSD).
-- **DeFi Protocols:** Uniswap V4 (for liquidity pools), Aave V3 (for lending/borrowing and leveraged strategies).
-- **Smart Contract:** `BoostAaveVault` (ERC4626 interface) on Celo mainnet.
+- **Target Chain:** Celo (mainnet) for gasless transactions and native stablecoins (cUSD, native USDC).
+- **Supported Tokens:**
+  - cUSD: 0x765DE816845861e75A25fCA122bb6898B8B1282a (18 decimals)
+  - USDC (native): 0xef4229c8c3250C675F21BCefa42f58EfbfF6002a (6 decimals)
+- **DeFi Protocols:** Uniswap V4 (for liquidity pools), Aave V3 Pool (0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402) for lending/borrowing and leveraged strategies.
+- **Smart Contracts:**
+  - cUSD Vault: `BoostAaveVault` at 0x775e8a5cbf69143482c89dcf9461d96cd49efb18 (ERC4626)
+  - USDC Vault: TBD (requires deployment with same BoostAaveVault contract)
 
 ### Third-Party Services
 

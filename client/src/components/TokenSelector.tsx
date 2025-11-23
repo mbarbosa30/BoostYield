@@ -1,12 +1,9 @@
 import { TOKEN_CONFIGS, type TokenSymbol } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
 import { Button } from "@/components/ui/button";
 
-interface TokenSelectorProps {
-  selectedToken: TokenSymbol;
-  onTokenChange: (token: TokenSymbol) => void;
-}
-
-export function TokenSelector({ selectedToken, onTokenChange }: TokenSelectorProps) {
+export function TokenSelector() {
+  const { selectedToken, setSelectedToken } = useToken();
   const tokens: TokenSymbol[] = ['cUSD', 'USDC'];
 
   return (
@@ -23,7 +20,7 @@ export function TokenSelector({ selectedToken, onTokenChange }: TokenSelectorPro
               key={token}
               size="sm"
               variant={isSelected ? "default" : "ghost"}
-              onClick={() => isAvailable && onTokenChange(token)}
+              onClick={() => isAvailable && setSelectedToken(token)}
               disabled={!isAvailable}
               className="toggle-elevate"
               data-testid={`button-token-${token.toLowerCase()}`}

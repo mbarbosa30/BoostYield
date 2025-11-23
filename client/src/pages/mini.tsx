@@ -9,7 +9,9 @@ import { DepositDialog } from "@/components/DepositDialog";
 import { WithdrawDialog } from "@/components/WithdrawDialog";
 import { DonationSettingsDialog } from "@/components/DonationSettingsDialog";
 import { ShareCastButton } from "@/components/ShareCastButton";
-import { BOOST_VAULT_ADDRESS, CUSD_ADDRESS, BoostVaultABI } from "@/lib/BoostVaultABI";
+import { TOKEN_CONFIGS, BoostVaultABI } from "@/lib/BoostVaultABI";
+import { useToken } from "@/contexts/TokenContext";
+import { TokenSelector } from "@/components/TokenSelector";
 import { initializeFarcaster, getFarcasterContext, type FarcasterContext } from "@/lib/farcasterClient";
 
 const AAVE_POOL_ADDRESS = '0x3E59A31363E2ad014dcbc521c4a0d5757d9f3402' as const;
@@ -44,12 +46,12 @@ const POOL_ABI = [
   }
 ] as const;
 
-function useAaveAPY() {
+function useAaveAPY(tokenAddress: `0x${string}`) {
   const { data: reserveData } = useReadContract({
     address: AAVE_POOL_ADDRESS,
     abi: POOL_ABI,
     functionName: 'getReserveData',
-    args: [CUSD_ADDRESS],
+    args: [tokenAddress],
     query: { refetchInterval: 60000 }
   });
   
@@ -66,6 +68,12 @@ export default function MiniPage() {
   const [depositOpen, setDepositOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const { selectedToken } = useToken();
+
+  const tokenConfig = TOKEN_CONFIGS[selectedToken];
+  const vaultAddress = tokenConfig.vaultAddress;
+  const tokenAddress = tokenConfig.address;
+  const tokenDecimals = tokenConfig.decimals;
 
   // Initialize Farcaster SDK
   useEffect(() => {
@@ -79,15 +87,15 @@ export default function MiniPage() {
 
   // Read user's vault balance
   const { data: userShares } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!address && !!vaultAddress }
   });
 
   const { data: assetsForShares } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'previewRedeem',
     args: userShares ? [userShares] : undefined,
@@ -95,32 +103,32 @@ export default function MiniPage() {
   });
 
   const { data: userPrincipal } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'principalOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!address && !!vaultAddress }
   });
 
   const { data: userDonationPct } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'donationPctOf',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!address && !!vaultAddress }
   });
 
   const { data: totalAssets } = useReadContract({
-    address: BOOST_VAULT_ADDRESS,
+    address: vaultAddress,
     abi: BoostVaultABI,
     functionName: 'totalAssets',
-    query: { enabled: !!BOOST_VAULT_ADDRESS }
+    query: { enabled: !!vaultAddress }
   });
 
   // Read user's cUSD balance
   const { data: cusdBalance } = useBalance({
     address: address,
-    token: CUSD_ADDRESS,
+    token: tokenAddress,
     query: { enabled: !!address }
   });
 
@@ -131,22 +139,25 @@ export default function MiniPage() {
   const donationPct = Number(userDonationPct || BigInt(0));
   const totalDonated = (profit * BigInt(donationPct)) / BigInt(100);
 
-  const currentAPY = useAaveAPY();
+  const currentAPY = useAaveAPY(tokenAddress);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile-optimized header */}
       <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b">
-        <div className="flex items-center justify-between p-4">
-          <div>
-            <h1 className="text-xl font-bold">Boost</h1>
-            {farcasterContext && (
-              <p className="text-sm text-muted-foreground">
-                @{farcasterContext.user?.username || 'anon'}
-              </p>
-            )}
+        <div className="p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold">Boost</h1>
+              {farcasterContext && (
+                <p className="text-sm text-muted-foreground">
+                  @{farcasterContext.user?.username || 'anon'}
+                </p>
+              )}
+            </div>
+            <ConnectButton />
           </div>
-          <ConnectButton />
+          <TokenSelector />
         </div>
       </div>
 

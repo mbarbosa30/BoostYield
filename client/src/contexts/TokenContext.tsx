@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { TokenSymbol } from "@/lib/BoostVaultABI";
+import { TOKEN_CONFIGS } from "@/lib/BoostVaultABI";
 
 interface TokenContextType {
   selectedToken: TokenSymbol;
@@ -11,8 +12,18 @@ const TokenContext = createContext<TokenContextType | undefined>(undefined);
 export function TokenProvider({ children }: { children: ReactNode }) {
   const [selectedToken, setSelectedToken] = useState<TokenSymbol>('cUSD');
 
+  // Validate token selection - only allow tokens with configured vaults
+  const handleTokenChange = (token: TokenSymbol) => {
+    const config = TOKEN_CONFIGS[token];
+    if (config.vaultAddress) {
+      setSelectedToken(token);
+    } else {
+      console.warn(`Token ${token} selected but vault address not configured. Keeping current token: ${selectedToken}`);
+    }
+  };
+
   return (
-    <TokenContext.Provider value={{ selectedToken, setSelectedToken }}>
+    <TokenContext.Provider value={{ selectedToken, setSelectedToken: handleTokenChange }}>
       {children}
     </TokenContext.Provider>
   );

@@ -139,6 +139,7 @@ export default function SimplePage() {
   const vaultAddress = tokenConfig.vaultAddress;
   const tokenAddress = tokenConfig.address;
   const tokenDecimals = tokenConfig.decimals;
+  const isTokenSupported = !!vaultAddress;
 
   // Read user's vault balance
   const { data: userShares, isLoading: isLoadingShares } = useReadContract({
